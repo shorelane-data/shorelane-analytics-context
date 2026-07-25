@@ -1,0 +1,39 @@
+# CLAUDE.md
+
+This repo is the **business context layer** for [company]'s analytical data, in
+Analytics Context Format (ACF). When you are run from this directory, use it to
+answer data questions accurately — don't write SQL from raw schema alone.
+
+## Answering a data question
+
+1. Read `company/terminology.md` for what the company's terms mean.
+2. Identify the domain the question belongs to; read
+   `domains/<domain>/reference.md` **first** — it routes the query.
+3. Honor every `IF … DO NOT …` routing trigger and `caveats` you find. These encode
+   the silent-failure modes a senior analyst would warn about. When a "Common query
+   patterns" block matches the question, start your SQL from its form.
+4. Before computing a metric, read `domains/<domain>/metrics.yaml` and honor its
+   `parameters` and `caveats`. When a **confirmed** metric carries an
+   `expression:` block, build the query from it — its `measure`, every
+   `mandatory_filters` entry, and only `allowed_dimensions` slices — don't
+   re-derive the metric from schema. For ambiguous terms, check `entities/*.yaml`
+   (cross-domain) then `domains/<domain>/entities.yaml` (domain-specific).
+5. Issue **read-only** SQL (SELECT only — never DDL/DML) via the warehouse MCP
+   server only. (No warehouse MCP configured? See `README.md`.)
+6. If the context is silent on something the answer depends on, **say so** — do not
+   invent a definition. A flagged gap is more useful than a confident wrong answer.
+
+If the answer depends on a caveat the context names, apply it and state it in your
+answer (e.g. "excluding sessions under 45 days, per the collection-rate caveat").
+
+## Editing this repo
+
+Adding or correcting context (not answering a question)? You can edit this repo
+directly — it does **not** require the Nodal tool repo. Follow `AUTHORING.md`: only a
+human owner flips `status: draft → confirmed`, keep statistics and schema out (SQL
+only as confirmed `reference.md` query patterns — see `AUTHORING.md`), and
+run `python3 .ci/validate.py` before committing (CI runs the same check). For a
+**brand-new domain**, re-running the `context-interview` skill is the recommended —
+not required — path; it drafts from your dbt models and harvests eval seeds for you.
+
+To share this context with your team over MCP, see `SHARING.md`.
