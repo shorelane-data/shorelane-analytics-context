@@ -1,6 +1,6 @@
-# [company] Analytics Context
+# Shorelane Analytics Context
 
-This repo is [company]'s **business context layer** for analytics agents, in
+This repo is Shorelanes's **business context layer** for analytics agents, in
 Analytics Context Format (ACF). It tells an AI agent what your terms mean, which
 table is canonical, what the standard filters are, and where the landmines are — so
 it answers data questions correctly instead of writing confidently-wrong SQL.
