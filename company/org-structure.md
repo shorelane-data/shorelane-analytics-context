@@ -10,7 +10,7 @@ ownership changes. Keep it in sync with each `domains/<domain>/domain.yaml: owne
 
 | Domain | Owner | Team | Status |
 |---|---|---|---|
-| _e.g. session-financials_ | _e.g. Jane Doe_ | _e.g. Finance Analytics_ | draft |
+| revenue | Ron Potok | Analytics | confirmed |
 
 <!--
 One row per domain. `Status` is `draft` until the analyst confirms the owner, then

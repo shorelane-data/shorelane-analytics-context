@@ -20,8 +20,13 @@ lineage_sources:
   #   ref: main
   #   manifest_path: target/manifest.json
 
-domains: {}                     # filled in per domain during the interview, e.g.:
-  # session-financials:
-  #   lineage:
-  #     - source: dbt_core
-  #       models: [fct_session_financials, dim_client]
+domains:
+  revenue:
+    lineage:
+      - source: dbt_shorelane
+        models:
+          - fct_revenue
+          - stg_orders
+          - stg_invoices
+          - stg_refunds
+          - stg_revenue_recognition

@@ -1,0 +1,39 @@
+# domain.yaml — structured metadata for one domain.
+name: revenue
+summary: >
+  How much Shorelane sold, earned, billed, collected, and recognized — the five
+  revenue measures over time. Answers "what was <revenue measure> in <period>?"
+  and "why do two revenue numbers disagree?"
+status: confirmed
+owner: Ron Potok
+grain: >
+  One row per revenue event in fct_revenue: (activity_date, measure_name,
+  amount). activity_date × measure_name is NOT unique — a day×measure has many
+  rows, so correct queries always SUM(amount).
+tables:
+  canonical: nodal-shorelane.shorelane.fct_revenue
+  others:
+    - nodal-shorelane.shorelane.stg_orders
+    - nodal-shorelane.shorelane.stg_invoices
+    - nodal-shorelane.shorelane.stg_refunds
+    - nodal-shorelane.shorelane.stg_revenue_recognition
+dashboards:
+  - name: business (scheduled Plotly dashboard)
+    owner: Ron Potok
+    canonical_question: >
+      The executive view: monthly GMV YTD, YTD recognized revenue, recognized
+      monthly trend, trailing-30d KPIs, five revenues last quarter, and billed
+      vs collected last month.
+  - name: Five revenues — public demo dashboard
+    owner: Ron Potok
+    canonical_question: >
+      What are the five revenue measures and how do they differ over time?
+      (https://nodal-data.github.io/shorelane/dashboard/)
+lineage:
+  - source: dbt_shorelane
+    models:
+      - fct_revenue
+      - stg_orders
+      - stg_invoices
+      - stg_refunds
+      - stg_revenue_recognition

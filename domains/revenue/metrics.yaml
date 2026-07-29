@@ -1,0 +1,136 @@
+# metrics.yaml — metric definitions. Human-owned `definition`. No statistics.
+metrics:
+  - name: gmv
+    definition: >
+      Gross merchandise value: the buyer's full ticket across all channels
+      (marketplace at full price, not Shorelane's take), gross of refunds,
+      attributed to order date. Measures demand at order time.
+    grain: revenue events in fct_revenue, summed; dollars dated on order date
+    status: confirmed   # expression read-back confirmed 2026-07-29
+    parameters:
+      - name: time_window
+        note: gmv is only meaningful over a stated period
+    caveats:
+      - never net refunds out of gmv (refunds do not reduce gmv)
+      - marketplace counts at full ticket here — the one measure where it does
+    common_filters:
+      - "measure_name = 'gmv'"
+    expression:
+      measure: SUM(amount)
+      mandatory_filters:
+        - field: measure_name
+          op: "="
+          value: gmv
+          reason: mixing measures double-counts the same dollars
+      allowed_dimensions: [activity_date]
+    lineage:
+      - source: dbt_shorelane
+        models: [fct_revenue]
+
+  - name: net_revenue
+    definition: >
+      What Shorelane earns: full amount on d2c and business subscriptions,
+      commission-only on marketplace. Refunds enter as negative rows dated on
+      the refund's own date; order dollars stay on order date.
+    grain: revenue events in fct_revenue, summed; order dollars on order date, refunds on refund date
+    status: confirmed   # expression read-back confirmed 2026-07-29
+    parameters:
+      - name: time_window
+        note: refund rows land in the period the refund was processed
+    caveats:
+      - refunds are negative rows on refund date — never retroactively moved to the order date
+      - marketplace enters at commission only, never full ticket
+    common_filters:
+      - "measure_name = 'net_revenue'"
+    expression:
+      measure: SUM(amount)
+      mandatory_filters:
+        - field: measure_name
+          op: "="
+          value: net_revenue
+          reason: mixing measures double-counts the same dollars
+      allowed_dimensions: [activity_date]
+    lineage:
+      - source: dbt_shorelane
+        models: [fct_revenue]
+
+  - name: billed_revenue
+    definition: >
+      What Shorelane billed: all channels, dated at order/invoice time
+      (subscriptions bill up front), valued at net (marketplace at commission)
+      so it is comparable to collected_cash.
+    grain: revenue events in fct_revenue, summed; dollars dated at order/invoice time
+    status: confirmed   # expression read-back confirmed 2026-07-29
+    parameters:
+      - name: time_window
+        note: billed and collected diverge inside the net-30 window
+    caveats:
+      - not restricted to business-subscription invoices — all channels bill
+      - at net, not full ticket (distinct from gmv)
+    common_filters:
+      - "measure_name = 'billed_revenue'"
+    expression:
+      measure: SUM(amount)
+      mandatory_filters:
+        - field: measure_name
+          op: "="
+          value: billed_revenue
+          reason: mixing measures double-counts the same dollars
+      allowed_dimensions: [activity_date]
+    lineage:
+      - source: dbt_shorelane
+        models: [fct_revenue]
+
+  - name: collected_cash
+    definition: >
+      Cash actually received, dated on the collection date (never invoice or
+      order date). Pending net-30 invoices and bad debt contribute nothing.
+      Refunds appear as negative rows on the refund date.
+    grain: revenue events in fct_revenue, summed; dollars dated on collection date
+    status: confirmed   # expression read-back confirmed 2026-07-29
+    parameters:
+      - name: time_window
+        note: cash lags billing by up to the net-30 window (or forever, for bad debt)
+    caveats:
+      - never backdate collected dollars to the invoice date
+      - bad-debt invoices never appear
+    common_filters:
+      - "measure_name = 'collected_cash'"
+    expression:
+      measure: SUM(amount)
+      mandatory_filters:
+        - field: measure_name
+          op: "="
+          value: collected_cash
+          reason: mixing measures double-counts the same dollars
+      allowed_dimensions: [activity_date]
+    lineage:
+      - source: dbt_shorelane
+        models: [fct_revenue]
+
+  - name: recognized_revenue
+    definition: >
+      The accounting view, at net: business subscriptions recognize ratably
+      over the term per the recognition schedule; d2c and marketplace recognize
+      immediately at order. This is what unqualified "revenue" means.
+    grain: revenue events in fct_revenue, summed; dollars dated on recognition date
+    status: confirmed   # expression read-back confirmed 2026-07-29
+    parameters:
+      - name: time_window
+        note: includes ratable slices of past subscription orders
+    caveats:
+      - can exceed gmv in a period when the subscription base is large — not a bug
+      - default target for unqualified "revenue" questions
+    common_filters:
+      - "measure_name = 'recognized_revenue'"
+    expression:
+      measure: SUM(amount)
+      mandatory_filters:
+        - field: measure_name
+          op: "="
+          value: recognized_revenue
+          reason: mixing measures double-counts the same dollars
+      allowed_dimensions: [activity_date]
+    lineage:
+      - source: dbt_shorelane
+        models: [fct_revenue]
