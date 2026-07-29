@@ -1,0 +1,18 @@
+# Harvested during Stage 1 terminology, 2026-07-28
+question: "What was revenue last month?"
+domain: revenue
+intent: >
+  Unqualified "revenue" at Shorelane means recognized_revenue (the accounting
+  view: dollars recognized in the period per the ratable recognition schedule).
+  NOT net_revenue (what Shorelane earns at order time), NOT gmv (topline gross
+  merchandise value), NOT billed_revenue or collected_cash. The analyst chose a
+  default over "always clarify": the agent should answer with
+  recognized_revenue and say which measure it used.
+expected:
+  kind: semantic_entity
+  entity: recognized_revenue
+provenance: interview
+status: confirmed
+lineage:
+  - source: dbt_shorelane
+    models: [fct_revenue]

@@ -1,0 +1,25 @@
+# Harvested during Stage 1 terminology, 2026-07-28
+question: "What was net revenue in the last quarter?"
+domain: revenue
+intent: >
+  net_revenue = what Shorelane earns: full amount for d2c and business
+  subscriptions, commission-only for marketplace. Refunds enter as negative
+  rows dated on the refund's own date — NOT retroactively netted onto the
+  original order date. A period's net revenue therefore includes refunds
+  *processed* in that period even for older orders.
+ir:
+  metric: net_revenue
+  time_window: last_quarter
+expected:
+  kind: sql_shape
+  must_include:
+    - "refund rows negative, dated at refund date"
+    - "marketplace counted at commission (take) only"
+  must_exclude:
+    - "moving refunds onto the original order's date"
+    - "full-ticket marketplace amounts"
+provenance: interview
+status: confirmed
+lineage:
+  - source: dbt_shorelane
+    models: [fct_revenue]

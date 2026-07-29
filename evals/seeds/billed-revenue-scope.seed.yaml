@@ -1,0 +1,24 @@
+# Harvested during Stage 1 terminology, 2026-07-29
+question: "How much did we bill in the last quarter?"
+domain: revenue
+intent: >
+  billed_revenue covers ALL channels (not just business-subscription invoices),
+  dated at order/invoice time (subscriptions bill up front), valued at net —
+  marketplace enters at commission-only — so it is directly comparable to
+  collected_cash. Rejected readings: subscriptions-only billing; full-ticket
+  (gmv-equal) billing.
+ir:
+  metric: billed_revenue
+  time_window: last_quarter
+expected:
+  kind: sql_shape
+  must_include:
+    - "all three channels included"
+    - "marketplace at commission (net), not full ticket"
+  must_exclude:
+    - "restricting billing to business-subscription invoices only"
+provenance: interview
+status: confirmed
+lineage:
+  - source: dbt_shorelane
+    models: [fct_revenue]
