@@ -11,8 +11,8 @@ intent: >
 ir:
   metric: recognized_revenue
   time_window:
-    start: 2026-06-01
-    end: 2026-06-30
+    start: "2026-06-01"
+    end: "2026-06-30"
 expected:
   kind: value_at_snapshot
   value: 492467.80
