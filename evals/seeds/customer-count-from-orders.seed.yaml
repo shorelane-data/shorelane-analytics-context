@@ -1,0 +1,22 @@
+# Harvested during Stage 3 entities, 2026-07-29
+question: "How many customers do we have?"
+domain: revenue
+intent: >
+  Count DISTINCT customer_id derived from orders (customers with at least one
+  real order), and report the channel mix alongside. The customer_id pool is
+  shared across all channels (one customer in two channels = one customer).
+  The raw ID pool over-counts — IDs exist before any order or with only a
+  voided invoice. ID prefixes encode entity type only.
+expected:
+  kind: sql_shape
+  must_include:
+    - "COUNT(DISTINCT customer_id) computed from stg_orders"
+    - "channel mix reported alongside the total"
+  must_exclude:
+    - "counting the raw customer ID pool (over-counts pre-order/voided IDs)"
+    - "summing per-channel distinct counts into a total (double-counts shared customers)"
+provenance: interview
+status: confirmed
+lineage:
+  - source: dbt_shorelane
+    models: [stg_orders]

@@ -1,10 +1,87 @@
 # entities.yaml — DOMAIN-SPECIFIC entities only (status/type on a single fact
 # table, one owner). Cross-domain entities go in /entities/ instead. See SPEC.md.
 entities:
-  - name: <e.g. claim_status>
-    description: <what this attribute means>
-    status: draft
-    mappings:                    # column value -> business meaning
-      <value>: <meaning>
-    important: <disambiguation / common misunderstanding>
-    analytical_notes: <when this matters; when to clarify with the user>
+  - name: measure_name
+    description: >
+      The five revenue measures in fct_revenue. There is no single "revenue" —
+      each measure values and dates dollars differently (see terminology.md and
+      metrics.yaml).
+    status: confirmed   # values from dbt accepted_values test; meanings confirmed in Stage 1
+    mappings:
+      gmv: buyer's full ticket, gross of refunds, order date
+      net_revenue: Shorelane's earnings (marketplace at commission), refunds negative on refund date
+      billed_revenue: billed at net, all channels, order/invoice date
+      collected_cash: cash received, collection date, bad debt never appears
+      recognized_revenue: accounting view at net; subs ratable, rest immediate
+    important: >
+      Unqualified "revenue" = recognized_revenue. Never SUM across measures.
+    analytical_notes: >
+      Every fct_revenue query filters or groups by exactly one measure_name.
+
+  - name: customer
+    description: >
+      One shared customer_id pool spans all three channels. ID prefixes encode
+      entity type only — read no other meaning into them.
+    status: confirmed   # 2026-07-29
+    important: >
+      "How many customers?" = COUNT(DISTINCT customer_id) derived FROM ORDERS
+      (customers with at least one real order), always reported with the
+      channel mix alongside. The raw ID pool over-counts: IDs can be created
+      before any order or with only a voided invoice.
+    analytical_notes: >
+      Never count customers from the raw customer pool; derive from stg_orders.
+      A customer active in two channels is one customer — the pool is shared.
+
+  - name: average_order_value
+    description: >
+      AOV = AVG(gross_amount) per order, always split by channel.
+    status: confirmed   # 2026-07-29
+    important: >
+      Never report a blended AOV: it mixes small d2c tickets, large
+      subscription invoices, and marketplace full tickets into a meaningless
+      number. Gross (ticket value), not net, is the confirmed numerator.
+    analytical_notes: >
+      Compute from stg_orders.gross_amount grouped by channel. If a stakeholder
+      wants "AOV of what we earn", that's a different question — use net_amount
+      and label it explicitly.
+
+  - name: order_count
+    description: >
+      Count of rows in stg_orders (one row per order_id), all channels.
+    status: confirmed   # 2026-07-29
+    important: >
+      A single total is acceptable, but always show the per-channel breakdown
+      alongside — the three channels are different businesses.
+    analytical_notes: >
+      Unlike AOV (never blended), a blended order total is fine with the mix
+      shown.
+
+  - name: channel
+    description: >
+      The three ways Shorelane sells; lives on stg_orders.channel.
+    status: confirmed   # 2026-07-29
+    mappings:
+      d2c: consumer shop — paid up front at order; bill/cash/recognition coincide
+      business_subscription: net-30 invoiced up front; cash later; ratable recognition
+      marketplace: third-party sellers; Shorelane fulfills and keeps the commission
+    important: >
+      Channel drives the valuation wedge — marketplace full ticket appears only
+      in gmv; earnings measures take commission only.
+    analytical_notes: >
+      fct_revenue has no channel column; channel slicing goes through
+      stg_orders (order_id).
+
+  - name: collection_status
+    description: >
+      Invoice lifecycle on stg_invoices — pending → collected → bad debt.
+    status: confirmed   # 2026-07-29
+    mappings:
+      pending: collected_date NULL, is_bad_debt false — billed, awaiting net-30 payment
+      collected: collected_date set — cash arrived (dates collected_cash)
+      bad_debt: is_bad_debt true, collected_date NULL — manually written off by finance
+    important: >
+      Bad debt is a MANUAL finance write-off, case by case — there is no fixed
+      aging threshold. NULL collected_date alone does not mean bad debt.
+    analytical_notes: >
+      Outstanding receivables = pending only (exclude bad debt). Bad-debt
+      invoices never contribute to collected_cash.

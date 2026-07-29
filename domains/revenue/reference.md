@@ -76,8 +76,14 @@
   invoices contribute nothing.
 - recognized_revenue can exceed gmv in a period (ratable slices of past
   subscription orders) — not a bug.
-- <!-- status: draft --> bad-debt flag mechanics (when `is_bad_debt` gets set)
-  are unconfirmed — see known-issues.md.
+- Bad debt is a manual finance write-off (no aging rule) — never infer it from
+  invoice age; NULL `collected_date` alone means pending, not bad debt.
+- Customer counts come from `stg_orders`, never the raw customer ID pool
+  (over-counts pre-order and voided-invoice IDs). Always show channel mix.
+- AOV is `AVG(gross_amount)` per channel, never blended; order counts may be
+  blended but always show the channel mix.
+- No seller ID exists — seller-level marketplace questions cannot be answered;
+  say so instead of proxying.
 
 ## Common query patterns
 

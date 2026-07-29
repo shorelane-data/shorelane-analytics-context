@@ -59,8 +59,8 @@ what it means here, and what people wrongly assume it means. No statistics.
   given period. <!-- status: confirmed 2026-07-28 (site) -->
 - **bad debt** — an invoice Shorelane no longer expects to collect
   (`is_bad_debt` on the invoice; `collected_date` stays NULL). Never enters
-  collected_cash. How/when an invoice gets flagged: _To be confirmed._
-  <!-- status: draft — flag mechanics unconfirmed -->
+  collected_cash. Flagged by a **manual finance write-off, case by case** —
+  there is no fixed aging threshold. <!-- status: confirmed 2026-07-29 -->
 - **pending collection** — an invoice whose `collected_date` is still NULL and
   is *not* flagged bad debt: billed, not yet paid, inside or past its net-30
   window. <!-- status: confirmed 2026-07-28 -->
