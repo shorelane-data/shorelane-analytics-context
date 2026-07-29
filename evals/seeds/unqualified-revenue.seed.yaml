@@ -1,17 +1,24 @@
-# Harvested during Stage 1 terminology, 2026-07-28
+# Harvested Stage 1 terminology 2026-07-28; verified live vs dashboard 2026-07-29
 question: "What was revenue last month?"
 domain: revenue
 intent: >
   Unqualified "revenue" at Shorelane means recognized_revenue (the accounting
   view: dollars recognized in the period per the ratable recognition schedule).
-  NOT net_revenue (what Shorelane earns at order time), NOT gmv (topline gross
-  merchandise value), NOT billed_revenue or collected_cash. The analyst chose a
-  default over "always clarify": the agent should answer with
-  recognized_revenue and say which measure it used.
+  NOT net_revenue (what Shorelane earns at order time — the measure a blind
+  agent picked in live verification), NOT gmv, NOT billed_revenue or
+  collected_cash. The agent should answer with recognized_revenue and say
+  which measure it used.
+ir:
+  metric: recognized_revenue
+  time_window:
+    start: 2026-06-01
+    end: 2026-06-30
 expected:
-  kind: semantic_entity
-  entity: recognized_revenue
-provenance: interview
+  kind: value_at_snapshot
+  value: 492467.80
+  as_of: "2026-07-29"
+verified_query_file: evals/verified/unqualified-revenue.sql
+provenance: dashboard
 status: confirmed
 lineage:
   - source: dbt_shorelane

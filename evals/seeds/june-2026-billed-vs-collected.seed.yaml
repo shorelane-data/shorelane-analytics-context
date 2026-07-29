@@ -1,0 +1,21 @@
+# Stage 5 live verification, 2026-07-29 — matched billed_vs_collected_last_month tile
+question: "How much did we bill in June 2026, and how much cash did we collect?"
+domain: revenue
+intent: >
+  billed_revenue (all channels, at net, order/invoice date) and collected_cash
+  (collection date; pending net-30 and bad debt contribute nothing) summed
+  separately from fct_revenue — never across measures. Collected exceeding
+  billed in a month is the expected net-30 timing wedge (June collections
+  include May billings), not a data bug.
+expected:
+  kind: value_at_snapshot
+  value:
+    billed_revenue: 410682.58
+    collected_cash: 547109.77
+  as_of: "2026-07-29"
+verified_query_file: evals/verified/june-2026-billed-vs-collected.sql
+provenance: dashboard
+status: confirmed
+lineage:
+  - source: dbt_shorelane
+    models: [fct_revenue]
