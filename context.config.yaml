@@ -6,23 +6,33 @@ warehouse: bigquery             # default platform; a per-source `warehouse:` ov
                                 # (snowflake | bigquery | databricks | postgres | ...)
 
 lineage_sources:
+  # Primary/live source — the standalone dbt repo running daily builds against BigQuery.
+  # Its notify-context-repo.yml workflow publishes manifest.json on the orphan
+  # `dbt-manifest` branch and dispatches lineage-changed here.
+  - id: dbt_shorelane_dbt
+    type: dbt
+    repo: github.com/nodal-data/shorelane-dbt
+    ref: dbt-manifest
+    manifest_path: manifest.json
+  # Second source — the shorelane monorepo (dbt nested under dbt/). Same convention:
+  # its sender copies dbt/target/manifest.json to the here
+  # is identical regardless of the nesting.
   - id: dbt_shorelane
-    type: dbt                   # dbt | sqlmesh | raw_sql | none
+    type: dbt
     repo: github.com/nodal-data/shorelane
-    ref: main
-    manifest_path: dbt/target/manifest.json
-  # Multiple warehouses / clouds? Tag the non-default source(s) with `warehouse:`,
-  # e.g. a second platform — entries without `warehouse:` inherit the default above:
-  # - id: dbt_bq_marketing
-  #   type: dbt
-  #   warehouse: bigquery
-  #   repo: github.com/your-org/marketing-dbt
-  #   ref: main
-  #   manifest_path: target/manifest.json
+    ref: dbt-manifest
+    manifest_path: manifest.json
 
 domains:
   revenue:
     lineage:
+      - source: dbt_shorelane_dbt
+        models:
+          - fct_revenue
+          - stg_orders
+          - stg_invoices
+          - stg_refunds
+          - stg_revenue_recognition
       - source: dbt_shorelane
         models:
           - fct_revenue

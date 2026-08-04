@@ -60,6 +60,67 @@
           ]
         }
       }
+    },
+    "dbt_shorelane_dbt": {
+      "models": {
+        "fct_revenue": {
+          "columns": [
+            "activity_date",
+            "amount",
+            "measure_name"
+          ],
+          "tests": [
+            "accepted_values:measure_name:[gmv,net_revenue,recognized_revenue,billed_revenue,collected_cash]",
+            "not_null:activity_date",
+            "not_null:amount",
+            "not_null:measure_name"
+          ]
+        },
+        "stg_invoices": {
+          "columns": [
+            "invoice_id",
+            "order_id"
+          ],
+          "tests": [
+            "not_null:invoice_id",
+            "not_null:order_id",
+            "relationships:order_id:->ref('stg_orders').order_id",
+            "unique:invoice_id"
+          ]
+        },
+        "stg_orders": {
+          "columns": [
+            "order_id"
+          ],
+          "tests": [
+            "not_null:order_id",
+            "unique:order_id"
+          ]
+        },
+        "stg_refunds": {
+          "columns": [
+            "order_id",
+            "refund_id"
+          ],
+          "tests": [
+            "not_null:order_id",
+            "not_null:refund_id",
+            "relationships:order_id:->ref('stg_orders').order_id",
+            "unique:refund_id"
+          ]
+        },
+        "stg_revenue_recognition": {
+          "columns": [
+            "order_id",
+            "recognition_date"
+          ],
+          "tests": [
+            "not_null:order_id",
+            "not_null:recognition_date",
+            "relationships:order_id:->ref('stg_orders').order_id"
+          ]
+        }
+      }
     }
   },
   "version": 1
