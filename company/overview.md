@@ -2,7 +2,7 @@
 
 ## What This Covers
 What the business does, how it makes money, and the unit of value it counts most.
-Drafted from the company's public site (https://nodal-data.github.io/shorelane/),
+Drafted from the company's public site (https://shorelane-data.github.io/shorelane/),
 then confirmed by an analyst.
 
 ## Business model

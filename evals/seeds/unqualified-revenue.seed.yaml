@@ -1,4 +1,6 @@
 # Harvested Stage 1 terminology 2026-07-28; verified live vs dashboard 2026-07-29
+# Re-verified 2026-08-17 via dashboard-verify capture (tier 1.5, Recognized Revenue
+# by Month figure: June = 492467.80 exact; same shape verified for July: 512209.17)
 question: "What was revenue last month?"
 domain: revenue
 intent: >
@@ -16,7 +18,7 @@ ir:
 expected:
   kind: value_at_snapshot
   value: 492467.80
-  as_of: "2026-07-29"
+  as_of: "2026-08-17"
 verified_query_file: evals/verified/unqualified-revenue.sql
 provenance: dashboard
 status: confirmed

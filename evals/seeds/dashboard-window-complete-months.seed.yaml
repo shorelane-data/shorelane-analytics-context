@@ -1,0 +1,26 @@
+# Harvested from Stage 5 reconciliation, 2026-08-17: unfiltered all-time SUM
+# (43,529,125.68) disagreed with the dashboard's All Time panel (43,237,241.00);
+# the delta was exactly the Aug 1–17 partial month. Window mismatch, not a data bug.
+question: "What is our all-time recognized revenue, per the dashboard?"
+domain: revenue
+intent: >
+  Every window on the business dashboard — including "All Time" — ends at the
+  last fully-elapsed month, while the warehouse has rows through today. A
+  dashboard-comparable total must cut the window at the last complete month;
+  an unfiltered SUM includes the partial current month and will not match any
+  dashboard tile. Rejected reading: summing all rows through today and calling
+  the difference a data discrepancy.
+ir:
+  metric: recognized_revenue
+  time_window: all_complete_months
+expected:
+  kind: sql_shape
+  must_include:
+    - "window ends at the last fully-elapsed month (activity_date < DATE_TRUNC(CURRENT_DATE, MONTH))"
+  must_exclude:
+    - "summing through today (including the partial current month) when matching a dashboard total"
+provenance: correction
+status: confirmed
+lineage:
+  - source: dbt_shorelane
+    models: [fct_revenue]

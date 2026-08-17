@@ -21,14 +21,18 @@ dashboards:
   - name: business (scheduled Plotly dashboard)
     owner: Ron Potok
     canonical_question: >
-      The executive view: monthly GMV YTD, YTD recognized revenue, recognized
-      monthly trend, trailing-30d KPIs, five revenues last quarter, and billed
-      vs collected last month.
+      The executive view, switchable Last 6/12/24 Months or All Time: six KPIs
+      (recognized revenue, GMV, active/new customers, AOV, refund rate) and five
+      charts (recognized revenue by month, revenue by channel, customer growth,
+      orders & AOV, recognized revenue vs collected cash). All windows end at the
+      last fully-elapsed month. Redesigned 2026-08: billed_revenue no longer
+      shown here — read it off the five-revenues dashboard below.
+      (https://shorelane-data.github.io/shorelane/business/)
   - name: Five revenues — public demo dashboard
     owner: Ron Potok
     canonical_question: >
       What are the five revenue measures and how do they differ over time?
-      (https://nodal-data.github.io/shorelane/dashboard/)
+      (https://shorelane-data.github.io/shorelane/dashboard/)
 lineage:
   - source: dbt_shorelane
     models:
