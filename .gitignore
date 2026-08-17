@@ -26,3 +26,10 @@ __pycache__/
 
 # macOS
 .DS_Store
+
+# Dashboard captures (dashboard-verify skill) are generated output — values read
+# from a dashboard at a point in time, plus their reconciliation reports. Keep
+# them local; the durable outputs are seeds and context edits. (Learned
+# playbooks in evals/playbooks/ ARE committed — recipes, not results.)
+evals/captures/*
+!evals/captures/.gitkeep

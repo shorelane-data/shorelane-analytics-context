@@ -16,3 +16,10 @@ and as an eval seed.
 - **Customer ID pool over-counts** — customer IDs exist before any order or
   with only a voided invoice; count customers from orders, never from the raw
   pool. <!-- -> seed: customer-count-from-orders -->
+- **Dashboard totals mean fully-elapsed months** — every window on the business
+  dashboard (including "All Time") ends at the last complete month; the
+  warehouse has rows through today. An unfiltered SUM includes the partial
+  current month and will disagree with every dashboard tile (verified live
+  2026-08-17: Δ was exactly the Aug 1–17 partial). When reconciling to a
+  dashboard, cut the window at the last fully-elapsed month.
+  <!-- -> seed: dashboard-window-complete-months -->

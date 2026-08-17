@@ -29,6 +29,10 @@
   wedge (see context.md table); it is not a data bug.
 - IF asked to SUM `amount` across all measures → refuse; a cross-measure total
   double-counts the same dollars five ways.
+- IF the answer will be compared to a dashboard number (or the question cites
+  the dashboard, "all time", or a period tile) → DO NOT sum through today; end
+  the window at the last fully-elapsed month (`activity_date <
+  DATE_TRUNC(CURRENT_DATE, MONTH)`), because every dashboard window ends there.
 
 ## Dimensions
 - `fct_revenue` carries only `activity_date`, `measure_name`, `amount`.
