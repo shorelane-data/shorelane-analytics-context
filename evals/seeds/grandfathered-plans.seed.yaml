@@ -1,0 +1,23 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: Should active subscribers exclude retired plans?
+domain: subscriptions
+intent: Grandfathered means the generation was retired from sale by the as-of date.
+  Customers retain the original plan and retired generations remain eligible for active-subscriber
+  counts. Term prices use the price effective at term start. The May 2025 increase
+  affected generation 3 only, leaving older generations unchanged.
+expected:
+  kind: sql_shape
+  must_include:
+  - Include live terms on retired generations.
+  - Term-start effective pricing.
+  must_exclude:
+  - Filter active subscribers to is_current plans.
+  - "Reprice historical terms at today\u2019s catalog price."
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_subscriptions
+  - dim_plans
+  - stg_plan_prices

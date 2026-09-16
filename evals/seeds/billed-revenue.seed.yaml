@@ -1,0 +1,27 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: What was billed revenue last quarter?
+domain: executive-revenue
+intent: Non-subscription activity on order date; subscription invoices on billed_date,
+  with full annual subscription billed upfront. Refund adjustments remain unconfirmed.
+ir:
+  metric: billed_revenue
+  dimensions: []
+  filters:
+  - field: measure_name
+    op: '='
+    value: billed_revenue
+  time_window: last_quarter
+expected:
+  kind: sql_shape
+  must_include:
+  - fct_revenue with measure_name = billed_revenue
+  - Explicit activity_date bounds; sum signed amount.
+  must_exclude:
+  - Sum different measures.
+  - Double-subtract refunds.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_revenue

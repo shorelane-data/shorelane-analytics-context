@@ -1,0 +1,27 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: What was gmv last quarter?
+domain: executive-revenue
+intent: Full-ticket order value at order date, including full subscription contract
+  value and marketplace retail spend; gross of refunds.
+ir:
+  metric: gmv
+  dimensions: []
+  filters:
+  - field: measure_name
+    op: '='
+    value: gmv
+  time_window: last_quarter
+expected:
+  kind: sql_shape
+  must_include:
+  - fct_revenue with measure_name = gmv
+  - Explicit activity_date bounds; sum signed amount.
+  must_exclude:
+  - Sum different measures.
+  - Double-subtract refunds.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_revenue

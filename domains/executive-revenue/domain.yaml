@@ -1,0 +1,32 @@
+# SIMULATION TEST ARTIFACT
+name: Executive Revenue
+summary: Executive revenue, customers, orders, AOV, refunds
+status: draft
+owner: To be confirmed
+grain: One dated signed contribution to one revenue measure; not an order/customer
+  and not a unique date-measure key.
+tables:
+  canonical: nodal-shorelane.shorelane.fct_revenue
+  others:
+  - nodal-shorelane.shorelane.fct_orders
+  - nodal-shorelane.shorelane.stg_orders
+dashboards:
+- name: Executive Revenue
+  canonical_question: What were recognized revenue and the separately reported revenue
+    measures for the selected period?
+  url: https://shorelane-data.github.io/shorelane/business/
+  tool: plotly-static
+lineage:
+- source: dbt_core
+  models:
+  - fct_revenue
+  - fct_orders
+  - stg_orders
+  - stg_refunds
+  - stg_invoices
+  - stg_revenue_recognition
+  - dim_customers
+  - stg_app_customers
+  - dim_date
+  - int_customer_identity
+  - fct_order_lines

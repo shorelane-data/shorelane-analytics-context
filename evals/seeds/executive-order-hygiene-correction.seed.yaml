@@ -1,0 +1,27 @@
+# SIMULATION TEST ARTIFACT — rule supported; observed dashboard defect awaits human review.
+question: The executive dashboard order count is higher than the governed order count.
+  Which should reporting use?
+domain: executive-revenue
+intent: Count only orders with account_type = customer using eligible one-row-per-order
+  fct_orders. Exclude test/internal orders; dashboard disagreement does not change
+  the governed definition. Live chart discrepancy is observed evidence pending human
+  owner review, not an analyst-confirmed defect.
+ir:
+  metric: orders
+  dimensions: []
+  time_window: last_12_full_months
+expected:
+  kind: sql_shape
+  must_include:
+  - Count eligible fct_orders rows in explicit order_date bounds.
+  - Preserve test/internal exclusions when reconciling dashboard differences.
+  must_exclude:
+  - Expand governed order population to match an unfiltered dashboard.
+provenance: correction
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_orders
+  - stg_orders
+  - stg_app_customers

@@ -1,0 +1,20 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: How many active subscribers did we have at month end?
+domain: subscriptions
+intent: Distinct real customers with term_start_date <= D <= term_end_date, both inclusive.
+  Compare dates to dates. Terms and seats are different units; status = active and
+  plan is_current do not determine eligibility.
+expected:
+  kind: sql_shape
+  must_include:
+  - Distinct real customers; term dates contain the as-of date inclusively.
+  - Date-to-date comparisons.
+  must_exclude:
+  - Count terms or seats as subscribers.
+  - Filter eligibility by status = active or plan is_current.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_subscriptions

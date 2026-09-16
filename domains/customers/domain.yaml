@@ -1,0 +1,20 @@
+# SIMULATION TEST ARTIFACT; table/lineage candidates are dbt-derived, not yet ratified.
+name: Customers
+summary: Customer lifecycle, channels, identity health
+status: draft
+owner: To be confirmed
+grain: To be confirmed by the domain owner.
+tables:
+  canonical: nodal-shorelane.shorelane.dim_customers
+dashboards:
+- name: Customers
+  canonical_question: To be confirmed
+  url: https://shorelane-data.github.io/shorelane/customers/
+lineage:
+- source: dbt_core
+  models:
+  - dim_customers
+  - fct_orders
+  - int_customer_identity
+  - fct_identity_resolution_quality
+  - dim_date

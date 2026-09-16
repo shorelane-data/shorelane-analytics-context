@@ -1,6 +1,8 @@
+> **SIMULATION TEST ARTIFACT:** This repository is generated through a simulated-analyst interview. Automated answers are not human approval; human review is required before production use.
+
 # CLAUDE.md
 
-This repo is the **business context layer** for [company]'s analytical data, in
+This repo is the **business context layer** for Shorelane's analytical data, in
 Analytics Context Format (ACF). When you are run from this directory, use it to
 answer data questions accurately — don't write SQL from raw schema alone.
 
@@ -29,7 +31,7 @@ answer (e.g. "excluding sessions under 45 days, per the collection-rate caveat")
 ## Editing this repo
 
 Adding or correcting context (not answering a question)? You can edit this repo
-directly — it does **not** require the Nodal tool repo. Follow `AUTHORING.md`: only a
+directly — it does **not** require a Nodal source checkout. Follow `AUTHORING.md`: only a
 human owner flips `status: draft → confirmed`, keep statistics and schema out (SQL
 only as confirmed `reference.md` query patterns — see `AUTHORING.md`), and
 run `python3 .ci/validate.py` before committing (CI runs the same check). For a

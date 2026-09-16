@@ -1,0 +1,28 @@
+# SIMULATION TEST ARTIFACT — enumerations supported by dbt and interview.
+entities:
+- name: revenue_measure
+  description: Distinct non-additive revenue measures on fct_revenue.
+  status: draft
+  mappings:
+    gmv: Full-ticket order value at order date, including full subscription contract
+      value and marketplace retail spend; gross of refunds.
+    recognized_revenue: 'Earnings basis: marketplace take, not retail GMV. Subscriptions
+      recognize net amount in twelve equal cent-rounded monthly installments beginning
+      on order date, anniversary-stepped and clamped to month end; other orders recognize
+      fully on order date. Recognition is independent of billing, collection and churn.
+      Refund-event implementation remains unconfirmed.'
+    net_revenue: Full d2c and subscription fees plus marketplace commission on order
+      date, less refunds on refund date. Marketplace refunds reverse the take. Refunds
+      occur only on d2c/marketplace and are already negative fct_revenue rows.
+    billed_revenue: Non-subscription activity on order date; subscription invoices
+      on billed_date, with full annual subscription billed upfront. Refund adjustments
+      remain unconfirmed.
+    collected_cash: Non-subscription activity on order date; subscriptions on actual
+      collected_date, less refunds paid out. Bad-debt invoices never contribute cash.
+      Null collection date can mean pending or bad debt, distinguished by is_bad_debt.
+  important: Select exactly one measure for a total; an unqualified revenue request
+    defaults to recognized revenue with the assumption stated.
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_revenue

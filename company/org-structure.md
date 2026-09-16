@@ -1,23 +1,10 @@
-# Org Structure
+# Dashboard domain ownership
 
-## What This Covers
-Who owns which analytical domain, so the agent can route ambiguous questions and
-PRs to the right owner. This is a **living roster**: the interview adds one row per
-domain as that domain's owner is confirmed in Stage 2, and updates the row if
-ownership changes. Keep it in sync with each `domains/<domain>/domain.yaml: owner`.
-
-## Domain Ownership
+> Simulation test artifact. Owners are not inferred from stakeholder personas.
 
 | Domain | Owner | Team | Status |
 |---|---|---|---|
-| revenue | Ron Potok | Analytics | confirmed |
-
-<!--
-One row per domain. `Status` is `draft` until the analyst confirms the owner, then
-`confirmed` (mirrors the domain's draft/confirmed discipline). Leave the owner as
-`_To be confirmed._` rather than guessing.
--->
-
-## Notes
-_Anything about ownership that doesn't fit a row — shared domains, escalation paths,
-who to ask when an owner is out._
+| Executive Revenue | To be confirmed | To be confirmed | draft |
+| Customers | To be confirmed | To be confirmed | draft |
+| Marketing | To be confirmed | To be confirmed | draft |
+| Subscriptions | To be confirmed | To be confirmed | draft |

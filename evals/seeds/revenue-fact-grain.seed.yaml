@@ -1,0 +1,41 @@
+# SIMULATION TEST ARTIFACT
+question: What was net revenue last quarter?
+domain: executive-revenue
+intent: 'Use fct_revenue for period revenue totals: exactly one measure_name, explicit
+  activity_date bounds, SUM(signed amount). Rows are dated contributions to measures,
+  not orders or customers; measures are non-additive and row counts have no business
+  meaning. fct_orders is one eligible order per row, for counts, canonical channels/customers
+  and order-date gross/net amounts; these do not replace recognized, billed or collected
+  events. stg_orders includes test/internal accounts. Refunds are negative rows where
+  applicable in fct_revenue; do not subtract them twice.'
+expected:
+  kind: sql_shape
+  must_include:
+  - fct_revenue; measure_name = net_revenue; explicit activity_date bounds; SUM(amount).
+  must_exclude:
+  - Sum measures together.
+  - Subtract refunds again.
+  - Use stg_orders without customer hygiene.
+  - Use order amounts as event-period revenue.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_revenue
+  - fct_orders
+  - stg_orders
+  - stg_refunds
+  - stg_invoices
+  - stg_revenue_recognition
+  - dim_customers
+  - stg_app_customers
+  - dim_date
+ir:
+  metric: net_revenue
+  dimensions: []
+  filters:
+  - field: measure_name
+    op: '='
+    value: net_revenue
+  time_window: last_quarter

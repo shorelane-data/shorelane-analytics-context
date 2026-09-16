@@ -1,0 +1,201 @@
+# SIMULATION TEST ARTIFACT — assembly accepted by simulated analyst, not human-approved.
+metrics:
+- name: gmv
+  definition: Full-ticket order value at order date, including full subscription contract
+    value and marketplace retail spend; gross of refunds.
+  grain: Dated signed measure contribution, aggregated over the reporting window.
+  status: draft
+  parameters:
+  - name: time_window
+    note: Explicit inclusive start and exclusive end dates.
+  - name: as_of_date
+    note: Anchor relative time to the stated as-of date.
+  caveats:
+  - Simulation test artifact; not human-approved.
+  - Select one measure; never sum all measures.
+  - Do not subtract refunds again from fct_revenue.
+  lineage: &id001
+  - source: dbt_core
+    models:
+    - fct_revenue
+  expression:
+    measure: SUM(amount)
+    mandatory_filters:
+    - field: measure_name
+      op: '='
+      value: gmv
+      reason: Measures are distinct and cannot be added together.
+    - field: activity_date
+      op: '>='
+      value: <period_start>
+      reason: "Use the selected measure\u2019s event date."
+    - field: activity_date
+      op: <
+      value: <period_end_exclusive>
+      reason: Explicit aligned bounds prevent mixing partial and fully elapsed periods.
+    allowed_dimensions:
+    - activity_date
+- name: recognized_revenue
+  definition: 'Earnings basis: marketplace take, not retail GMV. Subscriptions recognize
+    net amount in twelve equal cent-rounded monthly installments beginning on order
+    date, anniversary-stepped and clamped to month end; other orders recognize fully
+    on order date. Recognition is independent of billing, collection and churn. Refund-event
+    implementation remains unconfirmed.'
+  grain: Dated signed measure contribution, aggregated over the reporting window.
+  status: draft
+  parameters:
+  - name: time_window
+    note: Explicit inclusive start and exclusive end dates.
+  - name: as_of_date
+    note: Anchor relative time to the stated as-of date.
+  caveats:
+  - Simulation test artifact; not human-approved.
+  - Select one measure; never sum all measures.
+  - Do not subtract refunds again from fct_revenue.
+  - Recognized and billed refund internals remain unresolved; use the governed fact
+    as-is.
+  lineage: *id001
+  expression:
+    measure: SUM(amount)
+    mandatory_filters:
+    - field: measure_name
+      op: '='
+      value: recognized_revenue
+      reason: Measures are distinct and cannot be added together.
+    - field: activity_date
+      op: '>='
+      value: <period_start>
+      reason: "Use the selected measure\u2019s event date."
+    - field: activity_date
+      op: <
+      value: <period_end_exclusive>
+      reason: Explicit aligned bounds prevent mixing partial and fully elapsed periods.
+    allowed_dimensions:
+    - activity_date
+- name: net_revenue
+  definition: Full d2c and subscription fees plus marketplace commission on order
+    date, less refunds on refund date. Marketplace refunds reverse the take. Refunds
+    occur only on d2c/marketplace and are already negative fct_revenue rows.
+  grain: Dated signed measure contribution, aggregated over the reporting window.
+  status: draft
+  parameters:
+  - name: time_window
+    note: Explicit inclusive start and exclusive end dates.
+  - name: as_of_date
+    note: Anchor relative time to the stated as-of date.
+  caveats:
+  - Simulation test artifact; not human-approved.
+  - Select one measure; never sum all measures.
+  - Do not subtract refunds again from fct_revenue.
+  lineage: *id001
+  expression:
+    measure: SUM(amount)
+    mandatory_filters:
+    - field: measure_name
+      op: '='
+      value: net_revenue
+      reason: Measures are distinct and cannot be added together.
+    - field: activity_date
+      op: '>='
+      value: <period_start>
+      reason: "Use the selected measure\u2019s event date."
+    - field: activity_date
+      op: <
+      value: <period_end_exclusive>
+      reason: Explicit aligned bounds prevent mixing partial and fully elapsed periods.
+    allowed_dimensions:
+    - activity_date
+- name: billed_revenue
+  definition: Non-subscription activity on order date; subscription invoices on billed_date,
+    with full annual subscription billed upfront. Refund adjustments remain unconfirmed.
+  grain: Dated signed measure contribution, aggregated over the reporting window.
+  status: draft
+  parameters:
+  - name: time_window
+    note: Explicit inclusive start and exclusive end dates.
+  - name: as_of_date
+    note: Anchor relative time to the stated as-of date.
+  caveats:
+  - Simulation test artifact; not human-approved.
+  - Select one measure; never sum all measures.
+  - Do not subtract refunds again from fct_revenue.
+  - Recognized and billed refund internals remain unresolved; use the governed fact
+    as-is.
+  lineage: *id001
+  expression:
+    measure: SUM(amount)
+    mandatory_filters:
+    - field: measure_name
+      op: '='
+      value: billed_revenue
+      reason: Measures are distinct and cannot be added together.
+    - field: activity_date
+      op: '>='
+      value: <period_start>
+      reason: "Use the selected measure\u2019s event date."
+    - field: activity_date
+      op: <
+      value: <period_end_exclusive>
+      reason: Explicit aligned bounds prevent mixing partial and fully elapsed periods.
+    allowed_dimensions:
+    - activity_date
+- name: collected_cash
+  definition: Non-subscription activity on order date; subscriptions on actual collected_date,
+    less refunds paid out. Bad-debt invoices never contribute cash. Null collection
+    date can mean pending or bad debt, distinguished by is_bad_debt.
+  grain: Dated signed measure contribution, aggregated over the reporting window.
+  status: draft
+  parameters:
+  - name: time_window
+    note: Explicit inclusive start and exclusive end dates.
+  - name: as_of_date
+    note: Anchor relative time to the stated as-of date.
+  caveats:
+  - Simulation test artifact; not human-approved.
+  - Select one measure; never sum all measures.
+  - Do not subtract refunds again from fct_revenue.
+  lineage: *id001
+  expression:
+    measure: SUM(amount)
+    mandatory_filters:
+    - field: measure_name
+      op: '='
+      value: collected_cash
+      reason: Measures are distinct and cannot be added together.
+    - field: activity_date
+      op: '>='
+      value: <period_start>
+      reason: "Use the selected measure\u2019s event date."
+    - field: activity_date
+      op: <
+      value: <period_end_exclusive>
+      reason: Explicit aligned bounds prevent mixing partial and fully elapsed periods.
+    allowed_dimensions:
+    - activity_date
+- name: orders
+  definition: Count eligible orders placed in the reporting window.
+  grain: One eligible order per row.
+  status: draft
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_orders
+  expression:
+    measure: COUNT(*)
+    mandatory_filters:
+    - field: order_date
+      op: '>='
+      value: <period_start>
+      reason: Count orders placed in the selected period.
+    - field: order_date
+      op: <
+      value: <period_end_exclusive>
+      reason: Align the reporting window.
+    allowed_dimensions:
+    - order_date
+    - channel
+    - customer_id
+  caveats:
+  - fct_orders applies real-customer hygiene and canonical channel labels; staging
+    does not.
+  - Do not count fct_revenue rows as orders.

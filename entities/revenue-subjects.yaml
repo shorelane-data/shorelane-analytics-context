@@ -1,0 +1,43 @@
+# SIMULATION TEST ARTIFACT — human review required.
+entities:
+- name: real_customer
+  description: Eligible orders belong to account_type = customer; exclude test and
+    internal. No additional mandatory order-status exclusion is specified. Governed
+    facts apply eligibility; raw/staging retain all accounts.
+  status: draft
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_orders
+    - stg_app_customers
+  mappings:
+    customer: Eligible for business reporting
+    test: Excluded
+    internal: Excluded
+- name: canonical_channel
+  description: Normalize historical direct to d2c; rename effective 2022-06-01 was
+    not backfilled. business_subscription and marketplace retain labels. Use fct_orders.channel
+    for comparisons; channel_raw preserves original labels.
+  status: draft
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_orders
+  mappings:
+    direct: Historical alias of d2c
+    d2c: Shop Direct
+    business_subscription: Shorelane for Business
+    marketplace: Third-party marketplace
+- name: source_native_customer_id
+  description: Resolve aliases by LEFT JOIN on (source_system, source_customer_id).
+    Unresolved aliases remain unknown and a quality metric, never new customers. Deduplicate
+    canonical IDs before joining order facts; recreated Stripe aliases can multiply
+    revenue. Count distinct source systems for identity coverage. Attribute invoices/refunds
+    through order_id to fct_orders; tickets require qualified crosswalk resolution.
+  status: draft
+  lineage:
+  - source: dbt_core
+    models:
+    - int_customer_identity
+    - dim_customers
+    - fct_orders

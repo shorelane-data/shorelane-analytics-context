@@ -1,0 +1,20 @@
+# SIMULATION TEST ARTIFACT; table/lineage candidates are dbt-derived, not yet ratified.
+name: Marketing
+summary: GMV by channel, AOV, paid media, CAC, categories, promotions
+status: draft
+owner: To be confirmed
+grain: To be confirmed by the domain owner.
+tables:
+  canonical: nodal-shorelane.shorelane.fct_marketing_spend
+dashboards:
+- name: Marketing
+  canonical_question: To be confirmed
+  url: https://shorelane-data.github.io/shorelane/marketing/
+lineage:
+- source: dbt_core
+  models:
+  - fct_marketing_spend
+  - fct_order_lines
+  - fct_orders
+  - dim_products
+  - dim_date

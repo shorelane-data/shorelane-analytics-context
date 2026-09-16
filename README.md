@@ -1,12 +1,20 @@
+> **SIMULATION TEST ARTIFACT:** This repository is generated through a simulated-analyst interview. Automated answers are not human approval; human review is required before production use.
+
 # Shorelane Analytics Context
 
-This repo is Shorelanes's **business context layer** for analytics agents, in
+This repo is Shorelane's **business context layer** for analytics agents, in
 Analytics Context Format (ACF). It tells an AI agent what your terms mean, which
 table is canonical, what the standard filters are, and where the landmines are — so
 it answers data questions correctly instead of writing confidently-wrong SQL.
 
 It was built by interviewing your analyst (the `context-interview` skill), and every
 confirmed definition is also a labeled eval pair under `evals/seeds/`.
+
+To continue the guided interview, use the already-installed Nodal skill from your
+agent: `/nodal-analytics:context-interview` in Claude Code or
+`$context-interview` in Codex. A teammate can install from
+`nodal-data/nodal-context` through the team's native plugin channel or skills.sh;
+no Nodal source checkout is required. See `AUTHORING.md` for resume behavior.
 
 ## Prerequisite: a warehouse MCP server
 
@@ -73,11 +81,9 @@ Then ask a real data question — `CLAUDE.md` auto-loads from this directory and
 the agent to route via the relevant `domains/<domain>/reference.md`, honor the
 caveats, and query read-only.
 
-Or make it a one-liner with the bundled skill:
-
-```
-/data-question "what was our collection rate by payer last quarter?"
-```
+With the Nodal plugin installed, `analytics-plan` adds a reviewable plan,
+multi-source evidence, uncertainty, and post-query verification. Without it,
+`CLAUDE.md` still carries the complete ACF routing instructions.
 
 ## Use it with Codex / other agents
 
@@ -95,6 +101,10 @@ into your prompt.
 - Review every change **by PR**. The bundled `.github/workflows/` validate the YAML,
   flag unconfirmed `status: draft` entries, run the on/off eval delta, and detect
   drift when an upstream model changes.
+- **Wire the dbt repo** so model changes trigger the drift check the moment they
+  merge: copy [`dbt-repo/notify-context-repo.yml`](./dbt-repo/notify-context-repo.yml)
+  into the dbt repo's `.github/workflows/` — setup in
+  [`dbt-repo/README.md`](./dbt-repo/README.md).
 - **Keep it in sync with dbt automatically (optional, Nodal).** Connect your dbt repo
   and upstream changes — renamed columns, redefined metrics — propagate into the
   affected definitions as drafts for your analyst to confirm, so the context tracks the
@@ -108,7 +118,7 @@ This repo is initialized as a git repo with an initial commit. To share it with 
 team:
 
 ```bash
-gh repo create [company]-analytics-context --private --source . --push
+gh repo create Shorelane-analytics-context --private --source . --push
 # or, without the gh CLI:
 git remote add origin git@github.com:<your-org>/<repo>.git
 git push -u origin main

@@ -1,0 +1,28 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: What was net revenue last quarter?
+domain: executive-revenue
+intent: Full d2c and subscription fees plus marketplace commission on order date,
+  less refunds on refund date. Marketplace refunds reverse the take. Refunds occur
+  only on d2c/marketplace and are already negative fct_revenue rows.
+ir:
+  metric: net_revenue
+  dimensions: []
+  filters:
+  - field: measure_name
+    op: '='
+    value: net_revenue
+  time_window: last_quarter
+expected:
+  kind: sql_shape
+  must_include:
+  - fct_revenue with measure_name = net_revenue
+  - Explicit activity_date bounds; sum signed amount.
+  must_exclude:
+  - Sum different measures.
+  - Double-subtract refunds.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_revenue

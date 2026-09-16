@@ -1,0 +1,28 @@
+# SIMULATION TEST ARTIFACT
+question: What was revenue last quarter?
+domain: executive-revenue
+intent: The most recent fully elapsed calendar quarter as of an explicit as-of date;
+  state the assumption. No separate fiscal calendar. Use explicit quarter bounds,
+  not trailing days or months or the current partial quarter. The live warehouse loads
+  daily; the full fixture alone has no defined today.
+expected:
+  kind: sql_shape
+  must_include:
+  - Most recent fully elapsed calendar quarter; explicit as-of date and bounds.
+  must_exclude:
+  - Trailing 90 days or three months.
+  - Current partial quarter or invented fiscal calendar.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - dim_date
+ir:
+  metric: recognized_revenue
+  dimensions: []
+  filters:
+  - field: measure_name
+    op: '='
+    value: recognized_revenue
+  time_window: last_quarter

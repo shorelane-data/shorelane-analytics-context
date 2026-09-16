@@ -1,0 +1,24 @@
+# SIMULATION TEST ARTIFACT
+question: Can I join all customer identities to orders to report revenue?
+domain: executive-revenue
+intent: Resolve aliases by LEFT JOIN on (source_system, source_customer_id). Unresolved
+  aliases remain unknown and a quality metric, never new customers. Deduplicate canonical
+  IDs before joining order facts; recreated Stripe aliases can multiply revenue. Count
+  distinct source systems for identity coverage. Attribute invoices/refunds through
+  order_id to fct_orders; tickets require qualified crosswalk resolution.
+expected:
+  kind: sql_shape
+  must_include:
+  - Resolve aliases by LEFT JOIN on (source_system, source_customer_id). Unresolved
+    aliases remain unknown and a quality metric, never new customers. Deduplicate
+    canonical IDs before joining order facts; recreated Stripe aliases can multiply
+    revenue. Count distinct source systems for identity coverage. Attribute invoices/refunds
+    through order_id to fct_orders; tickets require qualified crosswalk resolution.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - int_customer_identity
+  - dim_customers
+  - fct_orders

@@ -1,0 +1,18 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: How much did we earn from the marketplace last quarter?
+domain: executive-revenue
+intent: "Marketplace earnings mean Shorelane\u2019s commission or take, represented\
+  \ by net_amount. Buyer retail spend is GMV (gross_amount). Refunds carry the take,\
+  \ not the full retail amount."
+expected:
+  kind: sql_shape
+  must_include:
+  - Use the commission/take amount (net_amount).
+  must_exclude:
+  - Treat full retail gross_amount as marketplace earnings.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_orders
