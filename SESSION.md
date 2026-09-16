@@ -23,5 +23,5 @@ Full first-domain round: Executive Revenue. Customers, Marketing and Subscriptio
 Only the simulated-analyst subagent reads the responses brief. Each question and response is recorded in the configured, gitignored transcript. No commits or pushes. `.codex/config.toml` preserved byte-for-byte. Generated context uses only elicited answers and explicitly tagged draft extraction candidates.
 
 ## Live verification
-Capture: `evals/captures/20260915/executive-revenue.capture.json`.
+Capture: `benchmarks/20260915/executive-revenue.capture.json`.
 The dashboard’s active Last 12 Months window is 2025-09-01 through 2026-08-31; data as of 2026-09-15. Context-off/on comparison completed: identical values in all three cases, two dashboard numerical matches and one observed order-population mismatch. Current snapshot blessing and dashboard-defect ownership review await the human. No verified SQL sidecar or blessed snapshot seed has been minted.

@@ -1,0 +1,808 @@
+[
+  {
+    "case_id": "S01",
+    "seed_file": "evals/seeds/active-subscribers.seed.yaml",
+    "sha256": "467e10be946ee9748a80e6a85b92fc57f16c82b55192ce8e6e5dffc2b09edbd2",
+    "seed": {
+      "question": "How many active subscribers did we have at month end?",
+      "domain": "subscriptions",
+      "intent": "Distinct real customers with term_start_date <= D <= term_end_date, both inclusive. Compare dates to dates. Terms and seats are different units; status = active and plan is_current do not determine eligibility.",
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "Distinct real customers; term dates contain the as-of date inclusively.",
+          "Date-to-date comparisons."
+        ],
+        "must_exclude": [
+          "Count terms or seats as subscribers.",
+          "Filter eligibility by status = active or plan is_current."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_subscriptions"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "S02",
+    "seed_file": "evals/seeds/billed-revenue.seed.yaml",
+    "sha256": "fdc4e8a21c574b566a6880da637d192e198e86a834c5d23c9dda047b16c60d52",
+    "seed": {
+      "question": "What was billed revenue last quarter?",
+      "domain": "executive-revenue",
+      "intent": "Non-subscription activity on order date; subscription invoices on billed_date, with full annual subscription billed upfront. Refund adjustments remain unconfirmed.",
+      "ir": {
+        "metric": "billed_revenue",
+        "dimensions": [],
+        "filters": [
+          {
+            "field": "measure_name",
+            "op": "=",
+            "value": "billed_revenue"
+          }
+        ],
+        "time_window": "last_quarter"
+      },
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "fct_revenue with measure_name = billed_revenue",
+          "Explicit activity_date bounds; sum signed amount."
+        ],
+        "must_exclude": [
+          "Sum different measures.",
+          "Double-subtract refunds."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_revenue"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "S03",
+    "seed_file": "evals/seeds/canonical-channel.seed.yaml",
+    "sha256": "9865c6c6046318efef7f69e66e14954d257b945f8a771c49cac323aac126500c",
+    "seed": {
+      "question": "Compare direct and d2c revenue over time.",
+      "domain": "executive-revenue",
+      "intent": "Normalize historical direct to d2c; rename effective 2022-06-01 was not backfilled. business_subscription and marketplace retain labels. Use fct_orders.channel for comparisons; channel_raw preserves original labels.",
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "Normalize historical direct to d2c; rename effective 2022-06-01 was not backfilled. business_subscription and marketplace retain labels. Use fct_orders.channel for comparisons; channel_raw preserves original labels."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_orders"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "S04",
+    "seed_file": "evals/seeds/collected-cash.seed.yaml",
+    "sha256": "966269c3f77330f3321c097100b0ce15ce7431e27e1de4c5e145a747cd1ab4f9",
+    "seed": {
+      "question": "What was collected cash last quarter?",
+      "domain": "executive-revenue",
+      "intent": "Non-subscription activity on order date; subscriptions on actual collected_date, less refunds paid out. Bad-debt invoices never contribute cash. Null collection date can mean pending or bad debt, distinguished by is_bad_debt.",
+      "ir": {
+        "metric": "collected_cash",
+        "dimensions": [],
+        "filters": [
+          {
+            "field": "measure_name",
+            "op": "=",
+            "value": "collected_cash"
+          }
+        ],
+        "time_window": "last_quarter"
+      },
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "fct_revenue with measure_name = collected_cash",
+          "Explicit activity_date bounds; sum signed amount."
+        ],
+        "must_exclude": [
+          "Sum different measures.",
+          "Double-subtract refunds."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_revenue"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "S05",
+    "seed_file": "evals/seeds/consumer-lines-scope.seed.yaml",
+    "sha256": "5bf72f70b18d0800ed6443d4b7280f1a58db562a8c3aae6f574a1d2501b71fc5",
+    "seed": {
+      "question": "Can order-line sales measure all company revenue?",
+      "domain": "executive-revenue",
+      "intent": "Order lines exist only for d2c and marketplace orders, sum to consumer gross value, and exclude subscriptions. Marketplace line value is retail, not Shorelane take. Use fct_order_lines for consumer product/category mix, quantities and line margin. Marketplace retail line margin does not establish Shorelane economic margin; marketplace/subscription cost basis is not provided.",
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "Order lines exist only for d2c and marketplace orders, sum to consumer gross value, and exclude subscriptions. Marketplace line value is retail, not Shorelane take. Use fct_order_lines for consumer product/category mix, quantities and line margin. Marketplace retail line margin does not establish Shorelane economic margin; marketplace/subscription cost basis is not provided."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_order_lines",
+            "fct_orders"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "S06",
+    "seed_file": "evals/seeds/current-customers.seed.yaml",
+    "sha256": "818cf08d903940e8700687030f37dbd6e7a25cbca088c7c91c1d145777a9a81b",
+    "seed": {
+      "question": "How many current customers do we have?",
+      "domain": "customers",
+      "intent": "Distinct canonical app_db_customer_id values with at least one order in the trailing twelve full calendar months, at month grain. Include only account_type = customer, excluding test/internal and never-ordered profiles; deduplicate across source identities and channels. The customer dashboard omits the test/internal exclusion; governed marts are authoritative.",
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "Trailing twelve full calendar months; distinct canonical app customer IDs.",
+          "Real customers with an order; exclude test/internal and never-ordered profiles."
+        ],
+        "must_exclude": [
+          "Count source identities or sum customer counts across channels.",
+          "Copy the customer dashboard\u2019s omitted hygiene filter."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "dim_customers"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "S07",
+    "seed_file": "evals/seeds/eligible-order.seed.yaml",
+    "sha256": "19abbc1d736f55d1fd5f02f4b4fc8f83b998e11361ed8216ce149f879789af87",
+    "seed": {
+      "question": "How many orders did we have last quarter?",
+      "domain": "executive-revenue",
+      "intent": "Eligible orders belong to account_type = customer; exclude test and internal. No additional mandatory order-status exclusion is specified. Governed facts apply eligibility; raw/staging retain all accounts.",
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "Eligible orders belong to account_type = customer; exclude test and internal. No additional mandatory order-status exclusion is specified. Governed facts apply eligibility; raw/staging retain all accounts."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_orders",
+            "stg_app_customers"
+          ]
+        }
+      ],
+      "ir": {
+        "metric": "orders",
+        "dimensions": [],
+        "time_window": "last_quarter"
+      }
+    }
+  },
+  {
+    "case_id": "S08",
+    "seed_file": "evals/seeds/executive-order-hygiene-correction.seed.yaml",
+    "sha256": "2e8bfe333f6c3fa2fea0a6ba97a53d0fc141d367e16772c5f6e755cb5c8ff3cd",
+    "seed": {
+      "question": "The executive dashboard order count is higher than the governed order count. Which should reporting use?",
+      "domain": "executive-revenue",
+      "intent": "Count only orders with account_type = customer using eligible one-row-per-order fct_orders. Exclude test/internal orders; dashboard disagreement does not change the governed definition. Live chart discrepancy is observed evidence pending human owner review, not an analyst-confirmed defect.",
+      "ir": {
+        "metric": "orders",
+        "dimensions": [],
+        "time_window": "last_12_full_months"
+      },
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "Count eligible fct_orders rows in explicit order_date bounds.",
+          "Preserve test/internal exclusions when reconciling dashboard differences."
+        ],
+        "must_exclude": [
+          "Expand governed order population to match an unfiltered dashboard."
+        ]
+      },
+      "provenance": "correction",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_orders",
+            "stg_orders",
+            "stg_app_customers"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "S09",
+    "seed_file": "evals/seeds/gmv.seed.yaml",
+    "sha256": "c0c1a4b7980623afadebf9e5d5ce772aade3d8af2ff49559618415d8932903b3",
+    "seed": {
+      "question": "What was gmv last quarter?",
+      "domain": "executive-revenue",
+      "intent": "Full-ticket order value at order date, including full subscription contract value and marketplace retail spend; gross of refunds.",
+      "ir": {
+        "metric": "gmv",
+        "dimensions": [],
+        "filters": [
+          {
+            "field": "measure_name",
+            "op": "=",
+            "value": "gmv"
+          }
+        ],
+        "time_window": "last_quarter"
+      },
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "fct_revenue with measure_name = gmv",
+          "Explicit activity_date bounds; sum signed amount."
+        ],
+        "must_exclude": [
+          "Sum different measures.",
+          "Double-subtract refunds."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_revenue"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "S10",
+    "seed_file": "evals/seeds/grandfathered-plans.seed.yaml",
+    "sha256": "26b8c196feb23847c760480110a1245a2149ad559b7f5ecb953b8e4944abd711",
+    "seed": {
+      "question": "Should active subscribers exclude retired plans?",
+      "domain": "subscriptions",
+      "intent": "Grandfathered means the generation was retired from sale by the as-of date. Customers retain the original plan and retired generations remain eligible for active-subscriber counts. Term prices use the price effective at term start. The May 2025 increase affected generation 3 only, leaving older generations unchanged.",
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "Include live terms on retired generations.",
+          "Term-start effective pricing."
+        ],
+        "must_exclude": [
+          "Filter active subscribers to is_current plans.",
+          "Reprice historical terms at today\u2019s catalog price."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_subscriptions",
+            "dim_plans",
+            "stg_plan_prices"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "S11",
+    "seed_file": "evals/seeds/last-quarter.seed.yaml",
+    "sha256": "9d8c9f3c4fd3577b722ba871e8a620088908294fe80af2e31288e1f7921b7f77",
+    "seed": {
+      "question": "What was revenue last quarter?",
+      "domain": "executive-revenue",
+      "intent": "The most recent fully elapsed calendar quarter as of an explicit as-of date; state the assumption. No separate fiscal calendar. Use explicit quarter bounds, not trailing days or months or the current partial quarter. The live warehouse loads daily; the full fixture alone has no defined today.",
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "Most recent fully elapsed calendar quarter; explicit as-of date and bounds."
+        ],
+        "must_exclude": [
+          "Trailing 90 days or three months.",
+          "Current partial quarter or invented fiscal calendar."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "dim_date"
+          ]
+        }
+      ],
+      "ir": {
+        "metric": "recognized_revenue",
+        "dimensions": [],
+        "filters": [
+          {
+            "field": "measure_name",
+            "op": "=",
+            "value": "recognized_revenue"
+          }
+        ],
+        "time_window": "last_quarter"
+      }
+    }
+  },
+  {
+    "case_id": "S12",
+    "seed_file": "evals/seeds/marketplace-earnings.seed.yaml",
+    "sha256": "fcf66d97312d230cb4a6601a9e49ec07043b2eba69b134da5dda7db6c6ea8089",
+    "seed": {
+      "question": "How much did we earn from the marketplace last quarter?",
+      "domain": "executive-revenue",
+      "intent": "Marketplace earnings mean Shorelane\u2019s commission or take, represented by net_amount. Buyer retail spend is GMV (gross_amount). Refunds carry the take, not the full retail amount.",
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "Use the commission/take amount (net_amount)."
+        ],
+        "must_exclude": [
+          "Treat full retail gross_amount as marketplace earnings."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_orders"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "S13",
+    "seed_file": "evals/seeds/multi-channel-customers.seed.yaml",
+    "sha256": "8f9717da7fa3e85793081db5e754f60ec3562f3cc9335c4b774d38588e4c8ec7",
+    "seed": {
+      "question": "How many multi-channel customers did we have last quarter?",
+      "domain": "customers",
+      "intent": "A customer with orders in at least two canonical channels within the selected period. Normalize historical direct to d2c. This is a period metric over active customers, not a subset of current customers. Channel customer counts overlap; deduplicate the total.",
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "At least two canonical channels within selected period.",
+          "Normalize direct to d2c; distinct canonical customer total."
+        ],
+        "must_exclude": [
+          "Sum overlapping channel customer counts.",
+          "Require membership in current-customer snapshot."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_orders",
+            "dim_customers"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "S14",
+    "seed_file": "evals/seeds/net-revenue.seed.yaml",
+    "sha256": "dd33d3e94485cc00a4e570837e2a134c665d1fb510b9d44eae5a6172e3aa4fc6",
+    "seed": {
+      "question": "What was net revenue last quarter?",
+      "domain": "executive-revenue",
+      "intent": "Full d2c and subscription fees plus marketplace commission on order date, less refunds on refund date. Marketplace refunds reverse the take. Refunds occur only on d2c/marketplace and are already negative fct_revenue rows.",
+      "ir": {
+        "metric": "net_revenue",
+        "dimensions": [],
+        "filters": [
+          {
+            "field": "measure_name",
+            "op": "=",
+            "value": "net_revenue"
+          }
+        ],
+        "time_window": "last_quarter"
+      },
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "fct_revenue with measure_name = net_revenue",
+          "Explicit activity_date bounds; sum signed amount."
+        ],
+        "must_exclude": [
+          "Sum different measures.",
+          "Double-subtract refunds."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_revenue"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "S15",
+    "seed_file": "evals/seeds/new-customers.seed.yaml",
+    "sha256": "614114fbe8bba95c5d9f02133f89a60b2b9c324d2cdb666901e9c1c69eda2489",
+    "seed": {
+      "question": "How many new customers did we acquire last quarter?",
+      "domain": "customers",
+      "intent": "A new customer\u2019s first-ever order across all channels falls in the period. Count distinct real canonical customers, not newly created profiles or a first purchase in an additional channel. Attribute new customers by channel to the canonical channel of their first-ever order.",
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "First-ever order across all channels in the period.",
+          "Distinct real canonical customers."
+        ],
+        "must_exclude": [
+          "New profiles or first purchase in an additional channel."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_orders",
+            "dim_customers"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "S16",
+    "seed_file": "evals/seeds/recognized-revenue.seed.yaml",
+    "sha256": "4779ca47b36d6a2224fc5926f751f503154ad3331bd2d60c89733267866ff15e",
+    "seed": {
+      "question": "What was recognized revenue last quarter?",
+      "domain": "executive-revenue",
+      "intent": "Earnings basis: marketplace take, not retail GMV. Subscriptions recognize net amount in twelve equal cent-rounded monthly installments beginning on order date, anniversary-stepped and clamped to month end; other orders recognize fully on order date. Recognition is independent of billing, collection and churn. Refund-event implementation remains unconfirmed.",
+      "ir": {
+        "metric": "recognized_revenue",
+        "dimensions": [],
+        "filters": [
+          {
+            "field": "measure_name",
+            "op": "=",
+            "value": "recognized_revenue"
+          }
+        ],
+        "time_window": "last_quarter"
+      },
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "fct_revenue with measure_name = recognized_revenue",
+          "Explicit activity_date bounds; sum signed amount."
+        ],
+        "must_exclude": [
+          "Sum different measures.",
+          "Double-subtract refunds."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_revenue"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "S17",
+    "seed_file": "evals/seeds/renewal-rate.seed.yaml",
+    "sha256": "c03edd55d05c3b201878de1e7cbc3ca862dabf2a40dd0a44a6585a6ad686d40f",
+    "seed": {
+      "question": "What was our renewal rate last quarter?",
+      "domain": "subscriptions",
+      "intent": "Renewed terms divided by renewed plus churned terms whose term end falls in the period. A subsequent term linked by renewed_from_subscription_id identifies renewal. Without renewal, churn occurs at term end. Exclude undecided active terms; count terms, anchored on the ending term\u2019s end date.",
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "Renewed / (renewed + churned) terms ending in the period.",
+          "Resolve renewal through renewed_from_subscription_id."
+        ],
+        "must_exclude": [
+          "Active undecided terms in denominator.",
+          "Customer counts or renewal start-date cohort."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_subscriptions"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "S18",
+    "seed_file": "evals/seeds/revenue-channel-reconciliation.seed.yaml",
+    "sha256": "cd38297e8292a8b870b1f0e4bdf6549fcb4aa850507adbcfe97593345861fba8",
+    "seed": {
+      "question": "Break recognized revenue down by channel.",
+      "domain": "executive-revenue",
+      "intent": "The executive channel chart omits test/internal exclusion and must not be used as a reconciliation target. fct_revenue supports date grouping and measure selection only. Use fct_orders for order-date GMV/earnings splits. For recognized, billed or collected splits, join the corresponding event rows to eligible fct_orders on order_id, use measure-specific activity dates, and attribute refunds to original orders. Reconcile every split to its fct_revenue total.",
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "The executive channel chart omits test/internal exclusion and must not be used as a reconciliation target. fct_revenue supports date grouping and measure selection only. Use fct_orders for order-date GMV/earnings splits. For recognized, billed or collected splits, join the corresponding event rows to eligible fct_orders on order_id, use measure-specific activity dates, and attribute refunds to original orders. Reconcile every split to its fct_revenue total."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_revenue",
+            "fct_orders",
+            "stg_revenue_recognition",
+            "stg_invoices",
+            "stg_refunds"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "S19",
+    "seed_file": "evals/seeds/revenue-fact-grain.seed.yaml",
+    "sha256": "f8019e59bd5b217e3160d283477aa4a3cca9205d279e339272f7ee30d4ab9fde",
+    "seed": {
+      "question": "What was net revenue last quarter?",
+      "domain": "executive-revenue",
+      "intent": "Use fct_revenue for period revenue totals: exactly one measure_name, explicit activity_date bounds, SUM(signed amount). Rows are dated contributions to measures, not orders or customers; measures are non-additive and row counts have no business meaning. fct_orders is one eligible order per row, for counts, canonical channels/customers and order-date gross/net amounts; these do not replace recognized, billed or collected events. stg_orders includes test/internal accounts. Refunds are negative rows where applicable in fct_revenue; do not subtract them twice.",
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "fct_revenue; measure_name = net_revenue; explicit activity_date bounds; SUM(amount)."
+        ],
+        "must_exclude": [
+          "Sum measures together.",
+          "Subtract refunds again.",
+          "Use stg_orders without customer hygiene.",
+          "Use order amounts as event-period revenue."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_revenue",
+            "fct_orders",
+            "stg_orders",
+            "stg_refunds",
+            "stg_invoices",
+            "stg_revenue_recognition",
+            "dim_customers",
+            "stg_app_customers",
+            "dim_date"
+          ]
+        }
+      ],
+      "ir": {
+        "metric": "net_revenue",
+        "dimensions": [],
+        "filters": [
+          {
+            "field": "measure_name",
+            "op": "=",
+            "value": "net_revenue"
+          }
+        ],
+        "time_window": "last_quarter"
+      }
+    }
+  },
+  {
+    "case_id": "S20",
+    "seed_file": "evals/seeds/revenue-period-completeness.seed.yaml",
+    "sha256": "1d4a48162c2461f5ac0344e4940c1975541c3a7a3eab1744c446e9b694a2efec",
+    "seed": {
+      "question": "Compare revenue through the latest available month.",
+      "domain": "executive-revenue",
+      "intent": "Subscription recognition continues for twelve monthly installments, so recognition activity can extend beyond the last order month. Compare identical explicit bounds ending at a fully elapsed calendar month; exclude the current partial month and pin the as-of load.",
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "Subscription recognition continues for twelve monthly installments, so recognition activity can extend beyond the last order month. Compare identical explicit bounds ending at a fully elapsed calendar month; exclude the current partial month and pin the as-of load."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_revenue",
+            "stg_revenue_recognition",
+            "dim_date"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "S21",
+    "seed_file": "evals/seeds/revenue.seed.yaml",
+    "sha256": "b2b1da476261fe3d2bba8f63a594be8bf323ea67e9cd8b858407f03236297372",
+    "seed": {
+      "question": "What was our revenue last quarter?",
+      "domain": "executive-revenue",
+      "intent": "Unqualified revenue means recognized revenue (GAAP); state the assumption. Persona defaults: CFO Dana \u2192 recognized; Marketing Marcus \u2192 GMV; FP&A Priya \u2192 billed; Controller Theo \u2192 collected cash; COO Sam \u2192 net revenue. The five measures are not additive.",
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "Default to recognized revenue and state that assumption.",
+          "Respect an explicitly supplied persona or measure."
+        ],
+        "must_exclude": [
+          "Sum the five revenue measures together."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_revenue"
+          ]
+        }
+      ],
+      "ir": {
+        "metric": "recognized_revenue",
+        "dimensions": [],
+        "filters": [
+          {
+            "field": "measure_name",
+            "op": "=",
+            "value": "recognized_revenue"
+          }
+        ],
+        "time_window": "last_quarter"
+      }
+    }
+  },
+  {
+    "case_id": "S22",
+    "seed_file": "evals/seeds/source-native-customer-id.seed.yaml",
+    "sha256": "e4387353409011cbe9d3a60902baaeef0f1d1627dfe7024c707821e3f77b59d0",
+    "seed": {
+      "question": "Can I join all customer identities to orders to report revenue?",
+      "domain": "executive-revenue",
+      "intent": "Resolve aliases by LEFT JOIN on (source_system, source_customer_id). Unresolved aliases remain unknown and a quality metric, never new customers. Deduplicate canonical IDs before joining order facts; recreated Stripe aliases can multiply revenue. Count distinct source systems for identity coverage. Attribute invoices/refunds through order_id to fct_orders; tickets require qualified crosswalk resolution.",
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "Resolve aliases by LEFT JOIN on (source_system, source_customer_id). Unresolved aliases remain unknown and a quality metric, never new customers. Deduplicate canonical IDs before joining order facts; recreated Stripe aliases can multiply revenue. Count distinct source systems for identity coverage. Attribute invoices/refunds through order_id to fct_orders; tickets require qualified crosswalk resolution."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "int_customer_identity",
+            "dim_customers",
+            "fct_orders"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "S23",
+    "seed_file": "evals/seeds/subscription-starts.seed.yaml",
+    "sha256": "4a288672a83f739427c84200ff739eb674a4add6c1342edb852646a2097c0795",
+    "seed": {
+      "question": "How many new subscriptions started last quarter?",
+      "domain": "subscriptions",
+      "intent": "Subscription starts are counted in terms, with renewals creating new term rows. The new subscriptions KPI counts first terms (is_first_term) starting in the period and excludes renewal terms.",
+      "expected": {
+        "kind": "sql_shape",
+        "must_include": [
+          "First terms with is_first_term starting in the period."
+        ],
+        "must_exclude": [
+          "Renewal terms in the new subscriptions KPI."
+        ]
+      },
+      "provenance": "interview",
+      "status": "draft",
+      "lineage": [
+        {
+          "source": "dbt_core",
+          "models": [
+            "fct_subscriptions"
+          ]
+        }
+      ]
+    }
+  }
+]

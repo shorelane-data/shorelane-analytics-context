@@ -112,6 +112,15 @@ into your prompt.
   workflow above flags the same drift on PR for free; the managed loop closes it. See
   [docs.nodaldata.io](https://docs.nodaldata.io/enterprise/overview).
 
+## Benchmark results
+
+This context has been benchmarked: across 23 frozen eval seeds graded blind, the
+answering agent passed **60.9% with context off and 82.6% with context on**
+(+21.7 pp). A separate dashboard reconciliation matched recognized revenue and
+collected cash to the cent and traced a 216-order dashboard discrepancy to excluded
+test and internal accounts. Every artifact behind those numbers, and the limitations
+that go with them, are in [`benchmarks/`](./benchmarks/README.md).
+
 ## Push to GitHub
 
 This repo is initialized as a git repo with an initial commit. To share it with your
