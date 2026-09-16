@@ -1,0 +1,23 @@
+# SIMULATION TEST ARTIFACT
+question: How many orders did we have last quarter?
+domain: executive-revenue
+intent: Eligible orders belong to account_type = customer; exclude test and internal.
+  No additional mandatory order-status exclusion is specified. Governed facts apply
+  eligibility; raw/staging retain all accounts.
+expected:
+  kind: sql_shape
+  must_include:
+  - Eligible orders belong to account_type = customer; exclude test and internal.
+    No additional mandatory order-status exclusion is specified. Governed facts apply
+    eligibility; raw/staging retain all accounts.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_orders
+  - stg_app_customers
+ir:
+  metric: orders
+  dimensions: []
+  time_window: last_quarter

@@ -1,0 +1,30 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: What was recognized revenue last quarter?
+domain: executive-revenue
+intent: 'Earnings basis: marketplace take, not retail GMV. Subscriptions recognize
+  net amount in twelve equal cent-rounded monthly installments beginning on order
+  date, anniversary-stepped and clamped to month end; other orders recognize fully
+  on order date. Recognition is independent of billing, collection and churn. Refund-event
+  implementation remains unconfirmed.'
+ir:
+  metric: recognized_revenue
+  dimensions: []
+  filters:
+  - field: measure_name
+    op: '='
+    value: recognized_revenue
+  time_window: last_quarter
+expected:
+  kind: sql_shape
+  must_include:
+  - fct_revenue with measure_name = recognized_revenue
+  - Explicit activity_date bounds; sum signed amount.
+  must_exclude:
+  - Sum different measures.
+  - Double-subtract refunds.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_revenue

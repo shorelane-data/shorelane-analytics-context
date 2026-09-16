@@ -1,0 +1,18 @@
+# SIMULATION TEST ARTIFACT
+question: Compare direct and d2c revenue over time.
+domain: executive-revenue
+intent: Normalize historical direct to d2c; rename effective 2022-06-01 was not backfilled.
+  business_subscription and marketplace retain labels. Use fct_orders.channel for
+  comparisons; channel_raw preserves original labels.
+expected:
+  kind: sql_shape
+  must_include:
+  - Normalize historical direct to d2c; rename effective 2022-06-01 was not backfilled.
+    business_subscription and marketplace retain labels. Use fct_orders.channel for
+    comparisons; channel_raw preserves original labels.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_orders

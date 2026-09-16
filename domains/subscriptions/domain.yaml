@@ -1,0 +1,19 @@
+# SIMULATION TEST ARTIFACT; table/lineage candidates are dbt-derived, not yet ratified.
+name: Subscriptions
+summary: 'FP&A: subscribers, ACV, starts, renewals, churn, plans'
+status: draft
+owner: To be confirmed
+grain: To be confirmed by the domain owner.
+tables:
+  canonical: nodal-shorelane.shorelane.fct_subscriptions
+dashboards:
+- name: Subscriptions
+  canonical_question: To be confirmed
+  url: https://shorelane-data.github.io/shorelane/subscriptions/
+lineage:
+- source: dbt_core
+  models:
+  - fct_subscriptions
+  - dim_plans
+  - stg_plan_prices
+  - dim_date

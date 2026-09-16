@@ -1,0 +1,21 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: How many new customers did we acquire last quarter?
+domain: customers
+intent: "A new customer\u2019s first-ever order across all channels falls in the period.\
+  \ Count distinct real canonical customers, not newly created profiles or a first\
+  \ purchase in an additional channel. Attribute new customers by channel to the canonical\
+  \ channel of their first-ever order."
+expected:
+  kind: sql_shape
+  must_include:
+  - First-ever order across all channels in the period.
+  - Distinct real canonical customers.
+  must_exclude:
+  - New profiles or first purchase in an additional channel.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_orders
+  - dim_customers

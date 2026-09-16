@@ -1,0 +1,22 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: How many multi-channel customers did we have last quarter?
+domain: customers
+intent: A customer with orders in at least two canonical channels within the selected
+  period. Normalize historical direct to d2c. This is a period metric over active
+  customers, not a subset of current customers. Channel customer counts overlap; deduplicate
+  the total.
+expected:
+  kind: sql_shape
+  must_include:
+  - At least two canonical channels within selected period.
+  - Normalize direct to d2c; distinct canonical customer total.
+  must_exclude:
+  - Sum overlapping channel customer counts.
+  - Require membership in current-customer snapshot.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_orders
+  - dim_customers

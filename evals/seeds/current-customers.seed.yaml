@@ -1,0 +1,22 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: How many current customers do we have?
+domain: customers
+intent: Distinct canonical app_db_customer_id values with at least one order in the
+  trailing twelve full calendar months, at month grain. Include only account_type
+  = customer, excluding test/internal and never-ordered profiles; deduplicate across
+  source identities and channels. The customer dashboard omits the test/internal exclusion;
+  governed marts are authoritative.
+expected:
+  kind: sql_shape
+  must_include:
+  - Trailing twelve full calendar months; distinct canonical app customer IDs.
+  - Real customers with an order; exclude test/internal and never-ordered profiles.
+  must_exclude:
+  - Count source identities or sum customer counts across channels.
+  - "Copy the customer dashboard\u2019s omitted hygiene filter."
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - dim_customers

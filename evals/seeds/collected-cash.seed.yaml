@@ -1,0 +1,28 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: What was collected cash last quarter?
+domain: executive-revenue
+intent: Non-subscription activity on order date; subscriptions on actual collected_date,
+  less refunds paid out. Bad-debt invoices never contribute cash. Null collection
+  date can mean pending or bad debt, distinguished by is_bad_debt.
+ir:
+  metric: collected_cash
+  dimensions: []
+  filters:
+  - field: measure_name
+    op: '='
+    value: collected_cash
+  time_window: last_quarter
+expected:
+  kind: sql_shape
+  must_include:
+  - fct_revenue with measure_name = collected_cash
+  - Explicit activity_date bounds; sum signed amount.
+  must_exclude:
+  - Sum different measures.
+  - Double-subtract refunds.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_revenue

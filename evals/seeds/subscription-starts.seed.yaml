@@ -1,0 +1,18 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: How many new subscriptions started last quarter?
+domain: subscriptions
+intent: Subscription starts are counted in terms, with renewals creating new term
+  rows. The new subscriptions KPI counts first terms (is_first_term) starting in the
+  period and excludes renewal terms.
+expected:
+  kind: sql_shape
+  must_include:
+  - First terms with is_first_term starting in the period.
+  must_exclude:
+  - Renewal terms in the new subscriptions KPI.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_subscriptions

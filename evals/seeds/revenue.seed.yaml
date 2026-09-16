@@ -1,0 +1,28 @@
+# SIMULATION TEST ARTIFACT
+question: What was our revenue last quarter?
+domain: executive-revenue
+intent: "Unqualified revenue means recognized revenue (GAAP); state the assumption.\
+  \ Persona defaults: CFO Dana \u2192 recognized; Marketing Marcus \u2192 GMV; FP&A\
+  \ Priya \u2192 billed; Controller Theo \u2192 collected cash; COO Sam \u2192 net\
+  \ revenue. The five measures are not additive."
+expected:
+  kind: sql_shape
+  must_include:
+  - Default to recognized revenue and state that assumption.
+  - Respect an explicitly supplied persona or measure.
+  must_exclude:
+  - Sum the five revenue measures together.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_revenue
+ir:
+  metric: recognized_revenue
+  dimensions: []
+  filters:
+  - field: measure_name
+    op: '='
+    value: recognized_revenue
+  time_window: last_quarter

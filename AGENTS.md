@@ -1,9 +1,11 @@
+> **SIMULATION TEST ARTIFACT:** This repository is generated through a simulated-analyst interview. Automated answers are not human approval; human review is required before production use.
+
 # AGENTS.md
 
 Machine-readable orientation for AI systems consuming this repository.
 
 ## Purpose
-This repo is the **business context layer** for [company]'s analytical data. It is
+This repo is the **business context layer** for Shorelane's analytical data. It is
 read by agents at query time to provide semantic grounding that schema metadata and
 dbt descriptions alone cannot. Built in Analytics Context Format (ACF).
 
@@ -31,8 +33,8 @@ Agents without a skill system (Codex, Cursor) should follow these steps directly
    invent a definition. Apply and state any caveat the answer relies on.
 
 ## Editing this repo
-Adding or correcting context (not answering a question) does **not** require the
-Nodal tool repo — any agent can edit this repo directly. It contains only Markdown
+Adding or correcting context (not answering a question) does **not** require a
+Nodal source checkout — any agent can edit this repo directly. It contains only Markdown
 and YAML. Full rules are in `AUTHORING.md`; the load-bearing ones:
 1. **No statistics, no schema, no invented definitions.** Numbers and column types
    live in the warehouse/dbt; leave `_To be confirmed by [owner]._` and
@@ -48,8 +50,7 @@ and YAML. Full rules are in `AUTHORING.md`; the load-bearing ones:
 4. **Validate before you commit:** `python3 .ci/validate.py` from the repo root
    (needs `pip install jsonschema pyyaml`). CI runs the same check on every PR.
 
-For a **brand-new domain** from scratch, the guided `context-interview` skill (run
-from a clone of [github.com/nodal-data/nodal-context](https://github.com/nodal-data/nodal-context))
+For a **brand-new domain** from scratch, the installed `context-interview` skill
 is recommended, not required — it drafts from your dbt models, verifies answers
 live, and harvests seeds automatically. See `AUTHORING.md` for that flow.
 

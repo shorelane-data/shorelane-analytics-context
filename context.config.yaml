@@ -1,42 +1,49 @@
-# context.config.yaml — repo metadata + the domain↔lineage map that makes
-# "context lives apart from lineage" safe. Every domain MUST carry a lineage
-# pointer so drift detection can fire when an upstream model changes.
+# SIMULATION TEST ARTIFACT
 version: 0.1
-warehouse: bigquery             # default platform; a per-source `warehouse:` overrides it
-                                # (snowflake | bigquery | databricks | postgres | ...)
-
+warehouse: bigquery
 lineage_sources:
-  # Primary/live source — the standalone dbt repo running daily builds against BigQuery.
-  # Its notify-context-repo.yml workflow publishes manifest.json on the orphan
-  # `dbt-manifest` branch and dispatches lineage-changed here.
-  - id: dbt_shorelane_dbt
-    type: dbt
-    repo: github.com/nodal-data/shorelane-dbt
-    ref: dbt-manifest
-    manifest_path: manifest.json
-  # Second source — the shorelane monorepo (dbt nested under dbt/). Same convention:
-  # its sender copies dbt/target/manifest.json to the here
-  # is identical regardless of the nesting.
-  - id: dbt_shorelane
-    type: dbt
-    repo: github.com/nodal-data/shorelane
-    ref: dbt-manifest
-    manifest_path: manifest.json
-
+- id: dbt_core
+  type: dbt
+  manifest_path: target/manifest.json
 domains:
-  revenue:
+  executive-revenue:
     lineage:
-      - source: dbt_shorelane_dbt
-        models:
-          - fct_revenue
-          - stg_orders
-          - stg_invoices
-          - stg_refunds
-          - stg_revenue_recognition
-      - source: dbt_shorelane
-        models:
-          - fct_revenue
-          - stg_orders
-          - stg_invoices
-          - stg_refunds
-          - stg_revenue_recognition
+    - source: dbt_core
+      models:
+      - fct_revenue
+      - fct_orders
+      - stg_orders
+      - stg_refunds
+      - stg_invoices
+      - stg_revenue_recognition
+      - dim_customers
+      - stg_app_customers
+      - dim_date
+      - int_customer_identity
+      - fct_order_lines
+  customers:
+    lineage:
+    - source: dbt_core
+      models:
+      - dim_customers
+      - fct_orders
+      - int_customer_identity
+      - fct_identity_resolution_quality
+      - dim_date
+  marketing:
+    lineage:
+    - source: dbt_core
+      models:
+      - fct_marketing_spend
+      - fct_order_lines
+      - fct_orders
+      - dim_products
+      - dim_date
+  subscriptions:
+    lineage:
+    - source: dbt_core
+      models:
+      - fct_subscriptions
+      - dim_plans
+      - stg_plan_prices
+      - dim_date

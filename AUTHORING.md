@@ -28,14 +28,15 @@ Markdown and YAML.
 
 Context is built one domain at a time; picking it back up is the normal case.
 
-- **Same machine, later.** Re-run the `context-interview` skill from your clone of
-  the tool repo ([github.com/nodal-data/nodal-context](https://github.com/nodal-data/nodal-context)).
-  It searches nearby directories for this repo and asks before touching anything;
+- **Same machine, later.** Re-run the installed `context-interview` skill from
+  your normal Claude, Codex, Cursor, or other supported agent. It searches nearby
+  directories for this repo and asks before touching anything;
   if it doesn't find it, give it the path (or this repo's GitHub URL). It reads
   `context.config.yaml`, sees what's already captured, and resumes from the open
   `status: draft` items — it never starts over.
-- **A teammate picking it up.** Clone the tool repo, run the `context-interview`
-  skill from that clone, and answer "continuing" with this repo's GitHub URL — the
+- **A teammate picking it up.** Install Nodal through the same native-plugin or
+  skills.sh channel your team uses, invoke `context-interview`, and answer
+  "continuing" with this repo's GitHub URL — the
   skill clones it and resumes. (A nearby existing clone works too; the skill finds
   those itself.) Everything needed to continue is committed here.
 - **Do I need the dbt repo locally?** Not to answer questions, validate, or run

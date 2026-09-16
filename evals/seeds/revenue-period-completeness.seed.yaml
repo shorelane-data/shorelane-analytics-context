@@ -1,0 +1,22 @@
+# SIMULATION TEST ARTIFACT
+question: Compare revenue through the latest available month.
+domain: executive-revenue
+intent: Subscription recognition continues for twelve monthly installments, so recognition
+  activity can extend beyond the last order month. Compare identical explicit bounds
+  ending at a fully elapsed calendar month; exclude the current partial month and
+  pin the as-of load.
+expected:
+  kind: sql_shape
+  must_include:
+  - Subscription recognition continues for twelve monthly installments, so recognition
+    activity can extend beyond the last order month. Compare identical explicit bounds
+    ending at a fully elapsed calendar month; exclude the current partial month and
+    pin the as-of load.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_revenue
+  - stg_revenue_recognition
+  - dim_date
