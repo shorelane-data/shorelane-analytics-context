@@ -1,0 +1,37 @@
+[
+  {
+    "case_id": "S01",
+    "question": "How many active subscribers did we have at month end?",
+    "off_answer": "At August 31, 2026 month end, there were 3,583 active subscribers (distinct customers), representing 3,583 active subscriptions and 159,928 seats.",
+    "on_answer": "3,595 active subscribers at August 31, 2026. Count distinct real customers whose term includes that date, inclusive of both endpoints; do not count seats or terms, or filter on status/plan availability.",
+    "note": "Illustrative answer difference; score comes from frozen sql_shape rubric, not numeric ground truth."
+  },
+  {
+    "case_id": "S06",
+    "question": "How many current customers do we have?",
+    "off_answer": "As of September 15, 2026, the customer dimension contains 28,930 distinct known customers; 25,769 have an order. I would provisionally report 28,930 for the current known customer base, but an active or currently paying customer count requires a different definition.",
+    "on_answer": "9,678 current customers: distinct canonical customers with an eligible order during September 2025\u2013August 2026. This excludes test/internal and never-ordered profiles and deduplicates channels and source identities.",
+    "note": "Illustrative answer difference; score comes from frozen sql_shape rubric, not numeric ground truth."
+  },
+  {
+    "case_id": "S12",
+    "question": "How much did we earn from the marketplace last quarter?",
+    "off_answer": "Marketplace order net earnings in Q2 2026 were 44,117.23, against 220,074.48 of marketplace gross order value. Recognized amounts linked to marketplace fact orders also total 44,117.23.",
+    "on_answer": "Marketplace earnings were 41,121.79 in Q2 2026: Shorelane commission on orders in the period less refund take on refund dates. Buyer retail GMV is not earnings.",
+    "note": "Illustrative answer difference; score comes from frozen sql_shape rubric, not numeric ground truth."
+  },
+  {
+    "case_id": "S15",
+    "question": "How many new customers did we acquire last quarter?",
+    "off_answer": "There were 1,137 newly purchasing customers in Q2 2026, using first_order_date. If acquisition means first appearance in the customer system instead, the count is 1,277.",
+    "on_answer": "1,121 new customers in Q2 2026. Each customer's first-ever eligible order across all channels falls in the quarter; new profiles and first purchases in an additional channel do not qualify.",
+    "note": "Illustrative answer difference; score comes from frozen sql_shape rubric, not numeric ground truth."
+  },
+  {
+    "case_id": "S20",
+    "question": "Compare revenue through the latest available month.",
+    "off_answer": "Assuming recognized revenue and a 2026 monthly comparison: January 2,719,971.20; February 2,724,725.92; March 2,843,150.88; April 2,913,808.47; May 3,004,119.79; June 3,030,749.11; July 3,074,299.24; August 3,208,472.01; September through September 15 1,582,898.73. August, the latest complete calendar month, increased 4.36% over July. September is partial and should not be read as a full-month decline.",
+    "on_answer": "Using recognized revenue and the latest twelve completed months, September 2025 through August 2026: Sep 2,493,427.94; Oct 2,523,303.25; Nov 2,592,348.50; Dec 2,760,434.86; Jan 2,719,971.20; Feb 2,724,725.92; Mar 2,843,150.88; Apr 2,913,808.47; May 3,004,119.79; Jun 3,030,749.11; Jul 3,074,299.24; Aug 3,208,472.01. August increased about 4.36% from July. Although data extends to September 15, September is partial and excluded. Use identical date bounds for comparisons; recognition can continue after the last order month and can exceed period GMV.",
+    "note": "Illustrative answer difference; score comes from frozen sql_shape rubric, not numeric ground truth."
+  }
+]

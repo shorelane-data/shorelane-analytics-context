@@ -1,0 +1,99 @@
+{
+  "as_of_date": "2026-09-15",
+  "project": "nodal-shorelane",
+  "dataset": "shorelane",
+  "cases": [
+    {
+      "case_id": "S01",
+      "question": "How many active subscribers did we have at month end?"
+    },
+    {
+      "case_id": "S02",
+      "question": "What was billed revenue last quarter?"
+    },
+    {
+      "case_id": "S03",
+      "question": "Compare direct and d2c revenue over time."
+    },
+    {
+      "case_id": "S04",
+      "question": "What was collected cash last quarter?"
+    },
+    {
+      "case_id": "S05",
+      "question": "Can order-line sales measure all company revenue?"
+    },
+    {
+      "case_id": "S06",
+      "question": "How many current customers do we have?"
+    },
+    {
+      "case_id": "S07",
+      "question": "How many orders did we have last quarter?"
+    },
+    {
+      "case_id": "S08",
+      "question": "The executive dashboard order count is higher than the governed order count. Which should reporting use?"
+    },
+    {
+      "case_id": "S09",
+      "question": "What was gmv last quarter?"
+    },
+    {
+      "case_id": "S10",
+      "question": "Should active subscribers exclude retired plans?"
+    },
+    {
+      "case_id": "S11",
+      "question": "What was revenue last quarter?"
+    },
+    {
+      "case_id": "S12",
+      "question": "How much did we earn from the marketplace last quarter?"
+    },
+    {
+      "case_id": "S13",
+      "question": "How many multi-channel customers did we have last quarter?"
+    },
+    {
+      "case_id": "S14",
+      "question": "What was net revenue last quarter?"
+    },
+    {
+      "case_id": "S15",
+      "question": "How many new customers did we acquire last quarter?"
+    },
+    {
+      "case_id": "S16",
+      "question": "What was recognized revenue last quarter?"
+    },
+    {
+      "case_id": "S17",
+      "question": "What was our renewal rate last quarter?"
+    },
+    {
+      "case_id": "S18",
+      "question": "Break recognized revenue down by channel."
+    },
+    {
+      "case_id": "S19",
+      "question": "What was net revenue last quarter?"
+    },
+    {
+      "case_id": "S20",
+      "question": "Compare revenue through the latest available month."
+    },
+    {
+      "case_id": "S21",
+      "question": "What was our revenue last quarter?"
+    },
+    {
+      "case_id": "S22",
+      "question": "Can I join all customer identities to orders to report revenue?"
+    },
+    {
+      "case_id": "S23",
+      "question": "How many new subscriptions started last quarter?"
+    }
+  ]
+}
