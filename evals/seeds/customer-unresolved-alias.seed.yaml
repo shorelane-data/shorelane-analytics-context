@@ -1,0 +1,20 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: Should unresolved customer IDs count as new customers?
+domain: customers
+intent: Unresolved aliases are unknown and identity quality, not newly acquired customers.
+expected:
+  kind: sql_shape
+  must_include:
+  - Qualified source-system/source-ID LEFT JOIN; preserve unresolved aliases for quality.
+  - Separate permanent pre-July-2021 Shopify/Salesforce migration gaps from up-to-thirty-day
+    sync lag.
+  must_exclude:
+  - Count unresolved aliases as new or additional customers.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - dim_customers
+  - int_customer_identity
+  - fct_orders

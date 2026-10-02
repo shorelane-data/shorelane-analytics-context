@@ -1,15 +1,25 @@
-# SIMULATION TEST ARTIFACT; table/lineage candidates are dbt-derived, not yet ratified.
+# SIMULATION TEST ARTIFACT — human review required.
 name: Customers
-summary: Customer lifecycle, channels, identity health
+summary: Customer population, acquisition, period activity, channel participation
+  and identity health.
 status: draft
 owner: To be confirmed
-grain: To be confirmed by the domain owner.
+grain: 'dim_customers: one row per canonical app_db_customer_id; fct_orders: one row
+  per real-customer order; fct_subscriptions: one row per subscription term.'
 tables:
   canonical: nodal-shorelane.shorelane.dim_customers
+  others:
+  - nodal-shorelane.shorelane.fct_orders
+  - nodal-shorelane.shorelane.fct_subscriptions
+  - nodal-shorelane.shorelane.int_customer_identity
+  - nodal-shorelane.shorelane.fct_identity_resolution_quality
 dashboards:
 - name: Customers
-  canonical_question: To be confirmed
+  canonical_question: How many current, active and new customers do we have, and how
+    do channels and identity resolution affect those counts?
   url: https://shorelane-data.github.io/shorelane/customers/
+  tool: plotly-static
+  owner: To be confirmed
 lineage:
 - source: dbt_core
   models:
@@ -18,3 +28,6 @@ lineage:
   - int_customer_identity
   - fct_identity_resolution_quality
   - dim_date
+  - fct_subscriptions
+  - stg_app_customers
+  - stg_orders

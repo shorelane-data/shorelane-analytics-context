@@ -1,0 +1,19 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: How many customers do we have?
+domain: customers
+intent: Distinguish canonical profiles from ordered real customers; clarify requested
+  lifecycle/window.
+expected:
+  kind: sql_shape
+  must_include:
+  - account_type customer and required order activity; distinct canonical IDs.
+  must_exclude:
+  - All profiles or segment alone as eligibility.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - dim_customers
+  - int_customer_identity
+  - fct_orders

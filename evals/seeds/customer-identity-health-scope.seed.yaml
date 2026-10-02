@@ -1,0 +1,21 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: Are unresolved aliases additional customers?
+domain: customers
+intent: No. Separate alias-quality population from ordered canonical customers; do
+  not assume their eligibility filters match.
+expected:
+  kind: sql_shape
+  must_include:
+  - Unresolved aliases divided by observed aliases in the same explicitly confirmed
+    population.
+  - Clarify alias source/date/account scope if unspecified.
+  must_exclude:
+  - Treat unresolved aliases as new customers.
+  - Apply customer account/order filters to alias quality by assumption.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - int_customer_identity
+  - fct_identity_resolution_quality

@@ -1,0 +1,24 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: What explains customer NPS and return reasons?
+domain: customers
+intent: The available data cannot answer NPS, store visits, customer shipping cost
+  or return reasons.
+expected:
+  kind: sql_shape
+  must_include:
+  - State limitation and request another source.
+  must_exclude:
+  - Invent proxies as measured answers.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - dim_customers
+  - fct_orders
+  - int_customer_identity
+  - fct_identity_resolution_quality
+  - dim_date
+  - fct_subscriptions
+  - stg_app_customers
+  - stg_orders

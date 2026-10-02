@@ -1,0 +1,37 @@
+# SIMULATION TEST ARTIFACT — human review required.
+entities:
+- name: canonical_customer
+  description: Canonical app profile keyed by app_db_customer_id. Profiles may never
+    order; has_order distinguishes ordered customers. Only account_type customer is
+    eligible for customer reporting.
+  important: Do not count all app profiles as ordered customers.
+  status: draft
+  lineage: &id001
+  - source: dbt_core
+    models:
+    - dim_customers
+    - int_customer_identity
+    - fct_orders
+- name: customer_segment
+  description: consumer, smb and enterprise describe the customer. Business customers
+    can place consumer-channel orders.
+  important: Segment does not replace account_type eligibility; segment slicing approval
+    is pending.
+  status: draft
+  lineage: *id001
+- name: unresolved_customer_alias
+  description: Qualified source alias without a canonical mapping is unknown, not
+    new or additional customer. Retain in identity-quality reporting through LEFT
+    JOIN on source_system and source_customer_id.
+  important: 'Migration gap: some Shopify/Salesforce profiles created before 2021-07-01
+    permanently lack crosswalk rows. Sync lag: links can arrive up to thirty days
+    after source creation.'
+  status: draft
+  lineage: *id001
+- name: stripe_customer_alias
+  description: Recreated Stripe accounts can leave inactive historical and active
+    current aliases pointing to one canonical customer.
+  important: Do not exclude the customer because an old alias is inactive. Count distinct
+    systems for coverage; deduplicate canonical customers before joining facts.
+  status: draft
+  lineage: *id001

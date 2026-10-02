@@ -20,3 +20,6 @@ lineage:
   models:
   - fct_orders
   - dim_customers
+ir:
+  metric: multi_channel_customers
+  time_window: last_quarter

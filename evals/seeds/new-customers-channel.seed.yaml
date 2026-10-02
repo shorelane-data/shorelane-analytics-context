@@ -1,0 +1,25 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: Which channel acquired our new customers last quarter?
+domain: customers
+intent: Use canonical first-ever order channel across all channels, not profile acquisition_channel.
+  Earliest-date cross-channel ties need human clarification.
+ir:
+  metric: new_customers_by_channel
+  dimensions:
+  - channel
+  time_window: last_quarter
+expected:
+  kind: sql_shape
+  must_include:
+  - First-ever order across all channels; normalize direct to d2c.
+  - Clarify unresolved earliest-date cross-channel ties.
+  must_exclude:
+  - Profile acquisition_channel as a substitute.
+  - First purchase within each channel as newly acquired customer.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - dim_customers
+  - fct_orders

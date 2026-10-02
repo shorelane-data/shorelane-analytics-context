@@ -1,0 +1,21 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: How many customers appear in multiple source systems?
+domain: customers
+intent: Count distinct source systems per canonical customer, not alias rows; Stripe
+  recreation produces aliases.
+expected:
+  kind: sql_shape
+  must_include:
+  - Deduplicate canonical customers before joining order facts.
+  - Distinct source systems.
+  must_exclude:
+  - Inactive historical Stripe alias excludes canonical customer.
+  - Count aliases as systems.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - dim_customers
+  - int_customer_identity
+  - fct_orders
