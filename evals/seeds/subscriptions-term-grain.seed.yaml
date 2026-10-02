@@ -1,0 +1,21 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: How many subscriptions do we have?
+domain: subscriptions
+intent: Clarify stock versus term events; canonical fct_subscriptions contains real-customer
+  terms.
+expected:
+  kind: sql_shape
+  must_include:
+  - Subscriber stock is distinct canonical customers at date; starts/renewal/churn
+    count terms.
+  - Use governed fct_subscriptions; raw/staging require real-customer eligibility.
+  must_exclude:
+  - Count lifetime term rows as active subscribers.
+  - Treat seats as customers.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_subscriptions
+  - dim_customers

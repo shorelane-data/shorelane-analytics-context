@@ -1,0 +1,19 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: Why does the quarterly churn chart differ from a full-quarter calculation?
+domain: subscriptions
+intent: Cohort uses selected term-end window then calendar-quarter buckets; partial
+  boundaries yield partial quarters.
+expected:
+  kind: sql_shape
+  must_include:
+  - Align explicit term-end window before comparing quarter rates.
+  - Exclude active undecided terms; state snapshot masking.
+  must_exclude:
+  - Treat a partial-quarter bucket as a full quarter.
+  - Infer zero churn from missing undecided outcomes.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_subscriptions

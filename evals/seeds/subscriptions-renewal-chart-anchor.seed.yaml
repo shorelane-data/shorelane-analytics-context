@@ -1,0 +1,25 @@
+# SIMULATION TEST ARTIFACT — human review required before production use.
+question: Why do monthly renewal bars and renewal-rate counts differ?
+domain: subscriptions
+intent: 'Human-selected rule: monthly Renewals bars count renewal terms by term_start_date;
+  renewal rate uses renewed and churned predecessor terms by term_end_date. These
+  cohorts may differ at period boundaries.'
+expected:
+  kind: sql_shape
+  must_include:
+  - 'Monthly bars: non-first renewal terms selected by term_start_date and bucketed
+    by calendar start month.'
+  - 'Renewal rate: renewed / (renewed + churned) decided predecessor terms selected
+    by term_end_date.'
+  - Keep each term counted once within its own cohort; allow different totals at window
+    boundaries.
+  must_exclude:
+  - Use renewal-start bars as numerator of the ending-term renewal rate.
+  - Count renewed ending terms as monthly renewal starts.
+  - Force cohort totals to agree by changing dates or excluding valid terms.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_subscriptions

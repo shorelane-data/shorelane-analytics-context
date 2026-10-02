@@ -55,3 +55,9 @@ domains:
       - dim_plans
       - stg_plan_prices
       - dim_date
+      - dim_customers
+      - stg_subscriptions
+      - stg_plans
+      - stg_app_customers
+      - int_customer_identity
+      - fct_revenue

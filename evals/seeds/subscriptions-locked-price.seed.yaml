@@ -1,0 +1,20 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: What is the value of the subscription book?
+domain: subscriptions
+intent: Use term locked ACV and effective-start price; do not reprice historical book
+  from current list prices.
+expected:
+  kind: sql_shape
+  must_include:
+  - Term ACV = seats times term-start effective annual seat price.
+  - Renewals use renewal term-start effective price.
+  must_exclude:
+  - Use dim_plans current list price for existing terms.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_subscriptions
+  - stg_plan_prices
+  - dim_plans

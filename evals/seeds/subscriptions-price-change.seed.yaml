@@ -1,0 +1,21 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: Did the May 2025 increase reprice our whole subscription book?
+domain: subscriptions
+intent: Generation3 increase effective2025-05-01 applies at term start to new and
+  renewing terms; locked existing terms and older generations unchanged.
+expected:
+  kind: sql_shape
+  must_include:
+  - Use term-start effective price and term locked ACV.
+  - Generation3 only for that change.
+  must_exclude:
+  - Reprice every active term from latest catalog.
+  - Assume older plan generations received increase.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_subscriptions
+  - stg_plan_prices
+  - dim_plans

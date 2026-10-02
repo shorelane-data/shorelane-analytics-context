@@ -1,0 +1,23 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: What share of expiring terms renewed?
+domain: subscriptions
+intent: Ending predecessor terms, decided statuses, linked successors without restricting
+  successor start to report period.
+expected:
+  kind: sql_shape
+  must_include:
+  - Cohort by predecessor term_end_date.
+  - Renewed/(renewed+churned); exclude active undecided.
+  - Allow successor start after report-period end.
+  must_exclude:
+  - Renewal-start cohort.
+  - All terms or distinct customers denominator.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_subscriptions
+ir:
+  metric: renewal_rate
+  time_window: selected_period

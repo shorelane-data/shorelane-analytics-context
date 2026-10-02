@@ -1,0 +1,21 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: Why did enterprise subscription churn rise in Q4 2022?
+domain: subscriptions
+intent: Documented synthetic billing incident is a fixture explanation; ticket causality
+  per term and a general estimator are not established.
+expected:
+  kind: sql_shape
+  must_include:
+  - Use ending-term enterprise cohort for churn.
+  - Canonicalize Salesforce requester identities before connecting support evidence.
+  - Qualify documented synthetic explanation.
+  must_exclude:
+  - Claim independently estimated causal effect.
+  - Join source requester ID directly to canonical customer ID.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_subscriptions
+  - int_customer_identity

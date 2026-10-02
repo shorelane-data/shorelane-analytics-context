@@ -1,0 +1,20 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: Can invoice revenue or order lines describe our subscription book?
+domain: subscriptions
+intent: Use terms for stock, seats and ACV; invoices for billed/collected, separate
+  recognition schedule for recognized revenue.
+expected:
+  kind: sql_shape
+  must_include:
+  - fct_subscriptions for subscribers, seats and locked ACV.
+  - State unsupported pauses/upgrades/plan switches in this fixture.
+  must_exclude:
+  - Treat ACV as recognized revenue.
+  - Use absent subscription order lines for composition.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_subscriptions
+  - fct_revenue
