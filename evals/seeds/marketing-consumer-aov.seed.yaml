@@ -1,0 +1,23 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: What was Marketing average order value last quarter?
+domain: marketing
+intent: Marketing consumer AOV uses d2c and marketplace gross order value divided
+  by consumer order count; all-channel headline GMV is a different scope.
+expected:
+  kind: sql_shape
+  must_include:
+  - Real-customer canonical d2c/marketplace orders.
+  - Ratio of whole-period GMV to order count.
+  must_exclude:
+  - Subscription orders in consumer AOV.
+  - Average monthly AOV without weighting.
+  - Subtract refunds or discounts again.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_orders
+ir:
+  metric: average_order_value
+  time_window: selected_period

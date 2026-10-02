@@ -3,7 +3,7 @@
 **Simulation test artifacts only.** All authored definitions and eval seeds remain draft; no simulated response constitutes human confirmation.
 
 ## Scope
-Executive Revenue interview round complete, with its work and clarification queue preserved. Customers full flow resumed in place on 2026-10-01: domain routing, metrics, entities, caveats and three live off/on comparisons captured; human clarifications and snapshot blessings remain pending. Marketing and Subscriptions remain draft follow-up domains. Company glossary captures ten terms.
+Executive Revenue interview round complete, with its work and clarification queue preserved. Customers full flow resumed in place on 2026-10-01: domain routing, metrics, entities, caveats and three live off/on comparisons captured; human clarifications and snapshot blessings remain pending. Marketing full interview and live comparisons were captured on 2026-10-02; acquisition tie policy, snapshot review and a new-customer headline discrepancy remain pending. Subscriptions remains the next untouched domain. Company glossary captures ten terms.
 
 ## Stage 0 disposition
 - **dbt: extracted** — source fallback, 30 documented models; no dbt executable, manifest or exposures. The local dbt directory disappeared after extraction; saved findings remain available. Manifest drift baseline is deferred.
@@ -83,3 +83,94 @@ User reported fixing the dashboards and requested reevaluation. Fresh local Chro
 ## GitHub review handoff
 
 The user authorized committing these additions and publishing to GitHub for review. All simulation definitions and seeds remain draft. Generated captures, run traces, raw query history, the analyst transcript, simulation marker and local MCP configuration remain gitignored; SESSION.md carries the durable evaluation summary.
+
+
+## Marketing full interview — 2026-10-02
+
+User selected Marketing after completed Executive Revenue and Customers rounds. Resume in place; preserve all prior definitions and queues. The current instruction prohibits commits, pushes and global configuration changes, superseding the earlier review-publication authorization for this round.
+
+### Source disposition
+- **dbt: extracted, source fallback**. Rechecked `/Users/ronpotok/nodal_code/shorelane-dbt`; it is present, with remote `https://github.com/shorelane-data/shorelane-dbt.git`. The previously deferred remote-durability question remains unchanged. Current source fallback reports 30 documented models and 23 with grain evidence; exposures unavailable to extractor. Findings in `evals/runs/20261002-marketing/dbt-findings.json`. No dbt build/parse or source edits performed.
+- **Warehouse schema probe: deferred, auth**. Existing BigQuery MCP SELECT 1 fails due to expired reauthentication. User was told to run `gcloud auth application-default login`. Reprobed during domain work and before live verification; still unavailable. Physical fields are source-derived drafts, not live schema-confirmed this round.
+- **Query history: deferred, auth**. Emitted BigQuery regional JOBS extraction SQL, but could not execute while connection unavailable. Run immediately when probe succeeds, then cluster; prior findings and service-identity clarification queue preserved. No claim of fresh mining.
+- **Browser: captured**. Existing local Chrome MCP selected tab was closed; opened the named Marketing dashboard in a new local tab. Last 12 Months, 2025-10-01 through 2026-09-30, data as of 2026-10-02. Visible Plotly arrays tier 1.5; DOM integer/rounded tiles tier 2. No setup/global changes. No local `.nodal.local.json` present at repo root.
+
+### Interview coverage
+Fourteen responder questions (including the three-item entity batch), with exact topics and answers used appended to the existing local simulation transcript. The interviewer did not read the configured brief; only the isolated Marketing responder did. No human replies to this round’s escalations have been received.
+
+Captured domain routes, thirteen metric records, subject entities, caveats, retrieval doc, pattern prose, thirteen new eval seeds and a reusable dashboard playbook. All remain simulation drafts. Simple settled aggregation shapes have draft ACF 0.1 expressions; unresolved cross-grain CAC/acquisition, rate and promotion policies are not forced into incorrect row-filter expressions. No schema/version upgrade or edits to prior domain definitions.
+
+Key rules: Marketing revenue means GMV; consumer orders/AOV exclude subscriptions and use period ratios; CAC uses first-ever real d2c acquisitions, not platform claims or repeated platform-row totals; category lines are consumer retail value; marketplace line margin is not Shorelane economic margin; promotion count/GMV are order-level and discounts line-level. Ad platforms differ from commerce channels. Source coverage, incomplete periods, SKU introduction and synthetic intervention limits are explicit.
+
+### Marketing clarification queue
+1. Additional Marketing measures beyond the surfaced catalog; observed dashboard adds gross margin by category. Owner remains To be confirmed in domain and roster; preserve prior owner queue.
+2. Product/promotion unique keys and safe lookup joins; live schema and key checks deferred.
+3. CAC zero-denominator convention and any separate customer-to-platform attribution method. No governed platform CAC without attribution.
+4. Human acceptance of consumer AOV implementation mapping; supported by brief examples and labels, not independent dashboard SQL.
+5. New-customer order-share numerator: first-ever orders, first-date orders or all period orders from newly acquired customers. Preserve Customers earliest-date/cross-channel tie queue.
+6. Category-mix denominator, margin-rate aggregation and d2c-only economic margin scope; dashboard channel filter not established.
+7. Blank/unmatched promotion codes, tags outside validity dates, actual-date policy for promotion counts/discounts, exact date bounds and discount fraction encoding.
+8. Historical category stability/recategorization and any extra promotion eligibility, stacking or redemption rules.
+9. Separate causal/counterfactual or seasonality-adjusted ROI method/source; synthetic paid-media intervention does not define a general estimator.
+
+### Live verification state
+Dashboard captured at `evals/captures/20261002-marketing/marketing.capture.json`; dashboard-only arithmetic and limits in adjacent `reconciliation.md`. Internal AOV and CAC arithmetic agrees with rounded tiles, but no warehouse answers were executed and no off/on delta exists. New-customer headline differs from the prior Customers capture; snapshot alignment and order-row versus distinct-customer counting require live investigation, not an inferred correction.
+
+Three pending cases (consumer AOV, CAC, new d2c customers) and resume steps are in `evals/runs/20261002-marketing/verification-plan.json`. Do not mark Stage 5 complete, mint blessed snapshots or verified SQL, or interpret missing authentication as a failed metric. Reauthenticate, re-mine history, verify schema/grain/ties, run isolated parallel off/on agents, refresh capture, then obtain human snapshot review. Subscriptions remains the next domain after Marketing verification/clarifications.
+
+
+## Marketing authentication recovery and live checks — 2026-10-02
+
+This supersedes the earlier Marketing authentication deferral. User reported renewed credentials. Existing long-lived BigQuery MCP retained stale credentials; a fresh application-default credential probe succeeded. Read-only queries then ran via fresh instances of the same `/opt/homebrew/bin/toolbox --prebuilt bigquery --stdio` MCP configuration and project, with no global/local configuration edits. Tokens were never printed or saved in artifacts.
+
+- **Query history: mined**. Latest 5,000 successful SELECT jobs within requested90-day window; cap reached. Zero admitted clusters under existing classification/thresholds. Prior service-identity classification queue remains; do not infer absence of Marketing BI usage. Artifacts under `evals/runs/20261002-marketing/`.
+- **Schema/key checks: executed**. Physical Marketing columns verified from INFORMATION_SCHEMA. Current SKU, promo-code and platform-day keys are empirically unique; no semantic/historical contract inferred. Full SQL and results saved in `evals/runs/20261002-marketing/live/`.
+- **Independent off/on runs: executed concurrently**. Off had warehouse/schema only; on read Marketing context and seeds. Neither accessed the analyst brief or dashboard. Only the separate responder consulted the brief.
+- **Browser: refreshed**. `evals/captures/20261002-marketing-live/marketing.capture.json`; same Last12Months window2025-10-01 through2026-09-30, dashboard as of2026-10-02.
+
+### Findings
+1. Consumer AOV: context-off291.8972 using consumer segment; on292.9154 using real d2c+marketplace orders regardless segment. On matches dashboard embedded components3,539,882.41/12,085 and rounded293 tile. Responder supports channel scope; numeric acceptance escalated and pending.
+2. New d2c acquisition:2,428 unambiguous customers plus two first-date cross-channel ties. Inclusive count2,430 matches dashboard acquisition series. Both agents noticed the ties; on did not invent a unique allocation. Owner must choose policy; neither exclusion nor inclusion is automatically approved.
+3. CAC: spend1,598,744.59 /2,430 =657.9196 inclusive; /2,428 =658.4615 excluding ties. Both round to dashboard tile658; exact component agreement supports observed inclusive behavior but cannot establish policy.
+4. Additional headline discrepancy: Marketing new-customer tile4,720 matches first-date order rows; distinct real first purchasers total4,718. Count-grain explanation is strongly consistent with data, not independently proven from dashboard code. Added a draft correction seed preserving canonical customer grain.
+5. Repeated daily acquisition counts agree across platforms for all365 days in window and reconcile to2,430 first-date d2c rows/distinct inclusive customers. Snapshot equivalence does not remove cross-channel ambiguity.
+
+### Remaining work
+- Human acquisition tie decision: count in every first-day channel versus uniquely attribute using an agreed first-order/timestamp rule (or leave open). Source/timestamp suitability must be verified before implementing a new rule. This is shared with the preserved Customers tie queue.
+- Human AOV snapshot acceptance and review/fix of the Marketing new-customer headline grain.
+- Earlier Marketing policy questions remain unless explicitly answered; no replies received as of this update.
+- No blessed snapshot seeds or verified SQL sidecars minted. One numerical AOV agreement plus two policy-conditional comparisons; no3/3 accuracy claim.
+- Marketing now has14 draft seeds. Report: `evals/captures/20261002-marketing-live/reconciliation.md`. Simulation transcript appended. No commits, pushes or configuration changes; previous domain files remain unchanged. Subscriptions remains next untouched interview domain.
+
+
+## Human review decisions — 2026-10-02
+
+- User explicitly accepted the consumer AOV reconciliation: consumer GMV divided by real d2c+marketplace orders for the captured period. This resolves the pending numeric acceptance and consumer-channel scope question for that case.
+- User explicitly directed distinct counting for the total new-customer metric: each canonical customer once, regardless of multiple first-date orders. The observed total is4,718, not4,720 first-date order rows.
+- These decisions do not yet settle which channel receives acquisition credit when first-date orders span channels. The CAC denominator’s d2c attribution remains open.
+- Preserve simulation-artifact labeling and draft status under the session instructions; do not infer approval of other definitions, snapshots or production use.
+
+
+## Human CAC timestamp rule and follow-up verification — 2026-10-02
+
+- Human chose earliest purchase timestamp across all channels for CAC first-time acquisition. Count distinct canonical customers whose first order is d2c; determine first purchase over all history before period/channel restrictions. This supersedes the prior open first-date versus timestamp policy for CAC, without closing unrelated Customers questions.
+- Rechecked local dbt staging source and live raw-source metadata. Original `shorelane_raw.app_db__orders.order_date` retains timestamps; staging casts to date. Joined raw timestamps to eligible fact orders by order_id. Raw order IDs unique; no eligible orders missing timestamps.
+- Timestamp verification for the same Oct 2025–Sep 2026 window still finds two exact cross-channel ties: cust_024587 at 2025-11-20T00:00:00Z (d2c/subscription); cust_029216 at 2026-09-30T00:00:00Z (d2c/marketplace). Therefore the chosen timestamp rule does not yet determine their acquisition channel.
+- Distinct total new customers remains 4,718; unambiguous first-channel d2c acquisitions remain 2,428. Spend remains 1,598,744.59. The 658.4615 CAC excluding unresolved cases is diagnostic, not a final approved CAC; do not silently exclude ties.
+- Responder is NOT_CONFIDENT: permitted brief supplies neither secondary ordering nor higher-resolution source, and does not establish order_id chronology. Escalate that remaining atom to human. No arbitrary ID/channel priority adopted.
+- Updated Marketing definitions, retrieval routing and existing eval seeds together; simulation labels/draft status retained. AOV acceptance and distinct-count decision retained. No other domain files changed.
+- Evidence: `evals/runs/20261002-marketing/live/marketing-timestamp-cac.{sql,json}` plus timestamp schema probes. No new approved snapshots or 3/3 correctness claim. Remaining work: resolve exact-time ties, rerun final CAC/acquisition and reconcile dashboard; retain earlier Marketing clarification queue and untouched Subscriptions next. No commits, pushes or configuration changes.
+
+
+## Human deterministic tie assignment — 2026-10-02
+
+- User accepted deterministic random assignment for identical earliest purchase timestamps. Fixed implementation before evaluation: lowest lowercase SHA-256 hex over compact UTF-8 JSON array `["shorelane-cac-first-order-v1", canonical customer_id, order_id]`; order_id ascending is collision-only fallback. Timestamp remains primary; rank all-channel lifetime orders before period/channel filters. Preserve a tie-assigned flag. This closes the CAC tie-policy queue; it does not infer purchase chronology or resolve unrelated Customers attribution questions.
+- BigQuery MCP read-only rerun for 2025-10-01 through 2026-09-30: distinct total new customers 4,718; new d2c 2,429; spend $1,598,744.59; CAC $658.190444627. cust_024587 selects d2c order ord_0066997; cust_029216 selects marketplace order ord_0080637. Independent Python SHA-256 reproduction agrees with both BigQuery selections.
+- Compared with the existing captured dashboard: acquisition count 2,430 differs by one; rounded CAC tile 658 conceals the difference. Dashboard/dbt implementation has not been changed by this context task. AOV acceptance and distinct total-customer policy remain accepted.
+- Updated Marketing context, metrics and seeds; added dedicated timestamp-tie seed (15 Marketing seeds). Simulation test artifact labels and draft status retained. Evidence: `evals/runs/20261002-marketing/live/marketing-deterministic-cac.{sql,json}`. No newly blessed snapshots, no fresh independent off/on rerun claimed.
+- Remaining work: downstream dashboard/dbt adoption and numeric review of revised CAC, CAC zero-denominator behavior, and the existing unrelated Marketing clarification queue. Subscriptions remains next domain. No commits, pushes or global configuration changes.
+
+
+## Review publication authorization — 2026-10-02
+
+User requested committing the current Marketing additions to a new branch and sending them to GitHub for review. This supersedes the earlier no-commit/no-push restriction for this publication only. Simulation draft labels and remaining clarification queues are preserved. Local transcript, query results and captures remain gitignored. Repository validation passed with 70 documents and no schema errors; no dashboard/dbt implementation changes are included.

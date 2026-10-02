@@ -1,15 +1,27 @@
-# SIMULATION TEST ARTIFACT; table/lineage candidates are dbt-derived, not yet ratified.
+# SIMULATION TEST ARTIFACT — human review required.
 name: Marketing
-summary: GMV by channel, AOV, paid media, CAC, categories, promotions
+summary: Commerce GMV and consumer performance, paid-media spend and acquisition,
+  category and promotion reporting.
 status: draft
 owner: To be confirmed
-grain: To be confirmed by the domain owner.
+grain: 'Paid spend: platform-day; commerce: eligible order; category/discount: consumer
+  order line; acquisition: canonical customer.'
 tables:
   canonical: nodal-shorelane.shorelane.fct_marketing_spend
+  others:
+  - nodal-shorelane.shorelane.fct_orders
+  - nodal-shorelane.shorelane.fct_order_lines
+  - nodal-shorelane.shorelane.dim_products
+  - nodal-shorelane.shorelane.dim_customers
+  - nodal-shorelane.shorelane.fct_revenue
+  - nodal-shorelane.shorelane.stg_promotions
 dashboards:
 - name: Marketing
-  canonical_question: To be confirmed
+  canonical_question: How do GMV, consumer order value and acquisition cost vary over
+    the selected period, and how do categories and promotions contribute?
   url: https://shorelane-data.github.io/shorelane/marketing/
+  tool: plotly-static
+  owner: To be confirmed
 lineage:
 - source: dbt_core
   models:
@@ -18,3 +30,8 @@ lineage:
   - fct_orders
   - dim_products
   - dim_date
+  - dim_customers
+  - fct_revenue
+  - stg_ad_spend
+  - stg_promotions
+  - stg_products

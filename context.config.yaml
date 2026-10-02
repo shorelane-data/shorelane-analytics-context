@@ -42,6 +42,11 @@ domains:
       - fct_orders
       - dim_products
       - dim_date
+      - dim_customers
+      - fct_revenue
+      - stg_ad_spend
+      - stg_promotions
+      - stg_products
   subscriptions:
     lineage:
     - source: dbt_core

@@ -1,0 +1,18 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: Compare ad platform performance since launch.
+domain: marketing
+intent: Respect staggered ad-platform coverage; earlier absence is not zero performance.
+expected:
+  kind: sql_shape
+  must_include:
+  - Google/Meta coverage starts June 2019; TikTok January 2021.
+  - Use a common covered period for like-for-like comparison.
+  must_exclude:
+  - Treat precoverage absence as measured zero.
+  - Infer platform CAC from unallocated acquisitions.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_marketing_spend

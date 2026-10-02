@@ -1,0 +1,30 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: How should CAC assign a customer whose earliest purchases in two channels have identical
+  timestamps?
+domain: marketing
+intent: Select exactly one first order using the human-approved deterministic hash convention, after
+  earliest-timestamp ordering; preserve a convention-assigned flag.
+expected:
+  kind: sql_shape
+  must_include:
+  - For identical earliest purchase timestamps, select the order with the lowest uppercase hexadecimal
+    SHA-256 digest of the UTF-8 JSON array ["shorelane-cac-first-order-v1", canonical customer_id,
+    order_id], serialized compactly with no spaces (BigQuery TO_JSON_STRING). Use order_id ascending
+    only if digests collide. Freeze this versioned salt and encoding; never use RAND(), channel alphabetical
+    priority, or fractional credit. Flag timestamp-tied selections as assigned by convention, not
+    observed chronology.
+  - Partition by canonical customer; order by original purchase timestamp before hash; restrict period
+    and d2c only after selection.
+  must_exclude:
+  - RAND() or other per-run randomness.
+  - Alphabetical channel priority or splitting one customer across channels.
+  - Hash ranking before purchase timestamp.
+  - Claim the assigned first order is proven chronological.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_orders
+  - dim_customers
+  - fct_marketing_spend
