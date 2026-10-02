@@ -1,0 +1,23 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: What share of d2c orders came from new customers?
+domain: marketing
+intent: Clarify which orders constitute the numerator; customer count is not interchangeable
+  with order count.
+expected:
+  kind: sql_shape
+  must_include:
+  - Real-customer canonical d2c order denominator.
+  - Ask whether numerator is first-ever, first-date, or all newly acquired customer
+    orders.
+  must_exclude:
+  - Invent tie policy or substitute distinct new customers for new-customer orders.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_orders
+  - dim_customers
+ir:
+  metric: new_customer_order_share
+  time_window: selected_period

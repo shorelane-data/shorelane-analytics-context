@@ -1,2 +1,4 @@
-# SIMULATION TEST ARTIFACT; status/type interview pending.
+# SIMULATION TEST ARTIFACT — human review required.
+# Ad platforms, product categories and promotions are subject entities in entities/marketing-subjects.yaml.
+# No additional fact status enum was elicited.
 entities: []

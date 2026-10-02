@@ -1,0 +1,21 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: What is Shorelane gross margin by category?
+domain: marketing
+intent: D2c line cost supports margin; marketplace retail margin is not Shorelane
+  economics. Clarify rate aggregation.
+expected:
+  kind: sql_shape
+  must_include:
+  - Clarify d2c economic scope and rate denominator.
+  must_exclude:
+  - Treat stored marketplace gross_margin as approved economic margin.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_order_lines
+  - dim_products
+ir:
+  metric: gross_margin
+  time_window: selected_period

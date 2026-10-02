@@ -1,0 +1,38 @@
+# SIMULATION TEST ARTIFACT — human review required.
+# REVIEW: Resolve the open Marketing clarification queue before production use.
+entities:
+- name: ad_platform
+  description: 'Paid-media source: Google, Meta, TikTok. Distinct from commerce channels
+    d2c, marketplace and business_subscription.'
+  important: A repeated warehouse acquisition day total does not assign customers
+    to a platform.
+  status: draft
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_marketing_spend
+- name: product_category
+  description: 'Named categories: paper, writing, office_tech, furniture, breakroom,
+    storage. Later-introduced SKUs can change mix.'
+  important: Exclusivity constraints, recategorization and historical stability await
+    human review.
+  status: draft
+  lineage:
+  - source: dbt_core
+    models:
+    - dim_products
+    - fct_order_lines
+- name: promotion
+  description: 'Order-level promotion code; discounts occur on consumer lines. WELCOME10:
+    March 2021, 10%, d2c. SPRING5: April 2022, 5%, d2c/marketplace. BTB15: September
+    2024, 15%, d2c/marketplace.'
+  important: BTB15 means Back to Business, not business subscriptions. WELCOME10 does
+    not establish new-customer-only eligibility. Exact dates, stacking, limits and
+    code exceptions await review.
+  status: draft
+  lineage:
+  - source: dbt_core
+    models:
+    - stg_promotions
+    - fct_orders
+    - fct_order_lines

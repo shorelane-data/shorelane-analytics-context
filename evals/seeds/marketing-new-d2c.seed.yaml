@@ -1,0 +1,34 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: How many new d2c customers did we acquire?
+domain: marketing
+intent: For CAC first-time purchases, assign each real canonical customer to their earliest purchase
+  timestamp across all channels before restricting acquisition period and canonical d2c. Count customers
+  distinctly; do not use first-date order rows or platform-reported conversions. Identical earliest
+  timestamps use the fixed deterministic hash assignment in Marketing reference.
+expected:
+  kind: sql_shape
+  must_include:
+  - First-ever across all channels before period/channel restriction.
+  - Distinct canonical customers; direct normalized to d2c.
+  - Use original purchase timestamp; staging/fact order dates lose intra-day order.
+  - For identical earliest purchase timestamps, select the order with the lowest uppercase hexadecimal
+    SHA-256 digest of the UTF-8 JSON array ["shorelane-cac-first-order-v1", canonical customer_id,
+    order_id], serialized compactly with no spaces (BigQuery TO_JSON_STRING). Use order_id ascending
+    only if digests collide. Freeze this versioned salt and encoding; never use RAND(), channel alphabetical
+    priority, or fractional credit. Flag timestamp-tied selections as assigned by convention, not
+    observed chronology.
+  must_exclude:
+  - Count first-date order rows as customers without checking ties.
+  - Existing customers entering d2c count as new.
+  - Inclusive first-day d2c membership as a substitute for earliest timestamp attribution.
+  - Fresh random draws, alphabetical channel precedence, or fractional customers for timestamp ties.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_orders
+  - dim_customers
+ir:
+  metric: new_d2c_customers
+  time_window: selected_period

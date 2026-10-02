@@ -1,2 +1,328 @@
-# SIMULATION TEST ARTIFACT; metric interview pending.
-metrics: []
+# SIMULATION TEST ARTIFACT — human review required.
+# REVIEW: Remaining Marketing policies and production use require review.
+metrics:
+- name: gmv
+  definition: Gross order value from real customers across all three canonical channels; marketplace
+    is buyer retail spend, not Shorelane take.
+  status: draft
+  grain: Eligible order in selected order period
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_orders
+  parameters:
+  - name: period_start
+    note: Inclusive order date.
+  - name: period_end_exclusive
+    note: Exclusive order date.
+  caveats:
+  - Gross of refunds and already reflects consumer discounts.
+  - For undimensioned period GMV, fct_revenue measure gmv is an alternate route; never use it for
+    channel/customer dimensions.
+  expression:
+    measure: SUM(gross_amount)
+    mandatory_filters:
+    - field: order_date
+      op: '>='
+      value: <period_start>
+      reason: Use selected order period.
+    - field: order_date
+      op: <
+      value: <period_end_exclusive>
+      reason: Exclude outside period.
+    allowed_dimensions:
+    - channel
+- name: orders
+  definition: Real-customer consumer order count in canonical d2c and marketplace.
+  status: draft
+  grain: One eligible consumer order
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_orders
+  parameters:
+  - name: period_start
+    note: Inclusive order date.
+  - name: period_end_exclusive
+    note: Exclusive order date.
+  caveats:
+  - Headline GMV uses a wider all-channel population.
+  expression:
+    measure: COUNT(DISTINCT order_id)
+    mandatory_filters:
+    - field: order_date
+      op: '>='
+      value: <period_start>
+      reason: Use selected order period.
+    - field: order_date
+      op: <
+      value: <period_end_exclusive>
+      reason: Exclude outside period.
+    - field: channel
+      op: in
+      value:
+      - d2c
+      - marketplace
+      reason: Consumer scope excludes subscription orders.
+- name: average_order_value
+  definition: Total consumer GMV divided by total consumer order count in the same period.
+  status: draft
+  grain: Selected period over eligible consumer orders
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_orders
+  parameters:
+  - name: period_start
+    note: Inclusive order date.
+  - name: period_end_exclusive
+    note: Exclusive order date.
+  caveats:
+  - Ratio of sums, never unweighted average of monthly AOV.
+  - Gross of refunds; discounts already reflected, never subtract again.
+  - Consumer-channel scope and captured AOV reconciliation accepted by the human user; simulation
+    draft retained.
+  expression:
+    measure: SUM(gross_amount) / COUNT(DISTINCT order_id)
+    mandatory_filters:
+    - field: order_date
+      op: '>='
+      value: <period_start>
+      reason: Use selected order period.
+    - field: order_date
+      op: <
+      value: <period_end_exclusive>
+      reason: Exclude outside period.
+    - field: channel
+      op: in
+      value:
+      - d2c
+      - marketplace
+      reason: Consumer scope excludes subscription orders.
+- name: new_d2c_customers
+  definition: Distinct real canonical customers whose earliest purchase timestamp across all channels
+    falls in the selected period and whose first order is canonical d2c, including historical direct.
+    This is the first-time purchase denominator for CAC.
+  status: draft
+  grain: Canonical customer acquired in selected period
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_orders
+    - dim_customers
+  parameters:
+  - name: period_start
+    note: Inclusive date, fully elapsed calendar period.
+  - name: period_end_exclusive
+    note: Exclusive date.
+  caveats:
+  - Human selected earliest purchase timestamp for CAC acquisition attribution. Use original app_db__orders.order_date
+    linked by order_id to eligible fct_orders; staging casts away time. Do not replace timestamp
+    ordering with order ID ordering or first-date flags.
+  - Do not count existing marketplace/subscription customers making first d2c purchase as newly acquired.
+  - dbt currently counts first-date order rows for daily attribution; this does not prove distinct-customer
+    equivalence.
+  - For identical earliest purchase timestamps, select the order with the lowest uppercase hexadecimal
+    SHA-256 digest of the UTF-8 JSON array ["shorelane-cac-first-order-v1", canonical customer_id,
+    order_id], serialized compactly with no spaces (BigQuery TO_JSON_STRING). Use order_id ascending
+    only if digests collide. Freeze this versioned salt and encoding; never use RAND(), channel alphabetical
+    priority, or fractional credit. Flag timestamp-tied selections as assigned by convention, not
+    observed chronology.
+- name: new_customer_order_share
+  definition: 'Denominator is real-customer canonical d2c order count in the selected period. Order-level
+    numerator remains unconfirmed: first-ever orders, first-date orders, or all orders from newly
+    acquired customers.'
+  status: draft
+  grain: D2c orders within period
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_orders
+    - dim_customers
+  parameters:
+  - name: period
+    note: Explicit date bounds.
+  - name: numerator_policy
+    note: Human definition required before calculation.
+  caveats:
+  - Do not substitute customer count for an order count.
+  - Earliest-date ties remain on the existing Customers queue.
+- name: ad_spend
+  definition: Sum paid-media spend over platform-day rows in the selected period.
+  status: draft
+  grain: Platform-day
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_marketing_spend
+  parameters:
+  - name: period_start
+    note: Inclusive date, fully elapsed calendar period.
+  - name: period_end_exclusive
+    note: Exclusive date.
+  caveats:
+  - Google/Meta begin June 2019; TikTok begins January 2021. Precoverage absence is not measured
+    zero.
+  expression:
+    measure: SUM(spend_usd)
+    mandatory_filters:
+    - field: spend_date
+      op: '>='
+      value: <period_start>
+      reason: Use selected spend period.
+    - field: spend_date
+      op: <
+      value: <period_end_exclusive>
+      reason: Exclude outside spend period.
+    allowed_dimensions:
+    - platform
+- name: customer_acquisition_cost
+  definition: All-platform paid spend divided by distinct real canonical customers whose earliest
+    purchase timestamp across all channels falls in the selected period and whose first order is
+    canonical d2c.
+  status: draft
+  grain: Selected period; numerator platform-day, denominator canonical first-time d2c customer
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_marketing_spend
+    - fct_orders
+    - dim_customers
+  parameters:
+  - name: period_start
+    note: Inclusive date, fully elapsed calendar window.
+  - name: period_end_exclusive
+    note: Exclusive date.
+  caveats:
+  - Do not use platform-reported conversions.
+  - Platform-specific CAC unsupported without an allocation rule.
+  - Zero-denominator convention awaits owner review.
+  - Do not sum repeated daily customer totals across platforms.
+  - Aggregate spend and acquisitions independently before division; no row-level spend-to-order join.
+    Structured expression deferred while timestamp-based count equivalence and zero behavior remain
+    unresolved.
+  - Human selected earliest purchase timestamp for first-time acquisition. Determine first purchase
+    over all history before filtering period or channel. Raw app_db__orders.order_date retains purchase
+    time; join to eligible fct_orders by order_id.
+  - Repeated daily acquisition totals are a shortcut only after reconciliation to timestamp-based
+    distinct acquisitions. Date-only first-order flags do not implement the approved rule.
+  - For identical earliest purchase timestamps, select the order with the lowest uppercase hexadecimal
+    SHA-256 digest of the UTF-8 JSON array ["shorelane-cac-first-order-v1", canonical customer_id,
+    order_id], serialized compactly with no spaces (BigQuery TO_JSON_STRING). Use order_id ascending
+    only if digests collide. Freeze this versioned salt and encoding; never use RAND(), channel alphabetical
+    priority, or fractional credit. Flag timestamp-tied selections as assigned by convention, not
+    observed chronology.
+- name: category_gmv
+  definition: Sum real-customer consumer line_amount by category; includes d2c and marketplace retail,
+    excludes subscription orders with no lines.
+  status: draft
+  grain: Consumer order line
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_order_lines
+    - fct_orders
+    - dim_products
+  parameters:
+  - name: period_start
+    note: Inclusive order date.
+  - name: period_end_exclusive
+    note: Exclusive order date.
+  caveats:
+  - Marketplace line amount is full retail value, not commission.
+  expression:
+    measure: SUM(line_amount)
+    mandatory_filters:
+    - field: order_date
+      op: '>='
+      value: <period_start>
+      reason: Selected order period.
+    - field: order_date
+      op: <
+      value: <period_end_exclusive>
+      reason: Selected order period.
+    allowed_dimensions:
+    - category
+- name: category_mix
+  definition: 'To be confirmed: category GMV numerator is consumer line value; denominator across
+    all consumer GMV versus selected categories remains unresolved.'
+  status: draft
+  grain: Category within selected period
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_order_lines
+    - dim_products
+  parameters:
+  - name: denominator_scope
+    note: Human confirmation required.
+  caveats: []
+- name: promotion_orders
+  definition: Count distinct real-customer promotion-tagged consumer orders; do not count an order
+    once per line. Blank/unmatched code and validity-date exceptions remain unconfirmed.
+  status: draft
+  grain: Consumer order
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_orders
+    - stg_promotions
+  parameters:
+  - name: period
+    note: Actual-order-date convention for count awaits confirmation.
+  - name: promo_code
+    note: Specify code or confirmed tagged-order population.
+  caveats: []
+- name: discount_dollars
+  definition: Sum quantity * unit_price * discount_pct at line grain for relevant promotion-tagged
+    orders.
+  status: draft
+  grain: Consumer order line
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_order_lines
+    - fct_orders
+    - stg_promotions
+  parameters:
+  - name: period
+    note: Order-date contract for discount totals awaits confirmation.
+  - name: promo_code
+    note: Specify promotion or confirmed tag population.
+  caveats:
+  - Do not subtract discount dollars again from order GMV.
+  - Do not count orders at joined line grain.
+  - Verify physical discount_pct encoding before evaluating formula; do not assume 15 versus 0.15.
+- name: gross_margin
+  status: draft
+  definition: D2c line_amount minus quantity times unit_cost; marketplace retail line margin is not
+    established as Shorelane economic margin.
+  grain: D2c order line
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_order_lines
+    - dim_products
+  parameters:
+  - name: period
+    note: Explicit order date bounds.
+  caveats:
+  - Margin-rate aggregation remains unconfirmed.
+  - Do not interpret marketplace line margin as Shorelane economic margin.
+- name: promotion_gmv
+  status: draft
+  definition: Sum gross_amount once per real-customer promotion-tagged consumer order, using actual
+    order date.
+  grain: Consumer order
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_orders
+    - stg_promotions
+  parameters:
+  - name: period
+    note: Explicit actual order date bounds.
+  - name: promo_code
+    note: Promotion selection; unmatched/invalid-date handling awaits confirmation.
+  caveats:
+  - Descriptive tagged-order total, not causal lift.

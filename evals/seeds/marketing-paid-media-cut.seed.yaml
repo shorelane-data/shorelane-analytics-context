@@ -1,0 +1,25 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: Why did acquisition fall during the known paid-media cut while d2c orders
+  remained stronger?
+domain: marketing
+intent: In this synthetic fixture, separate new d2c acquisition from existing-customer
+  ordering and inspect spend over matched periods. A known seeded intervention does
+  not supply a general causal ROI estimator.
+expected:
+  kind: sql_shape
+  must_include:
+  - Separate new acquisition from total orders and existing-customer behavior.
+  - Compare spend over same period; label synthetic fixture intervention.
+  must_exclude:
+  - Equate acquisition loss with equivalent total-order loss.
+  - Claim general causal ROI or platform attribution.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_marketing_spend
+  - fct_orders
+ir:
+  metric: new_d2c_customers
+  time_window: selected_period

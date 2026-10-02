@@ -1,0 +1,22 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: What was Marketing revenue by channel?
+domain: marketing
+intent: Marketing revenue means gross order GMV, not recognized revenue or marketplace
+  take.
+expected:
+  kind: sql_shape
+  must_include:
+  - Real eligible orders and normalized commerce channel.
+  - gross_amount; marketplace full retail value.
+  must_exclude:
+  - Recognized revenue or net_amount as Marketing GMV.
+  - Subtract refunds or discounts again.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_orders
+ir:
+  metric: gmv
+  time_window: selected_period

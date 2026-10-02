@@ -1,0 +1,23 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: What is GMV by product category?
+domain: marketing
+intent: Use consumer line_amount, not all-channel order GMV or marketplace take.
+expected:
+  kind: sql_shape
+  must_include:
+  - Real d2c/marketplace consumer lines grouped by category.
+  - Subscription orders have no lines.
+  must_exclude:
+  - Assume category totals cover subscription GMV.
+  - Use marketplace commission for retail line value.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_order_lines
+  - fct_orders
+  - dim_products
+ir:
+  metric: category_gmv
+  time_window: selected_period

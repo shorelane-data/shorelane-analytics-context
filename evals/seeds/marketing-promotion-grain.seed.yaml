@@ -1,0 +1,25 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: What were promotion orders, GMV and discount dollars?
+domain: marketing
+intent: Separate order-level count/GMV from line-level discounts; aggregate before
+  joining to avoid multiplying order value.
+expected:
+  kind: sql_shape
+  must_include:
+  - Distinct real tagged orders and gross_amount once per order.
+  - Discount dollars sum quantity*unit_price*discount_pct from related lines.
+  - Clarify code exceptions and count/discount date scope.
+  must_exclude:
+  - Sum order gross_amount across duplicated joined lines.
+  - Call promotion totals incremental lift.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_orders
+  - fct_order_lines
+  - stg_promotions
+ir:
+  metric: promotion_orders
+  time_window: selected_period

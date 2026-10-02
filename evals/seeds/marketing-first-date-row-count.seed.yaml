@@ -1,0 +1,21 @@
+# SIMULATION TEST ARTIFACT — human review required; observed grain discrepancy.
+question: Why does Marketing new-customer count exceed distinct first purchasers?
+domain: marketing
+intent: First-date order flags can select more than one order per canonical customer.
+  Count distinct real canonical customers for total acquisition; do not change business
+  grain to match a dashboard. CAC channel attribution uses the human-selected earliest purchase timestamp; date flags cannot establish intra-day precedence.
+expected:
+  kind: sql_shape
+  must_include:
+  - Distinct canonical customer IDs whose all-channel first date falls inside period.
+  - Investigate multiple first-date orders; keep channel tie policy explicit.
+  must_exclude:
+  - COUNT(*) of is_first_order rows as distinct customers.
+  - Force a unique acquisition channel without an agreed tie rule.
+provenance: correction
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_orders
+  - dim_customers
