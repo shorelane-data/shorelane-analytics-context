@@ -1,15 +1,24 @@
-# SIMULATION TEST ARTIFACT; table/lineage candidates are dbt-derived, not yet ratified.
+# SIMULATION TEST ARTIFACT — human review required.
 name: Subscriptions
-summary: 'FP&A: subscribers, ACV, starts, renewals, churn, plans'
+summary: FP&A subscription book, new business, term renewal and churn, plan generations
+  and effective pricing.
 status: draft
 owner: To be confirmed
-grain: To be confirmed by the domain owner.
+grain: Canonical customer stock at date; one real-customer subscription term for flows;
+  seats for capacity.
 tables:
   canonical: nodal-shorelane.shorelane.fct_subscriptions
+  others:
+  - nodal-shorelane.shorelane.dim_plans
+  - nodal-shorelane.shorelane.stg_plan_prices
+  - nodal-shorelane.shorelane.dim_customers
 dashboards:
 - name: Subscriptions
-  canonical_question: To be confirmed
+  canonical_question: How large is the active subscription book, how much new business
+    is starting, and how well are expiring terms renewing?
   url: https://shorelane-data.github.io/shorelane/subscriptions/
+  tool: plotly-static
+  owner: To be confirmed
 lineage:
 - source: dbt_core
   models:
@@ -17,3 +26,9 @@ lineage:
   - dim_plans
   - stg_plan_prices
   - dim_date
+  - dim_customers
+  - stg_subscriptions
+  - stg_plans
+  - stg_app_customers
+  - int_customer_identity
+  - fct_revenue

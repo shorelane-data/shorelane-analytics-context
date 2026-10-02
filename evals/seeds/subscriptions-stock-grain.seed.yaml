@@ -1,0 +1,20 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: How many subscribers, seats and ACV are active at month end?
+domain: subscriptions
+intent: Use inclusive term dates, customer dedup for subscribers and sum term seats/locked
+  ACV.
+expected:
+  kind: sql_shape
+  must_include:
+  - Real-customer terms containing explicit as-of date.
+  - Distinct customers for subscribers; sums for seats/ACV.
+  - Investigate overlapping terms as data violations.
+  must_exclude:
+  - Status/current-plan filtering.
+  - Reprice from current list prices.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_subscriptions

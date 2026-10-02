@@ -174,3 +174,47 @@ This supersedes the earlier Marketing authentication deferral. User reported ren
 ## Review publication authorization — 2026-10-02
 
 User requested committing the current Marketing additions to a new branch and sending them to GitHub for review. This supersedes the earlier no-commit/no-push restriction for this publication only. Simulation draft labels and remaining clarification queues are preserved. Local transcript, query results and captures remain gitignored. Repository validation passed with 70 documents and no schema errors; no dashboard/dbt implementation changes are included.
+
+
+## Subscriptions full interview — 2026-10-02 (in progress)
+
+User confirmed in-place continuation at `/Users/ronpotok/codex-demo`, with Executive Revenue, Customers and Marketing rounds complete and their outstanding queues preserved. Current main includes merged Marketing PR #7. No commit/push/global configuration changes authorized for this round.
+
+### Sources
+- dbt: rechecked `/Users/ronpotok/nodal_code/shorelane-dbt`, present, remote `https://github.com/shorelane-data/shorelane-dbt.git`. Source-fallback extraction found 30 documented models, 23 with grain evidence; exposures unavailable to extractor. Prior durable-remote confirmation queue remains; no dbt code/build/parse changes.
+- Warehouse: long-lived MCP still had stale reauthentication state; fresh instance of the same BigQuery toolbox MCP/project succeeded. Schema, grain, eligibility and renewal-link checks executed read-only. No new authentication or configuration changes required.
+- Query history: mined latest 5,000 successful SELECT jobs within requested 90 days, row cap reached. 794 clustered shapes, zero admitted clusters and no BI-service pool under current classification. Prior service-identity question preserved; zero admission does not establish absent BI usage.
+- Browser: existing local Chrome MCP opened the named Subscriptions dashboard. Visible Plotly embedded arrays captured at tier 1.5 and DOM tiles at tier 2; Last 12 Months resolved to 2025-10-01 through 2026-09-30, stock date 2026-09-30, dashboard freshness 2026-10-02. Raw capture and normalized capture under `evals/captures/20261002-subscriptions/`. Direct browser file-save was unavailable under its declared roots; tool result saved through workspace file tooling, no browser config changed.
+
+### Interview capture
+Eleven responder questions cover domain, canonical term fact, stock/flow metrics, new seat pricing, renewal/churn, lifecycle and plan entities, as-of grandfathering, pricing, timing, source routing and read-back. Only isolated `subscriptions_responder` read the configured brief. Answers and escalations appended to the existing local simulation transcript. Twelve metric definitions and twelve new seeds plus subject/status entities and dashboard playbook are simulation drafts. Earlier domain files/seeds are preserved.
+
+### Open human clarifications
+1. Named accountable Subscriptions owner (FP&A audience does not establish owner).
+2. Zero-denominator convention for subscription ratios.
+3. Observed leap-day date exception: sub_0004780 ends 2024-02-27 and linked sub_0007097 starts 2024-02-29 for cust_002694. Honor stored dates with flagged gap versus upstream correction. No date mutation authorized or performed.
+4. Historical reports based on currently loaded outcomes versus a historical knowledge-as-of contract; the latter is not supported by established history.
+Other limitations retained: exact tier mapping semantic review; previous dbt durability/service-identity queues; no per-ticket causal attribution/general causal estimator for the documented synthetic billing incident.
+
+### Live checks
+All 15,321 term IDs unique; no null key/date fields, overlapping terms, multiple renewal successors, ineligible customers or ACV formula discrepancies found. One next-day renewal boundary exception above. These are observed properties, not production contracts.
+Four question cases dispatched concurrently to isolated context-off/on agents: active book, new subscriptions/seat pricing, renewal/churn and grandfathered share. Neither agent can read brief/dashboard/other outputs; off has warehouse evidence only. Results and human numerical review pending. No confirmed snapshots or blessed SQL minted.
+
+
+### Subscriptions live verification outcome — 2026-10-02
+- Independent context-off/on agents completed all four cases with identical values: active subscribers 3,647; ACV 35,572,445.28; new subscriptions 1,151; new ACV/seat 236.920793813; ending renewed terms 2,498; churned 550; renewal rate 81.9553805774%; churned ACV 3,823,645.44; grandfathered 960/3,647 = 26.3230052098%. No context-on improvement claim. Subagent MCP instances worked directly; interviewer used fresh same-config MCP as recorded above.
+- Dashboard: three exact comparisons, three agreements at displayed precision; grandfathered share has only indirect generation-count support (no direct visible tile). Human acceptance/tolerance remains pending, so zero of four cases are human-reviewed and no snapshots/verified SQL blessed.
+- Monthly renewal bars total 2,496; separate warehouse read finds 2,496 renewal starts versus 2,498 renewed ending terms. Ending cohort has zero undecided terms or status/link conflicts. Cohort difference is evidence-backed, but the responder cannot confirm the chart's intended anchor; human question remains pending. Added a clarification seed without changing the governed ending-term rate.
+- Responder numeric reference is pinned to December2025 and cannot approve the current October2026 snapshot. Current numerical and chart-anchor escalations appended to existing transcript. Earlier ownership, zero-denominator, leap-day gap and historical-knowledge questions remain pending; no human replies received as of this update.
+- Round has 12 metric drafts and 13 new seed drafts. Final report: `evals/captures/20261002-subscriptions/reconciliation.md`; resume state: `evals/runs/20261002-subscriptions/verification-plan.json`; independent traces in `off/` and `on/`. Interview capture and live execution complete; human review/deferred clarification remain. Do not label fully verified.
+- Remaining work: resolve the six human clarification groups, reconcile monthly renewal presentation, obtain direct grandfathered benchmark if desired, then rerun only affected checks. Prior Executive Revenue, Customers and Marketing queues remain untouched. No new domain automatically selected. No commits, pushes or global configuration changes.
+
+
+### Subscriptions human acceptance — 2026-10-02
+- User accepted the compared values for October2025–September2026: active subscribers and book ACV, new subscriptions and new ACV/seat, renewal rate and churned ACV, with exact versus displayed precision as shown. Three of four verification cases are now human-reviewed; grandfathered share remains pending by explicit request. Acceptance does not upgrade all simulation definitions to production-confirmed status.
+- User selected monthly renewal starts for Renewals bars, while renewal rate uses ending-term decisions. Context, a separate renewal_starts metric, existing chart-anchor seed and capture playbook now state both cohorts explicitly. In the tested window, 2,496 renewal starts and 2,498 renewed endings are intentionally different counts; no data correction is implied.
+- Subscriptions now has13 metric drafts and13 new seed drafts. Grandfathered numeric review, owner, zero denominators, leap-day gap and historical-knowledge policy remain pending; unrelated prior queues preserved. Simulation labels/draft status retained. No warehouse, dbt, dashboard, commit, push or configuration changes.
+
+
+### Subscriptions review publication authorization — 2026-10-02
+User requested committing the current Subscriptions additions on a new branch and sending them to GitHub for review. This supersedes the prior no-commit/no-push instruction for this publication only. Simulation draft labels and outstanding queues are retained. Local transcript, captures and raw query artifacts remain gitignored. Validation passed for 84 documents with zero errors.

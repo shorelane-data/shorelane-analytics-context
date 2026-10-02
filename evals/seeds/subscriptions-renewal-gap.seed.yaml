@@ -1,0 +1,20 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: Should a linked renewal force continuous service when stored term dates
+  show a gap?
+domain: subscriptions
+intent: Use observed inclusive term dates for stock; flag source discrepancy rather
+  than inventing corrected dates. Renewal outcome linkage and stock eligibility are
+  distinct.
+expected:
+  kind: sql_shape
+  must_include:
+  - Flag date invariant violation; seek owner resolution.
+  - Keep successor linkage distinct from date containment.
+  must_exclude:
+  - Silently extend term_end_date or shift successor start.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_subscriptions

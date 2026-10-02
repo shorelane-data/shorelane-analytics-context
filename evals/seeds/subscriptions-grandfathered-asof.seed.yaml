@@ -1,0 +1,24 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: What fraction of active subscribers were grandfathered at a historical date?
+domain: subscriptions
+intent: Retirement as of requested date defines grandfathering, not current-generation
+  flag.
+expected:
+  kind: sql_shape
+  must_include:
+  - Distinct active real customers; inclusive term dates.
+  - Join plan retirement date and use retired_date <= as_of_date.
+  - Divide by all active distinct real customers.
+  must_exclude:
+  - Hard-code generation != 3 for every as-of date.
+  - Exclude retired plans from active base.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_subscriptions
+  - dim_plans
+ir:
+  metric: grandfathered_share
+  time_window: selected_period

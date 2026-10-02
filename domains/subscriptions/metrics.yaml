@@ -1,2 +1,358 @@
-# SIMULATION TEST ARTIFACT; metric interview pending.
-metrics: []
+# SIMULATION TEST ARTIFACT — human review required before production use.
+metrics:
+- name: active_subscribers
+  status: draft
+  definition: Distinct real canonical customers with a term containing as_of_date
+    inclusively.
+  grain: Canonical customer at date
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_subscriptions
+  parameters:
+  - name: as_of_date
+    note: Explicit date; compare dates to dates.
+  caveats:
+  - Do not filter status = active or plan is_current.
+  - Documented consecutive terms do not overlap; investigate violations before summing
+    seats or ACV.
+  expression:
+    measure: COUNT(DISTINCT customer_id)
+    mandatory_filters:
+    - field: term_start_date
+      op: <=
+      value: <as_of_date>
+      reason: Term has begun.
+    - field: term_end_date
+      op: '>='
+      value: <as_of_date>
+      reason: Inclusive last service date.
+    allowed_dimensions:
+    - plan_generation
+    - plan_name
+    - tier
+    - segment
+- name: acv_under_contract
+  status: draft
+  definition: Sum locked-in term ACV for real-customer terms containing as_of_date
+    inclusively.
+  grain: Active term at date
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_subscriptions
+  parameters:
+  - name: as_of_date
+    note: Explicit date; compare dates to dates.
+  caveats:
+  - Do not filter status = active or plan is_current.
+  - Documented consecutive terms do not overlap; investigate violations before summing
+    seats or ACV.
+  expression:
+    measure: SUM(acv)
+    mandatory_filters:
+    - field: term_start_date
+      op: <=
+      value: <as_of_date>
+      reason: Term has begun.
+    - field: term_end_date
+      op: '>='
+      value: <as_of_date>
+      reason: Inclusive last service date.
+    allowed_dimensions:
+    - plan_generation
+    - plan_name
+    - tier
+    - segment
+- name: active_seats
+  status: draft
+  definition: Sum seats for real-customer terms containing as_of_date inclusively.
+  grain: Active term at date
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_subscriptions
+  parameters:
+  - name: as_of_date
+    note: Explicit date; compare dates to dates.
+  caveats:
+  - Do not filter status = active or plan is_current.
+  - Documented consecutive terms do not overlap; investigate violations before summing
+    seats or ACV.
+  expression:
+    measure: SUM(seats)
+    mandatory_filters:
+    - field: term_start_date
+      op: <=
+      value: <as_of_date>
+      reason: Term has begun.
+    - field: term_end_date
+      op: '>='
+      value: <as_of_date>
+      reason: Inclusive last service date.
+    allowed_dimensions:
+    - plan_generation
+    - plan_name
+    - tier
+    - segment
+- name: new_subscriptions
+  status: draft
+  definition: Count first real-customer terms starting in selected period.
+  grain: First subscription term
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_subscriptions
+  parameters:
+  - name: period_start
+    note: Inclusive term start date.
+  - name: period_end_exclusive
+    note: Exclusive end date.
+  caveats:
+  - Exclude renewal terms.
+  - A term starting on final included day counts in full.
+  - For ratios, denominator-zero behavior pending human decision.
+  expression:
+    measure: COUNT(DISTINCT subscription_id)
+    mandatory_filters:
+    - field: term_start_date
+      op: '>='
+      value: <period_start>
+      reason: Start-date cohort.
+    - field: term_start_date
+      op: <
+      value: <period_end_exclusive>
+      reason: Selected window.
+    - field: is_first_term
+      op: '='
+      value: true
+      reason: Exclude renewal starts.
+    allowed_dimensions:
+    - plan_generation
+    - plan_name
+    - segment
+- name: new_acv
+  status: draft
+  definition: Sum locked ACV of first real-customer terms starting in selected period.
+  grain: First subscription term
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_subscriptions
+  parameters:
+  - name: period_start
+    note: Inclusive term start date.
+  - name: period_end_exclusive
+    note: Exclusive end date.
+  caveats:
+  - Exclude renewal terms.
+  - A term starting on final included day counts in full.
+  - For ratios, denominator-zero behavior pending human decision.
+  expression:
+    measure: SUM(acv)
+    mandatory_filters:
+    - field: term_start_date
+      op: '>='
+      value: <period_start>
+      reason: Start-date cohort.
+    - field: term_start_date
+      op: <
+      value: <period_end_exclusive>
+      reason: Selected window.
+    - field: is_first_term
+      op: '='
+      value: true
+      reason: Exclude renewal starts.
+    allowed_dimensions:
+    - plan_generation
+    - plan_name
+    - segment
+- name: new_acv_per_seat
+  status: draft
+  definition: Seat-weighted ACV of first real-customer terms starting in selected
+    period.
+  grain: First subscription term
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_subscriptions
+  parameters:
+  - name: period_start
+    note: Inclusive term start date.
+  - name: period_end_exclusive
+    note: Exclusive end date.
+  caveats:
+  - Exclude renewal terms.
+  - A term starting on final included day counts in full.
+  - For ratios, denominator-zero behavior pending human decision.
+  expression:
+    measure: SUM(acv) / SUM(seats)
+    mandatory_filters:
+    - field: term_start_date
+      op: '>='
+      value: <period_start>
+      reason: Start-date cohort.
+    - field: term_start_date
+      op: <
+      value: <period_end_exclusive>
+      reason: Selected window.
+    - field: is_first_term
+      op: '='
+      value: true
+      reason: Exclude renewal starts.
+    allowed_dimensions:
+    - plan_generation
+    - plan_name
+    - segment
+- name: renewal_starts
+  status: draft
+  definition: Count real-customer renewal terms starting in the selected period. Monthly
+    Renewals bars use the renewal term start month; this differs from renewed ending
+    terms used by renewal rate.
+  grain: Renewal term starting in period
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_subscriptions
+  parameters:
+  - name: period_start
+    note: Inclusive renewal term start date.
+  - name: period_end_exclusive
+    note: Exclusive renewal term start date.
+  caveats:
+  - Human selected monthly renewal starts for the Renewals bars.
+  - Count successor renewal terms, not first terms or ending predecessors.
+  - Do not substitute renewal starts for renewed ending terms in renewal-rate calculation.
+  expression:
+    measure: COUNT(DISTINCT subscription_id)
+    mandatory_filters:
+    - field: term_start_date
+      op: '>='
+      value: <period_start>
+      reason: Select renewal-start cohort.
+    - field: term_start_date
+      op: <
+      value: <period_end_exclusive>
+      reason: Selected window.
+    - field: is_first_term
+      op: '='
+      value: false
+      reason: Exclude first terms; count renewal terms.
+    allowed_dimensions:
+    - plan_generation
+    - plan_name
+    - segment
+- name: renewed_terms
+  status: draft
+  definition: Count decided renewed real-customer terms ending in selected period;
+    successor link identifies predecessor renewal.
+  grain: Decided subscription term ending in period
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_subscriptions
+  parameters:
+  - name: period_start
+    note: Inclusive ending-term end date.
+  - name: period_end_exclusive
+    note: Exclusive ending-term end date.
+  caveats:
+  - Exclude active undecided terms.
+  - Renewal successor start need not fall in report period.
+  - Use loaded-snapshot outcomes; historical knowledge-as-of reconstruction not established.
+  - Zero-denominator convention pending human decision.
+  - Monthly Renewals bars count renewal_starts by term_start_date; this metric uses
+    predecessor term_end_date. Boundary differences are expected.
+- name: churned_terms
+  status: draft
+  definition: Count decided churned real-customer terms ending in selected period.
+  grain: Decided subscription term ending in period
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_subscriptions
+  parameters:
+  - name: period_start
+    note: Inclusive ending-term end date.
+  - name: period_end_exclusive
+    note: Exclusive ending-term end date.
+  caveats:
+  - Exclude active undecided terms.
+  - Renewal successor start need not fall in report period.
+  - Use loaded-snapshot outcomes; historical knowledge-as-of reconstruction not established.
+  - Zero-denominator convention pending human decision.
+- name: acv_churned
+  status: draft
+  definition: Sum locked ACV of churned real-customer terms ending in selected period.
+  grain: Decided subscription term ending in period
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_subscriptions
+  parameters:
+  - name: period_start
+    note: Inclusive ending-term end date.
+  - name: period_end_exclusive
+    note: Exclusive ending-term end date.
+  caveats:
+  - Exclude active undecided terms.
+  - Renewal successor start need not fall in report period.
+  - Use loaded-snapshot outcomes; historical knowledge-as-of reconstruction not established.
+  - Zero-denominator convention pending human decision.
+- name: renewal_rate
+  status: draft
+  definition: Renewed terms divided by renewed plus churned terms ending in selected
+    period.
+  grain: Decided subscription term ending in period
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_subscriptions
+  parameters:
+  - name: period_start
+    note: Inclusive ending-term end date.
+  - name: period_end_exclusive
+    note: Exclusive ending-term end date.
+  caveats:
+  - Exclude active undecided terms.
+  - Renewal successor start need not fall in report period.
+  - Use loaded-snapshot outcomes; historical knowledge-as-of reconstruction not established.
+  - Zero-denominator convention pending human decision.
+  - Monthly Renewals bars count renewal_starts by term_start_date; this metric uses
+    predecessor term_end_date. Boundary differences are expected.
+- name: churn_rate
+  status: draft
+  definition: Churned terms divided by renewed plus churned terms ending in selected
+    period; complement of renewal rate.
+  grain: Decided subscription term ending in period
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_subscriptions
+  parameters:
+  - name: period_start
+    note: Inclusive ending-term end date.
+  - name: period_end_exclusive
+    note: Exclusive ending-term end date.
+  caveats:
+  - Exclude active undecided terms.
+  - Renewal successor start need not fall in report period.
+  - Use loaded-snapshot outcomes; historical knowledge-as-of reconstruction not established.
+  - Zero-denominator convention pending human decision.
+- name: grandfathered_share
+  status: draft
+  definition: Distinct active real customers on plans retired on or before as_of_date
+    divided by all distinct active real customers at that date.
+  grain: Canonical active customer at date
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_subscriptions
+    - dim_plans
+  parameters:
+  - name: as_of_date
+    note: Inclusive term containment and retired_date <= as_of_date.
+  caveats:
+  - Do not hard-code plan_generation != 3 across historical or future dates.
+  - Period start does not affect a stock measure.
+  - Zero denominator convention pending.

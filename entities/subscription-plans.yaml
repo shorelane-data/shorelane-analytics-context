@@ -1,0 +1,16 @@
+# SIMULATION TEST ARTIFACT — human review required.
+entities:
+- name: subscription_plan
+  description: Annual seat-based plan carried on each subscription term; distinct
+    from plan generation and tier.
+  important: 'Generation 1: starter_v1/pro_v1; generation 2: team_v2/office_v2/enterprise_v2;
+    generation 3: essentials/growth/enterprise. is_current describes sale eligibility,
+    not active subscriber eligibility. Tier mapping requires source evidence and owner
+    review.'
+  status: draft
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_subscriptions
+    - dim_plans
+    - stg_plan_prices

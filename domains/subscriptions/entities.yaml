@@ -1,2 +1,12 @@
-# SIMULATION TEST ARTIFACT; status/type interview pending.
-entities: []
+# SIMULATION TEST ARTIFACT — human review required.
+entities:
+- name: subscription_term_outcome
+  description: Stored term outcome differs from date-derived active-subscriber eligibility.
+  important: 'renewed: successor link exists; churned: not renewed at term end; active:
+    undecided in loaded snapshot. Renewal/churn rates exclude undecided terms; stock
+    ignores stored status.'
+  status: draft
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_subscriptions

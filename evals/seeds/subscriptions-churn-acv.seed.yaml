@@ -1,0 +1,21 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: How much ACV churned last quarter?
+domain: subscriptions
+intent: Sum locked ACV of decided churned ending terms, not customer disappearance
+  or negative revenue.
+expected:
+  kind: sql_shape
+  must_include:
+  - Churned terms with term_end_date in explicit previous full calendar quarter.
+  must_exclude:
+  - Current status active filter.
+  - Treat lost ACV as recognized-revenue refund.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_subscriptions
+ir:
+  metric: acv_churned
+  time_window: selected_period

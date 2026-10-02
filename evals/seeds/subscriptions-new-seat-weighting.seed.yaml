@@ -1,0 +1,21 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: What is ACV per seat on new subscriptions?
+domain: subscriptions
+intent: Ratio of total first-term ACV to total first-term seats by start-date cohort.
+expected:
+  kind: sql_shape
+  must_include:
+  - SUM(acv)/SUM(seats) over first terms starting in explicit period.
+  - Final-day starts count in full.
+  must_exclude:
+  - Average per-term or per-customer ratios.
+  - Include renewal terms or use end-date cohort.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_subscriptions
+ir:
+  metric: new_acv_per_seat
+  time_window: selected_period
