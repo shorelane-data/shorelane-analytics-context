@@ -16,7 +16,7 @@ _Simulation answer captured; human review pending._ <!-- status: draft -->
 
 ## Current customers
 
-Distinct canonical app_db_customer_id values with at least one order in the trailing twelve full calendar months, at month grain. Include only account_type = customer, excluding test/internal and never-ordered profiles; deduplicate across source identities and channels. The customer dashboard omits the test/internal exclusion; governed marts are authoritative.
+Distinct canonical app_db_customer_id values with at least one order in the trailing twelve full calendar months, at month grain. Include only account_type = customer, excluding test/internal and never-ordered profiles; deduplicate across source identities and channels. The historical customer dashboard omitted test/internal exclusions; the repaired dashboard now reconciles for the tested customer totals. Governed marts remain authoritative; verify filters on other surfaces.
 
 _Simulation answer captured; human review pending._ <!-- status: draft -->
 

@@ -1,0 +1,27 @@
+# SIMULATION TEST ARTIFACT — human review required; historical defect regression.
+question: If a customer dashboard again includes test/internal accounts, how should
+  its count be reconciled?
+domain: customers
+intent: Regression scenario based on the historical dashboard defect, now repaired
+  for tested customer totals. Preserve real-customer eligibility, align windows and
+  canonical grain, and investigate any population difference; do not assume the repaired
+  dashboard still omits hygiene.
+expected:
+  kind: sql_shape
+  must_include:
+  - account_type customer; governed marts; aligned windows.
+  must_exclude:
+  - Accept unfiltered dashboard population as authoritative.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - dim_customers
+  - fct_orders
+  - int_customer_identity
+  - fct_identity_resolution_quality
+  - dim_date
+  - fct_subscriptions
+  - stg_app_customers
+  - stg_orders

@@ -1,0 +1,23 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: How many active customers ordered last quarter?
+domain: customers
+intent: Active means distinct real canonical customers ordering within the selected
+  period, not the trailing-twelve-month current population. Channel slices overlap.
+ir:
+  metric: active_customers
+  time_window: last_quarter
+expected:
+  kind: sql_shape
+  must_include:
+  - Distinct canonical customer IDs from eligible orders within explicit full-quarter
+    bounds.
+  must_exclude:
+  - Use current-customer rolling snapshot.
+  - Sum channel counts for overall total.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - dim_customers
+  - fct_orders

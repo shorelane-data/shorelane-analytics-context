@@ -1,2 +1,296 @@
-# SIMULATION TEST ARTIFACT; metric interview pending.
-metrics: []
+# SIMULATION TEST ARTIFACT — human review required.
+# REVIEW: Open populations, dimensions and attribution rules require the human owner.
+metrics:
+- name: current_customers
+  definition: Distinct real canonical customers with orders in the twelve complete
+    calendar months ending with the reporting month. Channel counts overlap; deduplicate
+    the overall total.
+  status: draft
+  grain: Canonical customer at reporting month
+  lineage:
+  - source: dbt_core
+    models:
+    - dim_customers
+    - fct_orders
+  parameters:
+  - name: reporting_month
+    note: A fully elapsed calendar month; include that month and preceding eleven
+      months.
+  caveats:
+  - Do not use a rolling 365-day or partial-current-month window.
+  - Segment slicing awaits owner confirmation.
+  expression:
+    measure: COUNT(DISTINCT fct_orders.customer_id)
+    mandatory_filters:
+    - &id001
+      field: dim_customers.account_type
+      op: '='
+      value: customer
+      reason: Exclude test/internal accounts; fct_orders already applies this eligibility.
+    - field: fct_orders.order_date
+      op: '>='
+      value: <reporting_month_start> - 11 calendar months
+      reason: Start of twelve-month window.
+    - field: fct_orders.order_date
+      op: <
+      value: <reporting_month_start> + 1 calendar month
+      reason: Include complete reporting month only.
+    allowed_dimensions:
+    - fct_orders.channel
+- name: active_customers
+  definition: Distinct real canonical customers with at least one order inside the
+    selected period.
+  status: draft
+  grain: Canonical customer within selected period
+  lineage:
+  - source: dbt_core
+    models:
+    - dim_customers
+    - fct_orders
+  parameters:
+  - name: period_start
+    note: Inclusive explicit date; use full elapsed calendar periods.
+  - name: period_end_exclusive
+    note: Exclusive boundary after the selected period.
+  caveats:
+  - Do not substitute current-customer snapshot.
+  - Channel totals overlap. Segment slicing awaits owner confirmation.
+  expression:
+    measure: COUNT(DISTINCT fct_orders.customer_id)
+    mandatory_filters:
+    - *id001
+    - field: fct_orders.order_date
+      op: '>='
+      value: <period_start>
+      reason: Include selected period only.
+    - field: fct_orders.order_date
+      op: <
+      value: <period_end_exclusive>
+      reason: Exclude orders outside selected period.
+    allowed_dimensions:
+    - fct_orders.channel
+- name: new_customers
+  definition: Distinct real canonical customers whose first-ever order across all
+    channels falls in the selected period. Attribute by canonical first-ever order
+    channel, not profile acquisition_channel.
+  status: draft
+  grain: Canonical customer acquired in selected period
+  lineage:
+  - source: dbt_core
+    models:
+    - dim_customers
+    - fct_orders
+  parameters:
+  - name: period_start
+    note: Inclusive date.
+  - name: period_end_exclusive
+    note: Exclusive date.
+  caveats:
+  - Normalize direct to d2c.
+  - Earliest-date ties across channels lack a confirmed tie-breaker; clarify channel
+    attribution rather than inventing one.
+  expression:
+    measure: COUNT(DISTINCT dim_customers.app_db_customer_id)
+    mandatory_filters:
+    - field: dim_customers.account_type
+      op: '='
+      value: customer
+      reason: Exclude test/internal.
+    - field: dim_customers.first_order_date
+      op: '>='
+      value: <period_start>
+      reason: First-ever order occurs inside acquisition period.
+    - field: dim_customers.first_order_date
+      op: <
+      value: <period_end_exclusive>
+      reason: Exclude acquisitions outside period.
+- name: current_subscribers
+  definition: Distinct real canonical customers with a subscription term covering
+    the reporting month’s last day, both endpoints inclusive.
+  status: draft
+  grain: Canonical customer at reporting month end
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_subscriptions
+    - dim_customers
+  parameters:
+  - name: as_of_date
+    note: Reporting month’s last day; compare dates to dates.
+  caveats:
+  - Count customers, not terms or seats.
+  - Do not filter status, plan is_current or Stripe is_active.
+  - Do not merge with current-customer order eligibility if memberships disagree;
+    override policy awaits review.
+  expression:
+    measure: COUNT(DISTINCT fct_subscriptions.customer_id)
+    mandatory_filters:
+    - field: term_start_date
+      op: <=
+      value: <as_of_date>
+      reason: Term has begun.
+    - field: term_end_date
+      op: '>='
+      value: <as_of_date>
+      reason: Final term day remains eligible.
+    - field: dim_customers.account_type
+      op: '='
+      value: customer
+      reason: Exclude test/internal.
+- name: customers_by_channel
+  definition: Distinct eligible canonical customers within each canonical channel
+    for the explicitly selected lifecycle metric and window. Customers may belong
+    to several channels; deduplicate total.
+  status: draft
+  grain: Canonical customer by canonical channel within chosen metric window
+  parameters:
+  - name: base_metric
+    note: Specify current or active; acquisition uses new_customers_by_channel.
+  - name: window
+    note: Use selected base metric’s period definition.
+  caveats:
+  - Do not sum channel counts for distinct total.
+  - Do not treat segment as channel.
+  lineage:
+  - source: dbt_core
+    models:
+    - dim_customers
+    - fct_orders
+- name: new_customers_by_channel
+  definition: Distinct real canonical customers whose first-ever order across all
+    channels falls in the selected period. Attribute by canonical first-ever order
+    channel, not profile acquisition_channel.
+  status: draft
+  grain: Canonical customer acquired in selected period
+  lineage:
+  - source: dbt_core
+    models:
+    - dim_customers
+    - fct_orders
+  parameters:
+  - name: period_start
+    note: Inclusive date.
+  - name: period_end_exclusive
+    note: Exclusive date.
+  caveats:
+  - Normalize direct to d2c.
+  - Earliest-date ties across channels lack a confirmed tie-breaker; clarify channel
+    attribution rather than inventing one.
+  - Structured channel expression deferred until earliest-date tie policy is resolved.
+- name: multi_channel_customers
+  definition: Distinct real canonical customers ordering in at least two canonical
+    channels within the selected period; normalize direct to d2c first.
+  status: draft
+  grain: Canonical customer within selected period
+  parameters:
+  - name: period_start
+    note: Inclusive date.
+  - name: period_end_exclusive
+    note: Exclusive date.
+  caveats:
+  - Not a slice of the current-customer snapshot; all-time multi-channel may exceed
+    current.
+  - Exact pairwise combination exclusivity awaits owner review.
+  - Per-customer distinct-channel threshold requires grouped eligibility; retained
+    in prose/query form rather than flattened into this repository’s ACF 0.1 filters.
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_orders
+    - dim_customers
+- name: channel_combinations
+  definition: 'To be confirmed by domain owner: pairwise bucket inclusion of all-three
+    customers is unresolved.'
+  status: draft
+  lineage:
+  - source: dbt_core
+    models:
+    - fct_orders
+  parameters:
+  - name: period
+    note: Selected-period channel activity.
+  - name: bucket_policy
+    note: Inclusive pairs versus exact combinations requires clarification.
+- name: observed_source_ids
+  definition: Observed source-native aliases, not canonical customers. Exact source-system,
+    date and account populations await owner confirmation.
+  status: draft
+  grain: Source-native alias population
+  lineage:
+  - source: dbt_core
+    models:
+    - int_customer_identity
+    - fct_identity_resolution_quality
+  caveats:
+  - Identity-quality populations must not inherit ordered-customer filters without
+    confirmation.
+- name: unresolved_aliases
+  definition: Observed aliases missing a canonical mapping; identity-quality count,
+    never additional customers. Exact population awaits confirmation.
+  status: draft
+  grain: Source-native alias population
+  lineage:
+  - source: dbt_core
+    models:
+    - int_customer_identity
+    - fct_identity_resolution_quality
+  caveats:
+  - Identity-quality populations must not inherit ordered-customer filters without
+    confirmation.
+- name: unresolved_percentage
+  definition: Unresolved aliases divided by observed source IDs in the same population.
+    Exact source/date/account scope awaits confirmation.
+  status: draft
+  grain: Source-native alias population
+  lineage:
+  - source: dbt_core
+    models:
+    - int_customer_identity
+    - fct_identity_resolution_quality
+  caveats:
+  - Identity-quality populations must not inherit ordered-customer filters without
+    confirmation.
+- name: ordered_canonical_customers
+  definition: Distinct canonical app_db_customer_id values with has_order true and
+    account_type customer; profiles without orders and test/internal accounts are
+    excluded.
+  status: draft
+  grain: Canonical customer
+  lineage:
+  - source: dbt_core
+    models:
+    - dim_customers
+  caveats:
+  - Identity-quality populations must not inherit ordered-customer filters without
+    confirmation.
+  expression:
+    measure: COUNT(DISTINCT app_db_customer_id)
+    mandatory_filters:
+    - field: has_order
+      op: '='
+      value: true
+      reason: Exclude never-ordered profiles.
+    - field: account_type
+      op: '='
+      value: customer
+      reason: Exclude test/internal.
+  parameters:
+  - name: snapshot
+    note: Use explicit data snapshot; current dimension is not proven historical.
+- name: average_ids_per_customer
+  definition: To be confirmed by the domain owner; dashboard label alone does not
+    define numerator or denominator.
+  status: draft
+  lineage:
+  - source: dbt_core
+    models:
+    - dim_customers
+    - int_customer_identity
+- name: returning_share
+  definition: To be confirmed by the domain owner; surfaced in live dashboard inventory.
+  status: draft
+  lineage:
+  - source: dbt_core
+    models:
+    - dim_customers
+    - fct_orders

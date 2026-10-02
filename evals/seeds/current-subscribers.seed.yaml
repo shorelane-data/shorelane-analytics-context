@@ -1,0 +1,23 @@
+# SIMULATION TEST ARTIFACT — human review required.
+question: How many current subscribers did we have at the end of last month?
+domain: customers
+intent: "Distinct real canonical customers with a subscription term covering the reporting\
+  \ month\u2019s last day, both endpoints inclusive."
+ir:
+  metric: current_subscribers
+  time_window: last_month
+expected:
+  kind: sql_shape
+  must_include:
+  - Distinct real canonical customers; term_start_date <= month-end <= term_end_date;
+    compare dates.
+  must_exclude:
+  - Count terms or seats as customers.
+  - Filter status, plan is_current, or Stripe is_active.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_subscriptions
+  - dim_customers

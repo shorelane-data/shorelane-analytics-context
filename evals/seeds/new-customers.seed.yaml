@@ -19,3 +19,5 @@ lineage:
   models:
   - fct_orders
   - dim_customers
+ir:
+  metric: new_customers

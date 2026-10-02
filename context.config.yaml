@@ -1,4 +1,4 @@
-# SIMULATION TEST ARTIFACT
+# SIMULATION TEST ARTIFACT — human review required.
 version: 0.1
 warehouse: bigquery
 lineage_sources:
@@ -30,6 +30,9 @@ domains:
       - int_customer_identity
       - fct_identity_resolution_quality
       - dim_date
+      - fct_subscriptions
+      - stg_app_customers
+      - stg_orders
   marketing:
     lineage:
     - source: dbt_core
