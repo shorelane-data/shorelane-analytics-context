@@ -1,14 +1,18 @@
 # SIMULATION TEST ARTIFACT — human review required.
 question: What is Shorelane gross margin by category?
 domain: marketing
-intent: D2c line cost supports margin; marketplace retail margin is not Shorelane
-  economics. Clarify rate aggregation.
+intent: Category gross margin covers every consumer order line, d2c and marketplace,
+  as the Marketing dashboard reports it, with margin % as summed margin over summed
+  line_amount per category. Marketplace lines are at retail, so their margin is product
+  mix, not Shorelane earnings; the answer says so.
 expected:
   kind: sql_shape
   must_include:
-  - Clarify d2c economic scope and rate denominator.
+  - Include d2c and marketplace consumer order lines.
+  - Compute margin % per category as summed margin over summed line_amount.
   must_exclude:
-  - Treat stored marketplace gross_margin as approved economic margin.
+  - Restrict to d2c lines when the question does not ask for d2c.
+  - Call marketplace line margin Shorelane earnings.
 provenance: interview
 status: draft
 lineage:

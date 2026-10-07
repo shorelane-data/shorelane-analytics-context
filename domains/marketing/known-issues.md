@@ -9,7 +9,7 @@ Repeated day totals, platform claims, first-date order counts and canonical cust
 All-channel GMV differs from consumer AOV/order scope. Ratio-of-totals and preaggregated joins prevent plausible errors. <!-- status: draft -->
 
 ## Category/margin
-Subscription lines absent; marketplace retail margin not Shorelane economic margin. Mix/rate denominator and historical categories need review. <!-- status: draft -->
+Subscription lines absent. Category margin covers d2c and marketplace lines, as the Marketing dashboard reports it; marketplace lines are at retail, so their margin is not Shorelane earnings (those are the commission). A d2c-only margin understates category margin and can reorder categories. No governed economic margin by category exists. Historical categories need review. <!-- status: draft -->
 
 ## Promotion exceptions
 Blank/unmatched codes, validity-window exceptions, count/discount period rules, exact dates and encoding require human or live source checks. <!-- status: draft -->
