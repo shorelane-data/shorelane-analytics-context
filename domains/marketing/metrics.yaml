@@ -295,9 +295,11 @@ metrics:
   - Verify physical discount_pct encoding before evaluating formula; do not assume 15 versus 0.15.
 - name: gross_margin
   status: draft
-  definition: D2c line_amount minus quantity times unit_cost; marketplace retail line margin is not
-    established as Shorelane economic margin.
-  grain: D2c order line
+  definition: Consumer line margin, line_amount minus quantity times unit_cost (fct_order_lines.gross_margin),
+    over every eligible consumer order line, d2c and marketplace. This is the category margin the
+    Marketing dashboard reports and the default reading of "gross margin by category". Margin % is
+    summed margin over summed line_amount within each category.
+  grain: Consumer order line
   lineage:
   - source: dbt_core
     models:
@@ -306,9 +308,16 @@ metrics:
   parameters:
   - name: period
     note: Explicit order date bounds.
+  - name: channel
+    note: All consumer lines unless the question names a channel; restrict to d2c only when asked.
   caveats:
-  - Margin-rate aggregation remains unconfirmed.
-  - Do not interpret marketplace line margin as Shorelane economic margin.
+  - Marketplace lines carry the buyer's retail price and the product's unit cost, so their line margin
+    measures product mix, not money Shorelane earns; state this when marketplace lines are included.
+  - Shorelane's own earnings on marketplace orders are the commission (net_amount, see Marketplace
+    earnings in company/terminology.md), not line margin. No governed economic margin by category
+    exists; if asked for one, say so rather than dropping marketplace lines.
+  - Do not average per-line or per-month margin rates.
+  # REVIEW: confirm the Marketing dashboard's all-consumer-line scope as the governed category margin.
 - name: promotion_gmv
   status: draft
   definition: Sum gross_amount once per real-customer promotion-tagged consumer order, using actual
