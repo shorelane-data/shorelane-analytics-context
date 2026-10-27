@@ -1,0 +1,12 @@
+# Human-decided 2026-10-27 (customers-002): returning = active − new.
+name: returning_customers
+definition: >
+  Active customers in the period whose first-ever Shorelane order was before the period
+  (active customers minus new customers).
+grain: canonical customer (fct_orders.customer_id)
+temporal_kind: flow
+parameters: [{shared: period}]
+expression:
+  measure: metric(active_customers) - metric(new_customers)
+  allowed_dimensions: [order_date, segment]
+lineage: inherit

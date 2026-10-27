@@ -1,63 +1,19 @@
-# Shorelane terminology
+# Terminology
 
-> Simulation test artifact. Definitions require human review.
+## What This Covers
+The cross-domain terms a new analyst gets wrong in their first month. For each:
+what it means here, and what people wrongly assume it means. No statistics.
 
-## Revenue
+<!-- Terminology: 10 of 10 terms answered (simulated); 0 human-confirmed. Every entry below is proposed
+     working-branch content (status: draft) until the analyst confirms it. -->
 
-Unqualified revenue means recognized revenue (GAAP); state the assumption. Persona defaults: CFO Dana → recognized; Marketing Marcus → GMV; FP&A Priya → billed; Controller Theo → collected cash; COO Sam → net revenue. The five measures are not additive.
-
-_Simulation answer captured; human review pending._ <!-- status: draft -->
-
-## Marketplace earnings
-
-Marketplace earnings mean Shorelane’s commission or take, represented by net_amount. Buyer retail spend is GMV (gross_amount). Refunds carry the take, not the full retail amount.
-
-_Simulation answer captured; human review pending._ <!-- status: draft -->
-
-## Current customers
-
-Distinct canonical app_db_customer_id values with at least one order in the trailing twelve full calendar months, at month grain. Include only account_type = customer, excluding test/internal and never-ordered profiles; deduplicate across source identities and channels. The historical customer dashboard omitted test/internal exclusions; the repaired dashboard now reconciles for the tested customer totals. Governed marts remain authoritative; verify filters on other surfaces.
-
-_Simulation answer captured; human review pending._ <!-- status: draft -->
-
-## New customers
-
-A new customer’s first-ever order across all channels falls in the period. Count distinct real canonical customers, not newly created profiles or a first purchase in an additional channel. Attribute new customers by channel to the canonical channel of their first-ever order.
-
-_Simulation answer captured; human review pending._ <!-- status: draft -->
-
-## Active subscribers
-
-Distinct real customers with term_start_date <= D <= term_end_date, both inclusive. Compare dates to dates. Terms and seats are different units; status = active and plan is_current do not determine eligibility.
-
-_Simulation answer captured; human review pending._ <!-- status: draft -->
-
-## Subscription starts
-
-Subscription starts are counted in terms, with renewals creating new term rows. The new subscriptions KPI counts first terms (is_first_term) starting in the period and excludes renewal terms.
-
-_Simulation answer captured; human review pending._ <!-- status: draft -->
-
-## Renewal rate
-
-Renewed terms divided by renewed plus churned terms whose term end falls in the period. A subsequent term linked by renewed_from_subscription_id identifies renewal. Without renewal, churn occurs at term end. Exclude undecided active terms; count terms, anchored on the ending term’s end date.
-
-_Simulation answer captured; human review pending._ <!-- status: draft -->
-
-## Grandfathered plans
-
-Grandfathered means the generation was retired from sale by the as-of date. Customers retain the original plan and retired generations remain eligible for active-subscriber counts. Term prices use the price effective at term start. The May 2025 increase affected generation 3 only, leaving older generations unchanged.
-
-_Simulation answer captured; human review pending._ <!-- status: draft -->
-
-## Multi-channel customers
-
-A customer with orders in at least two canonical channels within the selected period. Normalize historical direct to d2c. This is a period metric over active customers, not a subset of current customers. Channel customer counts overlap; deduplicate the total.
-
-_Simulation answer captured; human review pending._ <!-- status: draft -->
-
-## Last quarter
-
-The most recent fully elapsed calendar quarter as of an explicit as-of date; state the assumption. No separate fiscal calendar. Use explicit quarter bounds, not trailing days or months or the current partial quarter. The live warehouse loads daily; the full fixture alone has no defined today.
-
-_Simulation answer captured; human review pending._ <!-- status: draft -->
+- **revenue (unqualified)** — means **recognized revenue** (GAAP, ratable; Finance's official number) unless the asker's team owns another measure; state the assumption. Each team means something different by "revenue": Marketing = GMV, Ops = net revenue, FP&A = billed revenue, Treasury = collected cash. The five measures are not additive — never sum across them. Commonly confused with GMV. <!-- status: draft (simulated, company-002); evidence: query-history-derived Plotly ytd_recognized / recognized_monthly_trend tiles; Sigma Business KPI comment -->
+- **GMV vs net revenue vs marketplace take** — GMV counts the full retail ticket of every order, including marketplace goods sold by third parties, gross of refunds; it is not a P&L figure. Net revenue counts what Shorelane earns: d2c and subscription fees in full, plus only the marketplace commission, minus refunds. **Take** is that marketplace commission — not a separate measure, but the marketplace component of net revenue (order grain: a marketplace order's `net_amount` in `fct_orders`). "How much did we make from the marketplace?" means take net of refunds, not GMV (human-decided 2026-10-27). A marketplace refund carries only the take, so "GMV minus refunds" mixes bases. <!-- status: draft (simulated, company-003) -->
+- **active subscribers vs `status = 'active'`** — active subscribers at date D are distinct real customers holding a subscription term with start ≤ D ≤ end (both inclusive; compare dates, not timestamps). `status` is a term's *outcome* (renewed / active / churned), not a liveness flag: `active` only means the term's fate is unknown at load time, so filtering on it drops real subscribers and makes historical counts collapse. `dim_plans.is_current` is not a liveness flag either — it marks only the plan generation still sold; every generation is a live base. <!-- status: draft (simulated, company-003); dbt-derived (model.fct_subscriptions, model.dim_plans) -->
+- **subscribers vs terms vs seats** — "subscribers" counts canonical real customers, never terms or seats. A **term** (one `fct_subscriptions` row, 12 months; a renewal adds a row) is the flow unit for starts, renewals, churn and renewal rate; at a single date terms and subscribers coincide, but over multi-period windows they diverge. **Seats** are capacity — counted only when seats are asked for, or inside ACV (seats × price per seat). <!-- status: draft (simulated, company-003) -->
+- **current customers** — distinct canonical customers (real customers only, `fct_orders` / `dim_customers`) with an order in any channel (including business subscriptions) in the trailing twelve calendar months ending at the snapshot month. Not all profiles, not source aliases, not all-time orderers. <!-- status: draft (simulated, company-002); all-channel scope human-decided 2026-10-27 at Stage 5 -->
+- **`direct` vs `d2c` channel** — the same channel, Shop Direct. `direct` is the raw label used before 2022-06-01 (the rename was never backfilled). Use canonical `fct_orders.channel`; grouping by the raw label splits one channel in two, makes d2c look like it launched mid-2022, and inflates multi-channel customer counts. <!-- status: draft (simulated, company-002); dbt-derived (model.fct_orders) -->
+- **`is_current` / grandfathered plans** — plans come in three generations; customers keep the plan they signed, so every generation is a live subscription base ("grandfathered"). `is_current` marks only the generation still sold to new customers — never filter subscribers or revenue on it; cut by `plan_generation` on the term row instead. <!-- status: draft (simulated, resolved incidentally in company-003); dbt-derived (model.dim_plans, model.stg_plans) -->
+- **renewal rate** — counted in subscription terms, over *decided* terms only: terms whose end date falls in the window (inclusive) with status renewed or churned form the denominator; the renewed ones form the numerator. Still-running `active` terms are excluded from both. The window is placed by term **end** date (that's when the renewal decision happens), not start. Near the load date, terms ending in the last days still show `active` and drop out. <!-- status: draft (simulated, company-004) -->
+- **ACV per seat** — total ACV ÷ total seats (a ratio of totals). A term's ACV is seats × the per-seat price **in effect at the term's start** (effective-dated price history), not the plan's latest price — ACV is a book value at locked-in prices, so grandfathered renewals carry their old prices. <!-- status: draft (simulated, company-004) -->
+- **"last quarter"** — the most recent fully completed **calendar** quarter as of the as-of date (today's load on the live warehouse); state the assumption. Shorelane has no fiscal calendar. Not trailing 90 days, not trailing three months, not the current partial quarter. Dashboards only offer 6/12/24-month and all-time presets, so a quarter needs explicit date bounds. <!-- status: draft (simulated, company-004) -->

@@ -1,0 +1,22 @@
+# Human-decided 2026-10-27 (marketing-001): AOV is consumer-only by default.
+question: "What's our average order value last quarter?"
+domain: marketing
+intent: >
+  Consumer AOV: GMV ÷ orders over d2c + marketplace orders from real customers in the
+  most recent completed calendar quarter. Rejected: an all-channel AOV including
+  business-subscription orders (inflated by annual contracts) unless explicitly asked
+  and labelled.
+ir:
+  metric: aov
+  time_window: last_quarter
+expected:
+  kind: sql_shape
+  must_include:
+    - "channel in (d2c, marketplace)"
+    - "SUM(gross_amount) / COUNT(order_id)"
+  must_exclude:
+    - "business_subscription orders included without labelling"
+provenance: interview
+lineage:
+  - source: dbt_core
+    models: [fct_orders]

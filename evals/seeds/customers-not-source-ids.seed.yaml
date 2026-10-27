@@ -1,0 +1,21 @@
+# status: draft — simulated-analyst answer (customers-001); not human-confirmed.
+question: "How many customers do we have across Stripe, Shopify and Salesforce?"
+domain: customers
+intent: >
+  Source-system IDs are aliases, not customers. Answer with canonical customers
+  (current_customers by default), and if identity health is wanted, report aliases
+  and unresolved aliases from fct_identity_resolution_quality as a quality figure —
+  never summed into a customer count.
+ir:
+  metric: current_customers
+expected:
+  kind: sql_shape
+  must_include:
+    - "canonical customer count via fct_orders / dim_customers"
+  must_exclude:
+    - "summing per-source-system profile or alias counts as customers"
+    - "inner join to the customer-ID crosswalk"
+provenance: interview
+lineage:
+  - source: dbt_core
+    models: [fct_orders, fct_identity_resolution_quality]

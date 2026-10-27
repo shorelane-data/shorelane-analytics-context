@@ -1,0 +1,26 @@
+# status: draft — simulated-analyst answer (revenue-001); not human-confirmed.
+question: "Break down GMV by channel for last quarter."
+domain: revenue
+intent: >
+  fct_revenue has no channel column. GMV by channel comes from fct_orders at
+  order date, summing gross_amount grouped by canonical channel (real customers
+  only; pre-2022 'direct' already coalesced to d2c). The split must sum to the
+  fct_revenue GMV total. Rejected: grouping staging orders by raw channel.
+ir:
+  metric: marketing.order_gmv
+  dimensions: [channel]
+  time_window: last_quarter
+expected:
+  kind: sql_shape
+  must_include:
+  - "fct_orders grouped by canonical channel at order date"
+  - "gross_amount summed for GMV"
+  must_exclude:
+  - "stg_orders or any staging table as the source"
+  - "grouping by channel_raw or treating 'direct' as a separate channel"
+provenance: interview
+lineage:
+- source: dbt_core
+  models: [fct_orders, fct_revenue]
+review_history:
+- status: draft

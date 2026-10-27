@@ -1,0 +1,28 @@
+# status: draft — simulated (company-002, customers-001); all-channel scope human-decided 2026-10-27 at Stage 5 (dashboard match).
+name: current_customers
+definition: >
+  Distinct canonical real customers with at least one order in any channel (including business
+  subscriptions) in the trailing twelve calendar months ending at (and including) the snapshot
+  month. The default answer to "how many customers do we have?".
+aliases: [customers, customer count, how many customers]
+grain: canonical customer, at month snapshot grain
+temporal_kind: stock
+parameters:
+- name: snapshot_month
+  note: Required. The month the trailing-12-month window ends on (inclusive); default the last completed month.
+caveats:
+- Not all dim_customers profiles (never-ordered profiles are not customers), and never raw source aliases.
+- "Never count from staging (stg_orders) — it includes test and internal accounts."
+expression:
+  measure: COUNT(DISTINCT customer_id)
+  mandatory_filters:
+  - field: order_date
+    op: '>='
+    value: <first day of snapshot_month minus 11 months>
+    reason: The trailing-12-month window; without it this counts every customer ever.
+  - field: order_date
+    op: '<='
+    value: <last day of snapshot_month>
+    reason: Window ends at the snapshot month inclusive.
+  allowed_dimensions: [channel, segment]
+lineage: {shared: fct_orders}

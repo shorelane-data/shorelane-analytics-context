@@ -1,10 +1,9 @@
 # SIMULATION TEST ARTIFACT
+# Migrated from ACF v0.2 (2026-10-27); not yet re-validated against v0.3 definitions.
+# MIGRATION: domain executive-revenue renamed to revenue.
 question: What was our revenue last quarter?
-domain: executive-revenue
-intent: "Unqualified revenue means recognized revenue (GAAP); state the assumption.\
-  \ Persona defaults: CFO Dana \u2192 recognized; Marketing Marcus \u2192 GMV; FP&A\
-  \ Priya \u2192 billed; Controller Theo \u2192 collected cash; COO Sam \u2192 net\
-  \ revenue. The five measures are not additive."
+domain: revenue
+intent: "Unqualified revenue means recognized revenue (GAAP); state the assumption. Persona defaults: CFO Dana → recognized; Marketing Marcus → GMV; FP&A Priya → billed; Controller Theo → collected cash; COO Sam → net revenue. The five measures are not additive."
 expected:
   kind: sql_shape
   must_include:
@@ -13,7 +12,6 @@ expected:
   must_exclude:
   - Sum the five revenue measures together.
 provenance: interview
-status: draft
 lineage:
 - source: dbt_core
   models:
@@ -26,3 +24,5 @@ ir:
     op: '='
     value: recognized_revenue
   time_window: last_quarter
+review_history:
+- status: draft

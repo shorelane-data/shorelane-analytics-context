@@ -1,0 +1,25 @@
+# Stage-5 dashboard match, value reviewed by a real human (Ron Potok, 2026-10-27).
+# Definition approval still comes only through protected human-reviewed merge;
+# the recognized_revenue metric it depends on is draft (simulated answers).
+question: "What was revenue last quarter?"
+domain: revenue
+intent: >
+  Unqualified "revenue" = recognized revenue (GAAP), assumption stated; "last
+  quarter" = the most recent completed calendar quarter (here Q3 2026). The
+  context-off run chose net revenue instead — rejected. Value read from the
+  Executive Revenue Dashboard's Recognized Revenue by Month series (exact figure
+  data, Jul+Aug+Sep 2026; filter Last 12 Months, as of 2026-10-27).
+ir:
+  metric: recognized_revenue
+  dimensions: []
+  time_window: {start: "2026-07-01", end: "2026-09-30"}
+expected:
+  kind: value_at_snapshot
+  value: 9563893.40
+  as_of: "2026-10-27"
+  tolerance: {absolute: 0.01}
+provenance: dashboard
+verified_query_file: evals/verified/revenue-recognized-q3-2026-dashboard.sql
+lineage:
+  - source: dbt_core
+    models: [fct_revenue]

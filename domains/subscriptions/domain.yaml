@@ -1,34 +1,18 @@
-# SIMULATION TEST ARTIFACT — human review required.
-name: Subscriptions
-summary: FP&A subscription book, new business, term renewal and churn, plan generations
-  and effective pricing.
-status: draft
-owner: To be confirmed
-grain: Canonical customer stock at date; one real-customer subscription term for flows;
-  seats for capacity.
+# status: draft — simulated-analyst answers (company-003/004, subscriptions-001); owner human-decided 2026-10-27.
+name: subscriptions
+summary: How big the business-subscription book is (subscribers, seats, ACV under contract) and how it moves — new first terms, renewals and churn — by plan generation, plan and segment.
+owner: FP&A
+grain: fct_subscriptions — one row per 12-month subscription term from a real customer
 tables:
   canonical: nodal-shorelane.shorelane.fct_subscriptions
   others:
-  - nodal-shorelane.shorelane.dim_plans
-  - nodal-shorelane.shorelane.stg_plan_prices
-  - nodal-shorelane.shorelane.dim_customers
+  - nodal-shorelane.shorelane.dim_plans   # plan generations; is_current = still sold, NOT liveness
 dashboards:
-- name: Subscriptions
-  canonical_question: How large is the active subscription book, how much new business
-    is starting, and how well are expiring terms renewing?
+- name: Subscriptions (FP&A)
+  owner: FP&A
+  canonical_question: How many active subscribers and how much ACV is under contract at window end, and how are new subscriptions, renewal rate and churn moving?
   url: https://shorelane-data.github.io/shorelane/subscriptions/
-  tool: plotly-static
-  owner: To be confirmed
+  tool: plotly
 lineage:
 - source: dbt_core
-  models:
-  - fct_subscriptions
-  - dim_plans
-  - stg_plan_prices
-  - dim_date
-  - dim_customers
-  - stg_subscriptions
-  - stg_plans
-  - stg_app_customers
-  - int_customer_identity
-  - fct_revenue
+  models: [fct_subscriptions, dim_plans]

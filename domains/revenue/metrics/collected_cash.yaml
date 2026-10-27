@@ -1,0 +1,29 @@
+# status: draft — simulated-analyst answers (company-002, revenue-001); not human-confirmed.
+# dbt-derived (model.fct_revenue accepted_values: measure_name)
+name: collected_cash
+definition: >
+  Cash that actually arrived, minus refunds paid back out. Subscription invoices collect after billing (net-30); bad-debt invoices never land. Treasury/Controller's measure.
+aliases: ['cash collected', 'collections']
+grain: one fct_revenue row = one underlying money movement (identifiers dropped); sum amount over an explicit activity_date range
+temporal_kind: flow
+parameters:
+- name: time_window
+  note: Required. Attributed by activity_date, which for this measure is the order date (non-subscription); invoice collected date (subscriptions); refund rows at refund date (human-decided 2026-10-27, revenue-002; warehouse-checked). Use explicit bounds; "last quarter" = most recent completed calendar quarter.
+caveats:
+- fct_revenue has no channel, customer or product columns — splits route through fct_orders (see reference.md).
+- Refunds are already negative rows; never subtract refunds again.
+- The five revenue measures are not additive; never sum across measure_name values.
+- "Never source revenue from staging views (stg_*) — they include test and internal accounts."
+expression:
+  measure: SUM(amount)
+  mandatory_filters:
+  - field: measure_name
+    op: '='
+    value: collected_cash
+    reason: fct_revenue stacks five non-additive measures; without this the sum mixes them.
+  allowed_dimensions: [activity_date]
+family:
+  name: revenue_measures
+  discriminator: measure_name
+  siblings: ['recognized_revenue', 'gmv', 'net_revenue', 'billed_revenue']
+lineage: {shared: fct_revenue}

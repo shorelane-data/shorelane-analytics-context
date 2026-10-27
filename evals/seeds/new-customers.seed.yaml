@@ -1,10 +1,8 @@
 # SIMULATION TEST ARTIFACT — human review required.
+# Migrated from ACF v0.2 (2026-10-27); not yet re-validated against v0.3 definitions.
 question: How many new customers did we acquire last quarter?
 domain: customers
-intent: "A new customer\u2019s first-ever order across all channels falls in the period.\
-  \ Count distinct real canonical customers, not newly created profiles or a first\
-  \ purchase in an additional channel. Attribute new customers by channel to the canonical\
-  \ channel of their first-ever order."
+intent: "A new customer’s first-ever order across all channels falls in the period. Count distinct real canonical customers, not newly created profiles or a first purchase in an additional channel. Attribute new customers by channel to the canonical channel of their first-ever order."
 expected:
   kind: sql_shape
   must_include:
@@ -13,7 +11,6 @@ expected:
   must_exclude:
   - New profiles or first purchase in an additional channel.
 provenance: interview
-status: draft
 lineage:
 - source: dbt_core
   models:
@@ -21,3 +18,5 @@ lineage:
   - dim_customers
 ir:
   metric: new_customers
+review_history:
+- status: draft

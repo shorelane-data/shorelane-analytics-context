@@ -1,0 +1,12 @@
+# Domain-specific status/type values on fct_revenue. draft (simulated, company-002, revenue-001).
+entities:
+- name: measure_name
+  description: Which of the five non-additive revenue measures a fct_revenue row contributes to.  # dbt-derived (model.fct_revenue accepted_values)
+  mappings:
+    recognized_revenue: Recognized revenue (GAAP, ratable) — Finance's official number; default for unqualified "revenue"
+    gmv: Gross merchandise value — full retail ticket incl. marketplace goods, gross of refunds (Marketing)
+    net_revenue: What Shorelane earns — fees in full plus marketplace take only, minus refunds (Ops)
+    billed_revenue: Invoiced in the period; subscriptions billed in full up front (FP&A)
+    collected_cash: Cash received minus refunds paid out; subscriptions collect after billing (Treasury)
+  important: Always filter exactly one measure_name. The measures are not additive — summing across them is meaningless.
+  analytical_notes: If the asker names a team or a different word (GMV, billings, cash), resolve to that measure; otherwise default to recognized_revenue and state the assumption.

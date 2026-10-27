@@ -1,0 +1,23 @@
+# status: draft — simulated-analyst answer (marketing-001); distinct counting human-decided.
+question: "What was our CAC last quarter?"
+domain: marketing
+intent: >
+  Blended CAC: total ad spend (fct_marketing_spend.spend_usd) ÷ distinct real customers
+  whose first-ever order was d2c in the most recent completed calendar quarter.
+  Rejected: summing attributed_new_d2c_customers_day_total across platform rows,
+  spend ÷ platform-reported conversions, counting flagged rows.
+ir:
+  metric: cac
+  time_window: last_quarter
+expected:
+  kind: sql_shape
+  must_include:
+    - "SUM(spend_usd) over the quarter"
+    - "COUNT(DISTINCT customer_id) of first-ever d2c orders from fct_orders"
+  must_exclude:
+    - "SUM(attributed_new_d2c_customers_day_total) across platforms"
+    - "reported_conversions as the denominator"
+provenance: interview
+lineage:
+  - source: dbt_core
+    models: [fct_marketing_spend, fct_orders]

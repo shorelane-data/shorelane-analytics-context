@@ -1,13 +1,9 @@
 # SIMULATION TEST ARTIFACT
+# Migrated from ACF v0.2 (2026-10-27); not yet re-validated against v0.3 definitions.
+# MIGRATION: domain executive-revenue renamed to revenue.
 question: What was net revenue last quarter?
-domain: executive-revenue
-intent: 'Use fct_revenue for period revenue totals: exactly one measure_name, explicit
-  activity_date bounds, SUM(signed amount). Rows are dated contributions to measures,
-  not orders or customers; measures are non-additive and row counts have no business
-  meaning. fct_orders is one eligible order per row, for counts, canonical channels/customers
-  and order-date gross/net amounts; these do not replace recognized, billed or collected
-  events. stg_orders includes test/internal accounts. Refunds are negative rows where
-  applicable in fct_revenue; do not subtract them twice.'
+domain: revenue
+intent: 'Use fct_revenue for period revenue totals: exactly one measure_name, explicit activity_date bounds, SUM(signed amount). Rows are dated contributions to measures, not orders or customers; measures are non-additive and row counts have no business meaning. fct_orders is one eligible order per row, for counts, canonical channels/customers and order-date gross/net amounts; these do not replace recognized, billed or collected events. stg_orders includes test/internal accounts. Refunds are negative rows where applicable in fct_revenue; do not subtract them twice.'
 expected:
   kind: sql_shape
   must_include:
@@ -18,7 +14,6 @@ expected:
   - Use stg_orders without customer hygiene.
   - Use order amounts as event-period revenue.
 provenance: interview
-status: draft
 lineage:
 - source: dbt_core
   models:
@@ -39,3 +34,5 @@ ir:
     op: '='
     value: net_revenue
   time_window: last_quarter
+review_history:
+- status: draft

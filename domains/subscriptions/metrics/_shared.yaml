@@ -1,0 +1,35 @@
+# Shared fragments for subscription metrics. status: draft (simulated, company-003/004, subscriptions-001).
+lineage:
+  fct_subscriptions:
+  - source: dbt_core
+    models: [fct_subscriptions]   # dbt-derived (model.fct_subscriptions): one row per term, real customers only
+filter_sets:
+  contains_as_of:
+    description: Terms whose date range contains the as-of date (both ends inclusive; compare dates, not timestamps).
+    filters:
+    - field: term_start_date
+      op: '<='
+      value: <as_of_date>
+      reason: Terms not yet started are not on the book.
+    - field: term_end_date
+      op: '>='
+      value: <as_of_date>
+      reason: Inclusive end — a term is still live on its last day; a timestamped as-of silently drops it.
+  decided_in_period:
+    description: Terms whose END date falls in the period and whose renewal outcome is decided.
+    filters:
+    - field: term_end_date
+      op: between
+      value: [<period_start>, <period_end>]
+      reason: Renewal outcomes are placed by term end, not start.
+    - field: status
+      op: in
+      value: [renewed, churned]
+      reason: Still-running 'active' terms are undecided and belong in neither numerator nor denominator.
+parameters:
+  as_of:
+  - name: as_of_date
+    note: Required. A DATE (not a timestamp); for a period, its last day.
+  period:
+  - name: time_window
+    note: Required. Fully elapsed period; windows reaching today lose recently ending terms (still 'active').

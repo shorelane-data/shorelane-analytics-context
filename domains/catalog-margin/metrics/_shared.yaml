@@ -1,0 +1,17 @@
+# Shared fragments for catalog-margin metrics. status: draft.
+lineage:
+  fct_order_lines:
+  - source: dbt_core
+    models: [fct_order_lines]
+filter_sets:
+  owned_inventory:
+    description: d2c lines only — Shorelane-owned inventory with a cost basis (human-decided 2026-10-27).
+    filters:
+    - field: channel
+      op: '='
+      value: d2c
+      reason: Marketplace lines carry the seller's retail price with no Shorelane cost basis; margin on them is meaningless.
+parameters:
+  period:
+  - name: time_window
+    note: Required. Explicit order_date bounds over fully elapsed months.

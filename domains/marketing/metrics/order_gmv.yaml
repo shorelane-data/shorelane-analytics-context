@@ -1,0 +1,14 @@
+# status: draft — simulated (company-003, revenue-001, marketing-001); not human-confirmed.
+name: order_gmv
+definition: >
+  GMV at order grain — SUM(gross_amount) on fct_orders at order date, gross of refunds. The
+  sliceable form of revenue.gmv: use it for GMV by channel or segment; totals must reconcile to
+  revenue.gmv for the same period.
+aliases: [GMV by channel]
+grain: order (fct_orders)
+temporal_kind: flow
+parameters: [{shared: period}]
+expression:
+  measure: SUM(gross_amount)
+  allowed_dimensions: [order_date, channel, segment, promo_code]
+lineage: {shared: fct_orders}

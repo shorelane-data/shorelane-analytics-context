@@ -1,0 +1,25 @@
+# status: draft — simulated (company-004, subscriptions-001); not human-confirmed.
+name: acv_per_seat_new
+definition: >
+  Seat-weighted price on new subscriptions: total ACV ÷ total seats over first terms started in
+  the period. A ratio of totals — not a mean of per-term ratios, not ACV-weighted, and excluding
+  renewals (which carry grandfathered prices).
+grain: subscription term (first terms)
+temporal_kind: rate
+parameters: [{shared: period}]
+expression:
+  measure: SUM(acv) / SUM(seats)
+  mandatory_filters:
+  - field: is_first_term
+    op: '='
+    value: true
+    reason: Including renewals lowers the figure via grandfathered prices.
+  - field: term_start_date
+    op: between
+    value: [<period_start>, <period_end>]
+    reason: New subscriptions are placed by term start.
+  ratio:
+    zero_denominator: null
+    reason: No new seats in the period means the price is undefined.
+  allowed_dimensions: [plan_generation, plan_name, tier, segment]
+lineage: {shared: fct_subscriptions}

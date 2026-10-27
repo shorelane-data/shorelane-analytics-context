@@ -1,0 +1,12 @@
+# Domain-specific values. draft (simulated, catalog-001).
+entities:
+- name: category
+  description: Merchandise category of a SKU (fct_order_lines.category / dim_products.category).
+  mappings:
+    paper: Paper
+    writing: Writing instruments
+    office_tech: Office technology
+    furniture: Furniture
+    breakroom: Breakroom supplies
+    storage: Storage
+  important: One supplier per category — supplier cuts repeat category cuts.

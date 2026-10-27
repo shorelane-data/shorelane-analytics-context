@@ -1,30 +1,12 @@
-# Customers known issues
+# Customers — Known Issues
 
-> SIMULATION TEST ARTIFACT; all entries draft and require human review.
+## What This Covers
+Data-quality issues and analytical gotchas — the silent-failure modes. Each issue
+here also appears as an `IF … DO NOT …` routing trigger in `reference.md`
+and as an eval seed.
 
-## Account hygiene
-The historical Customers dashboard omitted test/internal exclusions; the repaired dashboard reconciles for tested current/new/multi-channel totals. Sigma queries and other slices remain unverified. Preserve governed account_type customer eligibility. <!-- status: draft -->
-
-## Window and unit mismatch
-Current, active, new, subscriber, term and seat counts are different measures. <!-- status: draft -->
-
-## Identity fanout and missing mappings
-Qualified LEFT JOIN; unresolved aliases are quality, not customers; count systems for source coverage and deduplicate canonical IDs before facts. <!-- status: draft -->
-
-## Attribution ties
-Earliest-date cross-channel ties need a human tie-breaker; dbt flags all earliest-date orders. <!-- status: draft -->
-
-## Channel overlap
-Per-channel counts overlap; exact pairwise-bucket exclusivity is unconfirmed. <!-- status: draft -->
-
-## Identity populations
-Source/date/account populations and average-ID formula await owner review. <!-- status: draft -->
-
-## Unspecified dimensions and returning share
-Segment slicing approval and returning-share numerator/cutoff remain open. <!-- status: draft -->
-
-## Unavailable questions
-NPS, store visits, customer shipping cost and return reasons are not available. <!-- status: draft -->
-
-## Subscription equivalence
-The brief says trailing orders and term coverage coincide; no override is defined if they diverge. <!-- status: draft -->
+- **Counting source aliases** — rows of `int_customer_identity` (or per-system profile counts) overstate customers several times. <!-- status: draft (simulated, customers-001) -> seed -->
+- **Counting never-ordered profiles** — all `dim_customers` rows include profiles that never ordered; those are not customers. <!-- status: draft (simulated, customers-001) -> seed -->
+- **Double-flagged first orders** — some customers have two orders with `is_first_order`; count distinct customers. <!-- human-decided 2026-10-27 (customers-001) -> seed -->
+- **New to channel ≠ new customer** — only the channel of the first-ever order gets the new customer. <!-- status: draft (simulated, customers-001) -->
+- **Crosswalk joins** — inner joins drop unresolved aliases; joining orders through the alias bridge fans out on recreated Stripe accounts. <!-- status: draft (simulated, customers-001) -> seed -->

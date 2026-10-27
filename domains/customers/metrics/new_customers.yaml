@@ -1,0 +1,22 @@
+# status: draft — definition simulated (customers-001); distinct-customer counting human-decided 2026-10-27.
+name: new_customers
+definition: >
+  Distinct canonical real customers whose first-ever Shorelane order (any channel) falls in the
+  period. New to Shorelane, not new to a channel: by channel, a customer is new in the channel of
+  their first-ever order only.
+grain: canonical customer (fct_orders.customer_id)
+temporal_kind: flow
+parameters: [{shared: period}]
+caveats:
+- Some customers have two orders flagged is_first_order (same-day first orders) — count distinct customers, never flagged rows.
+- A customer's first order in a new channel after ordering elsewhere is not a new customer.
+- Group by canonical channel; raw 'direct' must merge into d2c or new-customer attribution splits.
+expression:
+  measure: COUNT(DISTINCT customer_id)
+  mandatory_filters:
+  - field: is_first_order
+    op: '='
+    value: true
+    reason: Without it this counts every ordering customer (active), not first-time customers.
+  allowed_dimensions: [order_date, channel, segment]
+lineage: {shared: fct_orders}

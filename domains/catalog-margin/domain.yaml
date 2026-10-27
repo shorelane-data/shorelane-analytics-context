@@ -1,0 +1,18 @@
+# status: draft — simulated (catalog-001); owner, marketplace scope and margin aggregation human-decided 2026-10-27.
+name: catalog-margin
+summary: How consumer sales break down by product category and SKU, and what gross margin Shorelane earns on the inventory it owns (d2c lines).
+owner: Ops (COO)
+grain: fct_order_lines — one consumer order line from a real customer (subscription orders have no lines)
+tables:
+  canonical: nodal-shorelane.shorelane.fct_order_lines
+  others:
+  - nodal-shorelane.shorelane.dim_products   # one row per SKU: category, unit_cost
+dashboards:
+- name: Marketing Dashboard — Consumer Line Revenue by Category / Gross Margin by Category
+  owner: Marketing (VP Marketing)
+  canonical_question: What is consumer line revenue and gross margin % by category for the period?
+  url: https://shorelane-data.github.io/shorelane/marketing/
+  tool: plotly
+lineage:
+- source: dbt_core
+  models: [fct_order_lines, dim_products]

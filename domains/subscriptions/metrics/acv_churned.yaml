@@ -1,0 +1,16 @@
+# status: draft — simulated (subscriptions-001); not human-confirmed.
+name: acv_churned
+definition: Sum of ACV over decided terms in the period that churned (placed by term end date).
+grain: subscription term
+temporal_kind: flow
+parameters: [{shared: period}]
+expression:
+  measure: SUM(acv)
+  include_filters: [decided_in_period]
+  mandatory_filters:
+  - field: status
+    op: '='
+    value: churned
+    reason: Only terms that were not renewed.
+  allowed_dimensions: [plan_generation, plan_name, tier, segment]
+lineage: {shared: fct_subscriptions}

@@ -1,0 +1,15 @@
+# status: draft — simulated-analyst answers (customers-001); not human-confirmed.
+name: active_customers
+definition: >
+  Distinct canonical real customers who placed at least one order inside the period.
+aliases: [customers who ordered]
+grain: canonical customer (fct_orders.customer_id)
+temporal_kind: flow
+parameters: [{shared: period}]
+caveats:
+- Per-channel active counts overlap — a customer active in two channels counts in both; channel rows sum to more than the total.
+- "Never count from stg_orders — it includes test and internal accounts."
+expression:
+  measure: COUNT(DISTINCT customer_id)
+  allowed_dimensions: [order_date, channel, segment]
+lineage: {shared: fct_orders}

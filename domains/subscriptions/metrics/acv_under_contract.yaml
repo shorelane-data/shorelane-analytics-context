@@ -1,0 +1,16 @@
+# status: draft — simulated (subscriptions-001); not human-confirmed.
+name: acv_under_contract
+definition: >
+  Sum of ACV over the terms that contain the as-of date — a book value at the per-seat prices
+  locked in at each term's start.
+grain: subscription term, at a point in time
+temporal_kind: stock
+parameters: [{shared: as_of}]
+caveats:
+- Group by the plan / generation on the term row, never a current-plan lookup.
+- Invoices are not the subscription book — they have no seats and answer billed / collected revenue.
+expression:
+  measure: SUM(acv)
+  include_filters: [contains_as_of]
+  allowed_dimensions: [plan_generation, plan_name, tier, segment]
+lineage: {shared: fct_subscriptions}

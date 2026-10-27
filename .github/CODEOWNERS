@@ -1,0 +1,3 @@
+# Code owners review every change to this context repo. That covers definitions,
+# seeds, configuration and the CI and governance workflows. See GOVERNANCE.md.
+* @potokrm

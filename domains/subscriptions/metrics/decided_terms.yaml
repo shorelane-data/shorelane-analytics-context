@@ -1,0 +1,11 @@
+# status: draft — simulated (company-004, subscriptions-001); not human-confirmed.
+name: decided_terms
+definition: Terms whose end date falls in the period with a decided outcome (renewed or churned) — the renewal-rate base.
+grain: subscription term
+temporal_kind: flow
+parameters: [{shared: period}]
+expression:
+  measure: COUNT(subscription_id)
+  include_filters: [decided_in_period]
+  allowed_dimensions: [plan_generation, plan_name, tier, segment]
+lineage: {shared: fct_subscriptions}

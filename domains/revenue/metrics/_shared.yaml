@@ -1,0 +1,5 @@
+# Shared fragments for revenue metrics. status: draft (simulated-analyst answers, revenue-001).
+lineage:
+  fct_revenue:
+  - source: dbt_core
+    models: [fct_revenue]   # dbt-derived (model.fct_revenue)

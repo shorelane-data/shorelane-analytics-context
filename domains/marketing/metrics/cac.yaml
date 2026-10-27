@@ -1,0 +1,17 @@
+# status: draft — simulated (marketing-001, governed reading b); not human-confirmed.
+name: cac
+definition: >
+  Customer acquisition cost: ad spend ÷ warehouse-attributed new d2c customers, each counted once.
+  Not spend ÷ platform-reported conversions (inflated by the platforms, so CAC comes out too low).
+  No warehouse attribution exists per platform, so CAC is a blended figure.
+aliases: [customer acquisition cost]
+grain: period total (blended across platforms)
+temporal_kind: rate
+parameters: [{shared: period}]
+expression:
+  measure: metric(ad_spend) / metric(new_d2c_customers)
+  ratio:
+    zero_denominator: null
+    reason: No new d2c customers in the period means CAC is undefined.
+  allowed_dimensions: []
+lineage: inherit

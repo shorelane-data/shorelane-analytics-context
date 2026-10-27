@@ -1,0 +1,17 @@
+# Shared fragments for marketing metrics. status: draft (simulated, marketing-001).
+lineage:
+  fct_orders:
+  - source: dbt_core
+    models: [fct_orders]
+filter_sets:
+  consumer_channels:
+    description: Consumer orders — Direct-to-Consumer and Marketplace (human-decided AOV scope, 2026-10-27).
+    filters:
+    - field: channel
+      op: in
+      value: [d2c, marketplace]
+      reason: Subscription orders are large annual contracts; including them inflates AOV by an order of magnitude.
+parameters:
+  period:
+  - name: time_window
+    note: Required. Explicit order_date bounds over fully elapsed months.

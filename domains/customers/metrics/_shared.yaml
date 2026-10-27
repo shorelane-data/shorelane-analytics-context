@@ -1,0 +1,9 @@
+# Shared fragments for customer metrics. status: draft (simulated, customers-001).
+lineage:
+  fct_orders:
+  - source: dbt_core
+    models: [fct_orders]   # dbt-derived (model.fct_orders): real customers only, canonical channel
+parameters:
+  period:
+  - name: time_window
+    note: Required. Explicit order_date bounds; "last quarter" = most recent completed calendar quarter.

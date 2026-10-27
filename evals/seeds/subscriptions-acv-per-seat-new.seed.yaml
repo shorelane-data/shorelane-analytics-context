@@ -1,0 +1,22 @@
+# status: draft — simulated-analyst answer (company-004, subscriptions-001); not human-confirmed.
+question: "What's our ACV per seat on new subscriptions last quarter?"
+domain: subscriptions
+intent: >
+  SUM(acv) ÷ SUM(seats) over first terms (is_first_term) started in the most recent
+  completed calendar quarter; price locked at term start. Rejected: mean of per-term
+  ratios, ACV-weighted averages, including renewals, or the plan's current price.
+ir:
+  metric: acv_per_seat_new
+  time_window: last_quarter
+expected:
+  kind: sql_shape
+  must_include:
+    - "SUM(acv) / SUM(seats) over first terms started in the quarter"
+  must_exclude:
+    - "AVG of acv/seats per term"
+    - "renewal terms included"
+    - "dim_plans current price used"
+provenance: interview
+lineage:
+  - source: dbt_core
+    models: [fct_subscriptions]

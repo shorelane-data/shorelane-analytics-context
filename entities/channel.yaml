@@ -1,0 +1,19 @@
+# Cross-domain subject entity: sales channel. draft (simulated, company-001/002).
+entities:
+- name: channel
+  aliases: [sales channel]
+  description: The canonical sales channel of an order (fct_orders.channel).  # dbt-derived (model.fct_orders accepted_values)
+  mappings:
+    d2c: Shop Direct — one-off storefront orders paid at checkout
+    business_subscription: Shorelane for Business — seat-based annual subscriptions
+    marketplace: Shorelane Marketplace — third-party sellers; Shorelane keeps a commission (take)
+  important: >
+    `direct` is the pre-2022-06-01 raw label for d2c (never backfilled) and survives only in
+    channel_raw and staging tables. Always group by canonical fct_orders.channel; grouping by the
+    raw label splits Shop Direct in two and inflates multi-channel customer counts.
+  analytical_notes: >
+    Revenue measures attach to channel only through the originating order — fct_revenue carries
+    no channel. Refunds inherit the original order's channel.
+  lineage:
+  - source: dbt_core
+    models: [fct_orders]

@@ -1,11 +1,9 @@
 # SIMULATION TEST ARTIFACT — human review required.
+# Migrated from ACF v0.2 (2026-10-27); not yet re-validated against v0.3 definitions.
+# MIGRATION: domain executive-revenue renamed to revenue.
 question: What was recognized revenue last quarter?
-domain: executive-revenue
-intent: 'Earnings basis: marketplace take, not retail GMV. Subscriptions recognize
-  net amount in twelve equal cent-rounded monthly installments beginning on order
-  date, anniversary-stepped and clamped to month end; other orders recognize fully
-  on order date. Recognition is independent of billing, collection and churn. Refund-event
-  implementation remains unconfirmed.'
+domain: revenue
+intent: 'Earnings basis: marketplace take, not retail GMV. Subscriptions recognize net amount in twelve equal cent-rounded monthly installments beginning on order date, anniversary-stepped and clamped to month end; other orders recognize fully on order date. Recognition is independent of billing, collection and churn. Refund-event implementation remains unconfirmed.'
 ir:
   metric: recognized_revenue
   dimensions: []
@@ -23,8 +21,9 @@ expected:
   - Sum different measures.
   - Double-subtract refunds.
 provenance: interview
-status: draft
 lineage:
 - source: dbt_core
   models:
   - fct_revenue
+review_history:
+- status: draft

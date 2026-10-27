@@ -1,0 +1,23 @@
+# Cross-domain subject entities: customer identity and attributes. draft (simulated, revenue-002).
+entities:
+- name: account_type
+  description: Account classification on the canonical app customer.
+  mappings:
+    customer: A real customer — the only type that counts in any metric
+    test: QA / test account — excluded
+    internal: Shorelane's own office buying — excluded, and material in size (not trivial QA traffic)
+  important: Marts (fct_*, dim_customers) already exclude test and internal; staging (stg_*) does not.
+  lineage:
+  - source: dbt_core
+    models: [stg_app_customers, fct_orders]
+- name: segment
+  description: Customer segment.
+  mappings:
+    consumer: Consumer
+    smb: Small business
+    enterprise: Enterprise
+  important: Segment is not channel — business customers also place orders in the consumer channels.
+  analytical_notes: Carried on both dim_customers and fct_orders.
+  lineage:
+  - source: dbt_core
+    models: [dim_customers, fct_orders]

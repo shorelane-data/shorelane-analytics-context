@@ -1,0 +1,16 @@
+# status: draft — simulated (company-004, subscriptions-001); not human-confirmed.
+name: renewed_terms
+definition: Decided terms in the period that renewed — the renewal-rate numerator.
+grain: subscription term
+temporal_kind: flow
+parameters: [{shared: period}]
+expression:
+  measure: COUNT(subscription_id)
+  include_filters: [decided_in_period]
+  mandatory_filters:
+  - field: status
+    op: '='
+    value: renewed
+    reason: Numerator is renewed terms only.
+  allowed_dimensions: [plan_generation, plan_name, tier, segment]
+lineage: {shared: fct_subscriptions}

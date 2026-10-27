@@ -1,8 +1,8 @@
 # SIMULATION TEST ARTIFACT — human review required.
+# Migrated from ACF v0.2 (2026-10-27); not yet re-validated against v0.3 definitions.
 question: What share of expiring terms renewed?
 domain: subscriptions
-intent: Ending predecessor terms, decided statuses, linked successors without restricting
-  successor start to report period.
+intent: Ending predecessor terms, decided statuses, linked successors without restricting successor start to report period.
 expected:
   kind: sql_shape
   must_include:
@@ -13,7 +13,6 @@ expected:
   - Renewal-start cohort.
   - All terms or distinct customers denominator.
 provenance: interview
-status: draft
 lineage:
 - source: dbt_core
   models:
@@ -21,3 +20,5 @@ lineage:
 ir:
   metric: renewal_rate
   time_window: selected_period
+review_history:
+- status: draft

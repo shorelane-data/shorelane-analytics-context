@@ -1,0 +1,17 @@
+# status: draft — simulated (company-003, subscriptions-001); not human-confirmed.
+name: active_subscribers
+definition: >
+  Distinct canonical real customers holding a subscription term whose date range contains the
+  as-of date. Status is a term outcome and plays no part; is_current is not a liveness flag.
+aliases: [subscribers, current subscribers]
+grain: canonical customer (fct_subscriptions.customer_id), at a point in time
+temporal_kind: stock
+parameters: [{shared: as_of}]
+caveats:
+- Never filter status = 'active' — it drops terms that later renewed or churned and collapses historical counts.
+- Never filter dim_plans.is_current — every plan generation is a live base.
+expression:
+  measure: COUNT(DISTINCT customer_id)
+  include_filters: [contains_as_of]
+  allowed_dimensions: [plan_generation, plan_name, tier, segment]
+lineage: {shared: fct_subscriptions}
