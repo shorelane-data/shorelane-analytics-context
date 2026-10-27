@@ -1,7 +1,6 @@
 # status: draft — simulated-analyst answers (company-002, revenue-001); not human-confirmed.
 # dbt-derived (model.fct_revenue accepted_values: measure_name)
 name: recognized_revenue
-status: draft
 definition: >
   Recognized revenue (GAAP, ratable) — Finance/CFO's official number and the default meaning of unqualified "revenue". Subscriptions are recognized monthly over the 12-month term starting on the order date; d2c and marketplace orders are recognized in full on the order date. Can exceed GMV in a period because of ratable recognition.
 aliases: ['revenue']

@@ -1,6 +1,5 @@
 # Simulated (marketing-001); distinct-customer counting human-decided 2026-10-27 (customers-001).
 name: new_d2c_customers
-status: draft
 definition: >
   Distinct real customers whose first-ever Shorelane order was a Direct-to-Consumer order in the
   period — the warehouse-attributed acquisition count behind CAC.

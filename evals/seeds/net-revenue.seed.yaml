@@ -3,9 +3,7 @@
 # MIGRATION: domain executive-revenue renamed to revenue.
 question: What was net revenue last quarter?
 domain: revenue
-intent: Full d2c and subscription fees plus marketplace commission on order date,
-  less refunds on refund date. Marketplace refunds reverse the take. Refunds occur
-  only on d2c/marketplace and are already negative fct_revenue rows.
+intent: Full d2c and subscription fees plus marketplace commission on order date, less refunds on refund date. Marketplace refunds reverse the take. Refunds occur only on d2c/marketplace and are already negative fct_revenue rows.
 ir:
   metric: net_revenue
   dimensions: []
@@ -23,8 +21,9 @@ expected:
   - Sum different measures.
   - Double-subtract refunds.
 provenance: interview
-status: draft
 lineage:
 - source: dbt_core
   models:
   - fct_revenue
+review_history:
+- status: draft

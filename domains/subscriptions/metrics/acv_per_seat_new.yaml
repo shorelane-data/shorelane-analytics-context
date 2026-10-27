@@ -1,6 +1,5 @@
 # status: draft — simulated (company-004, subscriptions-001); not human-confirmed.
 name: acv_per_seat_new
-status: draft
 definition: >
   Seat-weighted price on new subscriptions: total ACV ÷ total seats over first terms started in
   the period. A ratio of totals — not a mean of per-term ratios, not ACV-weighted, and excluding

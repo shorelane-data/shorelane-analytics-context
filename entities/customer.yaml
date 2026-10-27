@@ -1,7 +1,6 @@
-# Cross-domain subject entities: customer identity and attributes. status: draft (simulated, revenue-002).
+# Cross-domain subject entities: customer identity and attributes. draft (simulated, revenue-002).
 entities:
 - name: account_type
-  status: draft
   description: Account classification on the canonical app customer.
   mappings:
     customer: A real customer — the only type that counts in any metric
@@ -12,7 +11,6 @@ entities:
   - source: dbt_core
     models: [stg_app_customers, fct_orders]
 - name: segment
-  status: draft
   description: Customer segment.
   mappings:
     consumer: Consumer

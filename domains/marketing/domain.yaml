@@ -1,6 +1,5 @@
 # status: draft — simulated-analyst answers (marketing-001); owner, AOV scope and dashboard defect human-decided 2026-10-27.
 name: marketing
-status: draft
 summary: How much Shorelane sells (GMV by channel, consumer orders, AOV) and what acquiring new customers costs (ad spend vs warehouse-attributed new d2c customers), plus category and promotion effects.
 owner: Marketing (VP Marketing)
 grain: fct_orders — one order from a real customer; fct_marketing_spend — one row per platform-day of paid media

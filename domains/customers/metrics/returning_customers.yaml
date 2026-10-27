@@ -1,6 +1,5 @@
 # Human-decided 2026-10-27 (customers-002): returning = active − new.
 name: returning_customers
-status: draft
 definition: >
   Active customers in the period whose first-ever Shorelane order was before the period
   (active customers minus new customers).

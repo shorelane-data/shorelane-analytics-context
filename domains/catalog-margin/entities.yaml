@@ -1,7 +1,6 @@
-# Domain-specific values. status: draft (simulated, catalog-001).
+# Domain-specific values. draft (simulated, catalog-001).
 entities:
 - name: category
-  status: draft
   description: Merchandise category of a SKU (fct_order_lines.category / dim_products.category).
   mappings:
     paper: Paper

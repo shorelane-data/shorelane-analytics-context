@@ -1,6 +1,5 @@
 # Human-decided 2026-10-27 (catalog-001): ratio of totals, d2c lines only.
 name: gross_margin_pct
-status: draft
 definition: >
   Gross margin % = SUM(gross_margin) ÷ SUM(line_amount) over d2c lines — a ratio of totals, never
   an average of per-line margin percentages.

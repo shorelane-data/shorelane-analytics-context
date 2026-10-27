@@ -1,6 +1,5 @@
 # status: draft — simulated-analyst answers (domains-001, revenue-001); owner human-confirmed.
 name: revenue
-status: draft
 summary: How much money Shorelane made in a period, under five non-additive measures (GMV, net, recognized, billed, collected cash); recognized revenue is Finance's official number.
 owner: Finance (CFO)
 grain: fct_revenue — one row per underlying money movement (order, invoice, refund or recognition slice) with identifiers dropped; no dimensions beyond activity_date and measure_name

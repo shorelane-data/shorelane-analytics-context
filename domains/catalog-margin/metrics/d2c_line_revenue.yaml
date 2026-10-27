@@ -1,6 +1,5 @@
 # Human-decided 2026-10-27 (catalog-001): margin base is d2c lines.
 name: d2c_line_revenue
-status: draft
 definition: Line revenue on d2c lines — the base for gross margin %.
 grain: order line (fct_order_lines)
 temporal_kind: flow

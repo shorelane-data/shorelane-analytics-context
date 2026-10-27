@@ -1,6 +1,5 @@
 # Human-decided 2026-10-27 (marketing-001): AOV is consumer-only by default.
 name: aov
-status: draft
 definition: >
   Average order value on consumer orders: consumer GMV ÷ consumer orders (d2c + marketplace).
   An all-channel AOV (including subscription orders) is a different figure and must be labelled.

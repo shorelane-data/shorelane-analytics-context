@@ -1,7 +1,6 @@
 # status: draft — simulated-analyst answers (company-002, revenue-001); not human-confirmed.
 # dbt-derived (model.fct_revenue accepted_values: measure_name)
 name: gmv
-status: draft
 definition: >
   Gross merchandise value — the full retail ticket of every order, including third-party marketplace goods, gross of refunds. Marketing's headline measure; not a P&L figure.
 aliases: ['gross merchandise value']

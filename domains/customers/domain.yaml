@@ -1,6 +1,5 @@
 # status: draft — simulated-analyst answers (customers-001); owner + new-customer counting human-decided 2026-10-27.
 name: customers
-status: draft
 summary: Who counts as a Shorelane customer — how many real, deduplicated customers there are, how many are active or new in a period and in which channels, and how healthy identity resolution is across source systems.
 owner: Marketing (VP Marketing)
 grain: canonical real customer (app_db_customer_id) — dim_customers is one row per canonical profile; fct_orders one row per order from a real customer

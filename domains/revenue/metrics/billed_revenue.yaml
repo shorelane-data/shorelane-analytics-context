@@ -1,7 +1,6 @@
 # status: draft — simulated-analyst answers (company-002, revenue-001); not human-confirmed.
 # dbt-derived (model.fct_revenue accepted_values: measure_name)
 name: billed_revenue
-status: draft
 definition: >
   What was invoiced in the period. Subscriptions are invoiced for the full year up front (net-30); non-subscription orders bill on the order date. FP&A's measure.
 aliases: ['billings']

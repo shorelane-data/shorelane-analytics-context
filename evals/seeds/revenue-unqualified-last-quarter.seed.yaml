@@ -1,7 +1,6 @@
 # status: draft — simulated-analyst answer (company-002, company-004); not human-confirmed.
 question: "What was revenue last quarter?"
 domain: revenue
-status: draft
 intent: >
   Unqualified "revenue" means recognized revenue (GAAP), stated as an assumption.
   "Last quarter" is the most recent fully completed calendar quarter. Rejected
@@ -15,14 +14,16 @@ ir:
 expected:
   kind: sql_shape
   must_include:
-    - "fct_revenue filtered to measure_name = recognized_revenue"
-    - "explicit bounds for the most recent completed calendar quarter"
-    - "the answer states that revenue was interpreted as recognized revenue"
+  - "fct_revenue filtered to measure_name = recognized_revenue"
+  - "explicit bounds for the most recent completed calendar quarter"
+  - "the answer states that revenue was interpreted as recognized revenue"
   must_exclude:
-    - "summing amount across more than one measure_name"
-    - "GMV, billed revenue or collected cash substituted for recognized revenue"
-    - "a trailing-90-day or current-partial-quarter window"
+  - "summing amount across more than one measure_name"
+  - "GMV, billed revenue or collected cash substituted for recognized revenue"
+  - "a trailing-90-day or current-partial-quarter window"
 provenance: interview
 lineage:
-  - source: dbt_core
-    models: [fct_revenue]
+- source: dbt_core
+  models: [fct_revenue]
+review_history:
+- status: draft

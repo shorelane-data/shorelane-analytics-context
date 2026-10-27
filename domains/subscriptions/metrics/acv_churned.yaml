@@ -1,6 +1,5 @@
 # status: draft — simulated (subscriptions-001); not human-confirmed.
 name: acv_churned
-status: draft
 definition: Sum of ACV over decided terms in the period that churned (placed by term end date).
 grain: subscription term
 temporal_kind: flow

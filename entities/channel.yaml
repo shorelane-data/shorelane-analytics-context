@@ -1,7 +1,6 @@
-# Cross-domain subject entity: sales channel. status: draft (simulated, company-001/002).
+# Cross-domain subject entity: sales channel. draft (simulated, company-001/002).
 entities:
 - name: channel
-  status: draft
   aliases: [sales channel]
   description: The canonical sales channel of an order (fct_orders.channel).  # dbt-derived (model.fct_orders accepted_values)
   mappings:

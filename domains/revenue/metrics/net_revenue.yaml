@@ -1,7 +1,6 @@
 # status: draft — simulated-analyst answers (company-002, revenue-001); not human-confirmed.
 # dbt-derived (model.fct_revenue accepted_values: measure_name)
 name: net_revenue
-status: draft
 definition: >
   What Shorelane earns at the point of sale: d2c and subscription fees in full plus only the marketplace commission (take), minus refunds (negative rows, dated at refund date). Ops/COO's measure.
 aliases: ['net']

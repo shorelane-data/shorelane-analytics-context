@@ -1,7 +1,6 @@
-# Domain-specific status values on fct_subscriptions. status: draft (simulated, company-003).
+# Domain-specific status values on fct_subscriptions. draft (simulated, company-003).
 entities:
 - name: subscription_status
-  status: draft
   description: The outcome of a subscription term (fct_subscriptions.status).  # dbt-derived (accepted_values)
   mappings:
     renewed: The term ended and the customer renewed into a new term

@@ -1,6 +1,5 @@
 # status: draft — AOV scope human-decided 2026-10-27 (marketing-001).
 name: consumer_gmv
-status: draft
 definition: GMV on consumer orders (Direct-to-Consumer and Marketplace) at order date.
 grain: order (fct_orders)
 temporal_kind: flow

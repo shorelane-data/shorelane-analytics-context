@@ -1,6 +1,5 @@
 # status: draft — simulated (company-004, subscriptions-001); not human-confirmed.
 name: renewed_terms
-status: draft
 definition: Decided terms in the period that renewed — the renewal-rate numerator.
 grain: subscription term
 temporal_kind: flow

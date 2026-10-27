@@ -1,7 +1,6 @@
 # status: draft — simulated-analyst answer (revenue-001); not human-confirmed.
 question: "Break down GMV by channel for last quarter."
 domain: revenue
-status: draft
 intent: >
   fct_revenue has no channel column. GMV by channel comes from fct_orders at
   order date, summing gross_amount grouped by canonical channel (real customers
@@ -14,12 +13,14 @@ ir:
 expected:
   kind: sql_shape
   must_include:
-    - "fct_orders grouped by canonical channel at order date"
-    - "gross_amount summed for GMV"
+  - "fct_orders grouped by canonical channel at order date"
+  - "gross_amount summed for GMV"
   must_exclude:
-    - "stg_orders or any staging table as the source"
-    - "grouping by channel_raw or treating 'direct' as a separate channel"
+  - "stg_orders or any staging table as the source"
+  - "grouping by channel_raw or treating 'direct' as a separate channel"
 provenance: interview
 lineage:
-  - source: dbt_core
-    models: [fct_orders, fct_revenue]
+- source: dbt_core
+  models: [fct_orders, fct_revenue]
+review_history:
+- status: draft

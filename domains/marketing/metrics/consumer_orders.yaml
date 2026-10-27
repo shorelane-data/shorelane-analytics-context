@@ -1,6 +1,5 @@
 # status: draft — AOV scope human-decided 2026-10-27 (marketing-001).
 name: consumer_orders
-status: draft
 definition: Count of consumer orders (Direct-to-Consumer and Marketplace) from real customers in the period.
 grain: order (fct_orders)
 temporal_kind: flow

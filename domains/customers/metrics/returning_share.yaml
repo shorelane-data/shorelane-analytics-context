@@ -1,6 +1,5 @@
 # Human-decided 2026-10-27 (customers-002): returning share = returning ÷ active.
 name: returning_share
-status: draft
 definition: >
   Share of the period's active customers who had ordered before the period:
   returning customers ÷ active customers.

@@ -1,6 +1,5 @@
 # status: draft — simulated (company-004, subscriptions-001); not human-confirmed.
 name: renewal_rate
-status: draft
 definition: >
   Renewed terms ÷ decided terms (renewed + churned) whose end date falls in the period. Counted
   in terms, not customers.

@@ -1,6 +1,5 @@
 # status: draft — simulated (company-003, subscriptions-001); not human-confirmed.
 name: active_subscribers
-status: draft
 definition: >
   Distinct canonical real customers holding a subscription term whose date range contains the
   as-of date. Status is a term outcome and plays no part; is_current is not a liveness flag.

@@ -1,6 +1,5 @@
 # status: draft — simulated (catalog-001); not human-confirmed.
 name: line_revenue
-status: draft
 definition: >
   Consumer line revenue — SUM(line_amount) over consumer order lines (d2c + marketplace), net of
   the line discount, gross of refunds. Consumer GMV at line grain, not total revenue (subscriptions

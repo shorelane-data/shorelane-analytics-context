@@ -1,6 +1,5 @@
 # status: draft — simulated (catalog-001); owner, marketplace scope and margin aggregation human-decided 2026-10-27.
 name: catalog-margin
-status: draft
 summary: How consumer sales break down by product category and SKU, and what gross margin Shorelane earns on the inventory it owns (d2c lines).
 owner: Ops (COO)
 grain: fct_order_lines — one consumer order line from a real customer (subscription orders have no lines)

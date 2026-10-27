@@ -1,6 +1,5 @@
 # status: draft — simulated (marketing-001, governed reading b); not human-confirmed.
 name: cac
-status: draft
 definition: >
   Customer acquisition cost: ad spend ÷ warehouse-attributed new d2c customers, each counted once.
   Not spend ÷ platform-reported conversions (inflated by the platforms, so CAC comes out too low).

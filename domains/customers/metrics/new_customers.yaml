@@ -1,6 +1,5 @@
 # status: draft — definition simulated (customers-001); distinct-customer counting human-decided 2026-10-27.
 name: new_customers
-status: draft
 definition: >
   Distinct canonical real customers whose first-ever Shorelane order (any channel) falls in the
   period. New to Shorelane, not new to a channel: by channel, a customer is new in the channel of

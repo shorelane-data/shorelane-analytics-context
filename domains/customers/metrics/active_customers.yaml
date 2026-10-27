@@ -1,6 +1,5 @@
 # status: draft — simulated-analyst answers (customers-001); not human-confirmed.
 name: active_customers
-status: draft
 definition: >
   Distinct canonical real customers who placed at least one order inside the period.
 aliases: [customers who ordered]

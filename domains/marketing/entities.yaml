@@ -1,7 +1,6 @@
-# Domain-specific values. status: draft (simulated, marketing-001).
+# Domain-specific values. draft (simulated, marketing-001).
 entities:
 - name: ad_platform
-  status: draft
   description: Paid-media platform on fct_marketing_spend.platform.
   mappings:
     google: Google Ads

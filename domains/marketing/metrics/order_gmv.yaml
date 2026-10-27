@@ -1,6 +1,5 @@
 # status: draft — simulated (company-003, revenue-001, marketing-001); not human-confirmed.
 name: order_gmv
-status: draft
 definition: >
   GMV at order grain — SUM(gross_amount) on fct_orders at order date, gross of refunds. The
   sliceable form of revenue.gmv: use it for GMV by channel or segment; totals must reconcile to

@@ -1,6 +1,5 @@
 # status: draft — simulated (company-002, customers-001); all-channel scope human-decided 2026-10-27 at Stage 5 (dashboard match).
 name: current_customers
-status: draft
 definition: >
   Distinct canonical real customers with at least one order in any channel (including business
   subscriptions) in the trailing twelve calendar months ending at (and including) the snapshot

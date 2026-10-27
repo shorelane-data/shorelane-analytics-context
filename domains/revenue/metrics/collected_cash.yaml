@@ -1,7 +1,6 @@
 # status: draft — simulated-analyst answers (company-002, revenue-001); not human-confirmed.
 # dbt-derived (model.fct_revenue accepted_values: measure_name)
 name: collected_cash
-status: draft
 definition: >
   Cash that actually arrived, minus refunds paid back out. Subscription invoices collect after billing (net-30); bad-debt invoices never land. Treasury/Controller's measure.
 aliases: ['cash collected', 'collections']

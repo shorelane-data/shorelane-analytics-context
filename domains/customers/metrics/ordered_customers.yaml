@@ -1,6 +1,5 @@
 # status: draft — simulated-analyst answers (customers-001); not human-confirmed.
 name: ordered_customers
-status: draft
 definition: >
   All-time count of canonical real customers who have ever ordered. A legitimate reference figure
   only when explicitly asked for ("customers who have ever ordered"); never the default customer count.

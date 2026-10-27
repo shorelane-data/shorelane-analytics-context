@@ -1,0 +1,21 @@
+# SIMULATION TEST ARTIFACT
+# Migrated from ACF v0.2 (2026-10-27); not yet re-validated against v0.3 definitions.
+# MIGRATION: domain executive-revenue renamed to revenue.
+question: Break recognized revenue down by channel.
+domain: revenue
+intent: The executive channel chart omits test/internal exclusion and must not be used as a reconciliation target. fct_revenue supports date grouping and measure selection only. Use fct_orders for order-date GMV/earnings splits. For recognized, billed or collected splits, join the corresponding event rows to eligible fct_orders on order_id, use measure-specific activity dates, and attribute refunds to original orders. Reconcile every split to its fct_revenue total.
+expected:
+  kind: sql_shape
+  must_include:
+  - The executive channel chart omits test/internal exclusion and must not be used as a reconciliation target. fct_revenue supports date grouping and measure selection only. Use fct_orders for order-date GMV/earnings splits. For recognized, billed or collected splits, join the corresponding event rows to eligible fct_orders on order_id, use measure-specific activity dates, and attribute refunds to original orders. Reconcile every split to its fct_revenue total.
+provenance: interview
+lineage:
+- source: dbt_core
+  models:
+  - fct_revenue
+  - fct_orders
+  - stg_revenue_recognition
+  - stg_invoices
+  - stg_refunds
+review_history:
+- status: draft

@@ -3,8 +3,7 @@
 # MIGRATION: domain executive-revenue renamed to revenue.
 question: What was gmv last quarter?
 domain: revenue
-intent: Full-ticket order value at order date, including full subscription contract
-  value and marketplace retail spend; gross of refunds.
+intent: Full-ticket order value at order date, including full subscription contract value and marketplace retail spend; gross of refunds.
 ir:
   metric: gmv
   dimensions: []
@@ -22,8 +21,9 @@ expected:
   - Sum different measures.
   - Double-subtract refunds.
 provenance: interview
-status: draft
 lineage:
 - source: dbt_core
   models:
   - fct_revenue
+review_history:
+- status: draft

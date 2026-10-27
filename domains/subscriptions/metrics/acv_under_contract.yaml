@@ -1,6 +1,5 @@
 # status: draft — simulated (subscriptions-001); not human-confirmed.
 name: acv_under_contract
-status: draft
 definition: >
   Sum of ACV over the terms that contain the as-of date — a book value at the per-seat prices
   locked in at each term's start.

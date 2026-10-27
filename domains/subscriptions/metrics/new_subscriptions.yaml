@@ -1,6 +1,5 @@
 # status: draft — simulated (subscriptions-001); not human-confirmed.
 name: new_subscriptions
-status: draft
 definition: >
   First subscription terms (is_first_term) of real customers whose term start date falls in the
   period (inclusive). Later terms are renewals ("renewal starts"), not new subscriptions.

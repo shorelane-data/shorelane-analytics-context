@@ -1,7 +1,6 @@
-# Domain-specific status/type values on fct_revenue. status: draft (simulated, company-002, revenue-001).
+# Domain-specific status/type values on fct_revenue. draft (simulated, company-002, revenue-001).
 entities:
 - name: measure_name
-  status: draft
   description: Which of the five non-additive revenue measures a fct_revenue row contributes to.  # dbt-derived (model.fct_revenue accepted_values)
   mappings:
     recognized_revenue: Recognized revenue (GAAP, ratable) — Finance's official number; default for unqualified "revenue"
