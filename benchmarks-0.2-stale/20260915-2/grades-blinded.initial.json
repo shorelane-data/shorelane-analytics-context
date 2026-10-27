@@ -1,0 +1,559 @@
+{
+  "grades": [
+    {
+      "case_id": "S01",
+      "candidates": {
+        "A": {
+          "status": "pass",
+          "reason": "Counts distinct real customers with inclusive DATE term bounds and no status or catalog eligibility filter.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        },
+        "B": {
+          "status": "fail",
+          "reason": "Distinct-customer grain is correct, but term_end_date > excludes the endpoint and no real-account restriction is applied.",
+          "missing_requirements": [
+            "Inclusive term-end eligibility",
+            "Distinct real customers, excluding test/internal accounts"
+          ],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        }
+      }
+    },
+    {
+      "case_id": "S02",
+      "candidates": {
+        "A": {
+          "status": "pass",
+          "reason": "Uses fct_revenue and reports its billed_revenue group with explicit Q2 activity_date bounds and signed SUM; grouping keeps measures separate and no refunds are subtracted again. Conditional SUM bounds are semantically equivalent to WHERE bounds.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        },
+        "B": {
+          "status": "pass",
+          "reason": "Uses fct_revenue and reports its billed_revenue group with explicit Q2 activity_date bounds and signed SUM; grouping keeps measures separate and no refunds are subtracted again. Conditional SUM bounds are semantically equivalent to WHERE bounds.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        }
+      }
+    },
+    {
+      "case_id": "S03",
+      "candidates": {
+        "A": {
+          "status": "fail",
+          "reason": "Correctly uses normalized fct_orders.channel and explains the dated, non-backfilled rename, but omits the raw-label field and unchanged-label rules.",
+          "missing_requirements": [
+            "channel_raw preserves original labels",
+            "business_subscription and marketplace retain their labels"
+          ],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": [
+            "Compound rubric additionally requires discussion of unchanged unrelated channels and the raw-label field for a direct/d2c comparison; these unconditional clauses make the seed broader than the question."
+          ]
+        },
+        "B": {
+          "status": "pass",
+          "reason": "Uses normalized fct_orders.channel; the channel/channel_raw diagnostic establishes the June 2022 switch, retained historical direct labels, and unchanged marketplace/business_subscription labels. The different revenue basis is outside this rubric.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": [
+            "Compound rubric additionally requires discussion of unchanged unrelated channels and the raw-label field for a direct/d2c comparison; these unconditional clauses make the seed broader than the question."
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "S04",
+      "candidates": {
+        "A": {
+          "status": "pass",
+          "reason": "Uses fct_revenue and reports its collected_cash group with explicit Q2 activity_date bounds and signed SUM; grouping keeps measures separate and no refunds are subtracted again. Conditional SUM bounds are semantically equivalent to WHERE bounds.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        },
+        "B": {
+          "status": "pass",
+          "reason": "Uses fct_revenue and reports its collected_cash group with explicit Q2 activity_date bounds and signed SUM; grouping keeps measures separate and no refunds are subtracted again. Conditional SUM bounds are semantically equivalent to WHERE bounds.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        }
+      }
+    },
+    {
+      "case_id": "S05",
+      "candidates": {
+        "A": {
+          "status": "fail",
+          "reason": "Correctly rejects company-wide line revenue and demonstrates missing subscription coverage, but only says marketplace amounts may differ and does not supply the required line-value and cost guidance.",
+          "missing_requirements": [
+            "Line amounts sum to consumer gross retail value; marketplace retail is not Shorelane take",
+            "Use fct_order_lines for product/category mix, quantities and line margin",
+            "Marketplace line margin does not establish economic margin; marketplace/subscription cost bases are unavailable"
+          ],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": [
+            "Compound rubric includes product mix and economic-margin/cost guidance beyond whether lines cover company revenue."
+          ]
+        },
+        "B": {
+          "status": "pass",
+          "reason": "Conceptual answer supplies consumer-only gross retail coverage, subscription exclusion, marketplace take distinction, line-analysis uses and cost/margin limitations.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": [
+            "Compound rubric includes product mix and economic-margin/cost guidance beyond whether lines cover company revenue."
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "S06",
+      "candidates": {
+        "A": {
+          "status": "fail",
+          "reason": "Reports all dimension profiles by first_seen_date instead of real customers ordering within twelve full months; clarification leaves the required current-customer definition unresolved.",
+          "missing_requirements": [
+            "Trailing twelve full calendar months of orders",
+            "Exclude test/internal and never-ordered profiles"
+          ],
+          "forbidden_behaviors": [],
+          "abstained": true,
+          "rubric_caveats": []
+        },
+        "B": {
+          "status": "pass",
+          "reason": "Distinct customer_id from governed fct_orders over September 2025 through August 2026 satisfies canonical grain, purchasing eligibility and full-month window.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        }
+      }
+    },
+    {
+      "case_id": "S07",
+      "candidates": {
+        "A": {
+          "status": "pass",
+          "reason": "Counts Q2 order rows/IDs from governed fct_orders, which encapsulates account hygiene; no additional status exclusion is introduced. Staging diagnostics do not replace the reported population.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        },
+        "B": {
+          "status": "pass",
+          "reason": "Counts Q2 order rows/IDs from governed fct_orders, which encapsulates account hygiene; no additional status exclusion is introduced. Staging diagnostics do not replace the reported population.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        }
+      }
+    },
+    {
+      "case_id": "S08",
+      "candidates": {
+        "A": {
+          "status": "pass",
+          "reason": "Counts bounded Q2 governed fct_orders and recommends preserving its population while diagnosing staging separately; this operationally retains the governed hygiene exclusions.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        },
+        "B": {
+          "status": "fail",
+          "reason": "Preserves test/internal exclusions and rejects matching the dashboard, but gives neither an order-date bounded count nor a pattern with explicit bounds.",
+          "missing_requirements": [
+            "Count eligible fct_orders rows within explicit order_date bounds"
+          ],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": [
+            "Question is conceptual, but its frozen rubric explicitly requires a bounded count; no execution is necessary if an adequate pattern or complete method is supplied."
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "S09",
+      "candidates": {
+        "A": {
+          "status": "pass",
+          "reason": "Uses fct_revenue and reports its gmv group with explicit Q2 activity_date bounds and signed SUM; grouping keeps measures separate and no refunds are subtracted again. Conditional SUM bounds are semantically equivalent to WHERE bounds.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        },
+        "B": {
+          "status": "pass",
+          "reason": "Uses fct_revenue and reports its gmv group with explicit Q2 activity_date bounds and signed SUM; grouping keeps measures separate and no refunds are subtracted again. Conditional SUM bounds are semantically equivalent to WHERE bounds.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        }
+      }
+    },
+    {
+      "case_id": "S10",
+      "candidates": {
+        "A": {
+          "status": "pass",
+          "reason": "Includes live terms on retired generations, rejects is_current eligibility and specifies term-start effective pricing.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": [
+            "Term-start pricing is an unconditional extra requirement despite the question asking only subscriber eligibility."
+          ]
+        },
+        "B": {
+          "status": "fail",
+          "reason": "Includes retired-plan terms and does not filter to current catalog plans, but omits term-start effective pricing.",
+          "missing_requirements": [
+            "Term-start effective pricing"
+          ],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": [
+            "Term-start pricing is an unconditional extra requirement despite the question asking only subscriber eligibility."
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "S11",
+      "candidates": {
+        "A": {
+          "status": "fail",
+          "reason": "Uses explicit Q2 calendar-quarter bounds, but no explicit as-of date is stated for selecting that quarter.",
+          "missing_requirements": [
+            "Explicit as-of date"
+          ],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        },
+        "B": {
+          "status": "pass",
+          "reason": "Pins the as-of date to September 15, 2026 and selects the most recent elapsed calendar quarter with April 1 inclusive/July 1 exclusive bounds.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        }
+      }
+    },
+    {
+      "case_id": "S12",
+      "candidates": {
+        "A": {
+          "status": "pass",
+          "reason": "Uses marketplace net_amount as commission/take and explicitly distinguishes retail GMV; refund event adjustments do not violate this rubric.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        },
+        "B": {
+          "status": "pass",
+          "reason": "Reports marketplace net_amount as retained earnings and separates gross retail value; refund deduction is not required by this seed.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        }
+      }
+    },
+    {
+      "case_id": "S13",
+      "candidates": {
+        "A": {
+          "status": "pass",
+          "reason": "Groups governed fct_orders by canonical customer_id within Q2, retains customers with at least two distinct normalized channels, and counts each once without a current-snapshot restriction.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        },
+        "B": {
+          "status": "pass",
+          "reason": "Groups governed fct_orders by canonical customer_id within Q2, retains customers with at least two distinct normalized channels, and counts each once without a current-snapshot restriction.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        }
+      }
+    },
+    {
+      "case_id": "S14",
+      "candidates": {
+        "A": {
+          "status": "pass",
+          "reason": "Uses fct_revenue and reports its net_revenue group with explicit Q2 activity_date bounds and signed SUM; grouping keeps measures separate and no refunds are subtracted again. Conditional SUM bounds are semantically equivalent to WHERE bounds.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        },
+        "B": {
+          "status": "pass",
+          "reason": "Uses fct_revenue and reports its net_revenue group with explicit Q2 activity_date bounds and signed SUM; grouping keeps measures separate and no refunds are subtracted again. Conditional SUM bounds are semantically equivalent to WHERE bounds.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        }
+      }
+    },
+    {
+      "case_id": "S15",
+      "candidates": {
+        "A": {
+          "status": "fail",
+          "reason": "Uses distinct canonical IDs and first_order_date in Q2, but dim_customers is not restricted to real account_type customers. Alternate profile counts are labeled, not substituted for the headline KPI.",
+          "missing_requirements": [
+            "Real-customer hygiene exclusion"
+          ],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        },
+        "B": {
+          "status": "pass",
+          "reason": "Finds each canonical customer's earliest eligible fct_orders date across all channels before applying Q2 bounds; grouped rows count real customers once.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        }
+      }
+    },
+    {
+      "case_id": "S16",
+      "candidates": {
+        "A": {
+          "status": "pass",
+          "reason": "Uses fct_revenue and reports its recognized_revenue group with explicit Q2 activity_date bounds and signed SUM; grouping keeps measures separate and no refunds are subtracted again. Conditional SUM bounds are semantically equivalent to WHERE bounds.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        },
+        "B": {
+          "status": "pass",
+          "reason": "Uses fct_revenue and reports its recognized_revenue group with explicit Q2 activity_date bounds and signed SUM; grouping keeps measures separate and no refunds are subtracted again. Conditional SUM bounds are semantically equivalent to WHERE bounds.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        }
+      }
+    },
+    {
+      "case_id": "S17",
+      "candidates": {
+        "A": {
+          "status": "pass",
+          "reason": "Anchors on ending terms, resolves successors via renewed_from_subscription_id, and divides renewed by renewed-or-churned, excluding undecided terms.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        },
+        "B": {
+          "status": "fail",
+          "reason": "Uses the correct ending-term cohort and successor key, but divides by every ending term without restricting to resolved renewed/churned outcomes.",
+          "missing_requirements": [
+            "Renewed / (renewed + churned) denominator"
+          ],
+          "forbidden_behaviors": [
+            "Active undecided terms can enter denominator"
+          ],
+          "abstained": false,
+          "rubric_caveats": []
+        }
+      }
+    },
+    {
+      "case_id": "S18",
+      "candidates": {
+        "A": {
+          "status": "fail",
+          "reason": "Correct recognition_date event join to eligible fct_orders and explicit reconciliation are present. The required chart warning and refund-to-original-order treatment are absent; an unresolved refund-policy limitation does not establish that treatment.",
+          "missing_requirements": [
+            "Executive channel chart omits hygiene and must not be a reconciliation target",
+            "Attribute applicable refunds to original orders"
+          ],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": [
+            "Compound rubric unconditionally includes an executive-chart warning although no dashboard is mentioned. Order-date GMV/earnings and billed/collected instructions are conditional on other measures and are not demanded here."
+          ]
+        },
+        "B": {
+          "status": "fail",
+          "reason": "Correct recognition_date joins and fct_revenue reconciliation are present, with unmatched staging kept outside the reported total. Missing required chart warning and refund attribution remain.",
+          "missing_requirements": [
+            "Executive channel chart omits hygiene and must not be a reconciliation target",
+            "Attribute applicable refunds to original orders"
+          ],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": [
+            "Compound rubric unconditionally includes an executive-chart warning although no dashboard is mentioned. Order-date GMV/earnings and billed/collected instructions are conditional on other measures and are not demanded here."
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "S19",
+      "candidates": {
+        "A": {
+          "status": "pass",
+          "reason": "Uses fct_revenue and reports its net_revenue group with explicit Q2 activity_date bounds and signed SUM; grouping keeps measures separate and no refunds are subtracted again. Conditional SUM bounds are semantically equivalent to WHERE bounds.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        },
+        "B": {
+          "status": "pass",
+          "reason": "Uses fct_revenue and reports its net_revenue group with explicit Q2 activity_date bounds and signed SUM; grouping keeps measures separate and no refunds are subtracted again. Conditional SUM bounds are semantically equivalent to WHERE bounds.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        }
+      }
+    },
+    {
+      "case_id": "S20",
+      "candidates": {
+        "A": {
+          "status": "fail",
+          "reason": "Excludes September and compares explicit full-month bounds, explains post-order recognition, and states an observation date. It omits twelve monthly installments and expressly implements only reporting-date bounds rather than a pinned load.",
+          "missing_requirements": [
+            "Subscription recognition continues for twelve monthly installments",
+            "Pin the as-of warehouse load"
+          ],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": [
+            "The rubric combines comparison shape with a twelve-installment business explanation and load pinning; a reporting-date cutoff alone does not pin a historical warehouse load."
+          ]
+        },
+        "B": {
+          "status": "fail",
+          "reason": "Labels September partial but includes it in the returned monthly series through September 15; does not establish the twelve-installment recognition tail or a pinned load.",
+          "missing_requirements": [
+            "Twelve monthly installments can extend recognition past the last order month",
+            "Comparison bounds ending at a fully elapsed month and excluding the partial month",
+            "Pin the as-of warehouse load"
+          ],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": [
+            "The rubric combines comparison shape with a twelve-installment business explanation and load pinning; a reporting-date cutoff alone does not pin a historical warehouse load."
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "S21",
+      "candidates": {
+        "A": {
+          "status": "pass",
+          "reason": "States recognized revenue as its assumed default and reports its separate fct_revenue group; measures are not summed together. A request to confirm the basis does not undo the supplied answer.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": [
+            "No explicit persona or measure was supplied, so that conditional override requirement is not triggered."
+          ]
+        },
+        "B": {
+          "status": "pass",
+          "reason": "States recognized revenue as its assumed default and reports its separate fct_revenue group; measures are not summed together. A request to confirm the basis does not undo the supplied answer.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": [
+            "No explicit persona or measure was supplied, so that conditional override requirement is not triggered."
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "S22",
+      "candidates": {
+        "A": {
+          "status": "pass",
+          "reason": "Complete conceptual answer specifies qualified LEFT JOIN resolution, unknown unresolved aliases, canonical deduplication, Stripe fanout, distinct-source coverage and event/ticket routing.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": [
+            "Compound rubric also demands distinct-source coverage and invoice/refund/ticket routing beyond the immediate identity-to-order join question."
+          ]
+        },
+        "B": {
+          "status": "fail",
+          "reason": "Correctly prevents canonical-ID fanout and qualifies source ID joins, but does not specify LEFT JOIN unknown retention, distinct-source coverage or event/ticket routing.",
+          "missing_requirements": [
+            "LEFT JOIN resolution with unresolved aliases retained as unknown, never new customers",
+            "Count distinct source systems for identity coverage",
+            "Attribute invoices/refunds through order_id to fct_orders; resolve tickets through qualified crosswalk"
+          ],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": [
+            "Compound rubric also demands distinct-source coverage and invoice/refund/ticket routing beyond the immediate identity-to-order join question."
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "S23",
+      "candidates": {
+        "A": {
+          "status": "pass",
+          "reason": "Counts is_first_term subscription IDs/rows starting within explicit Q2 term_start_date bounds; renewal starts are excluded from the new-subscription KPI.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        },
+        "B": {
+          "status": "pass",
+          "reason": "Counts is_first_term subscription IDs/rows starting within explicit Q2 term_start_date bounds; renewal starts are excluded from the new-subscription KPI.",
+          "missing_requirements": [],
+          "forbidden_behaviors": [],
+          "abstained": false,
+          "rubric_caveats": []
+        }
+      }
+    }
+  ]
+}

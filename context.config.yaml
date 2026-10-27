@@ -56,6 +56,8 @@ time_tokens:
   - last_quarter
   - current_billing_period
   - all_time
+  - last_12_full_months    # migrated v0.2 seeds: twelve complete calendar months ending last month
+  - selected_period        # migrated v0.2 seeds: the period the asker selected
   fiscal: []
 variants:
   max_per_seed: 20

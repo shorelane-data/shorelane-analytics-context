@@ -1,0 +1,73 @@
+{
+  "off": {
+    "answer_count": 23,
+    "cases_with_executed_sql": [
+      "S01",
+      "S02",
+      "S03",
+      "S04",
+      "S05",
+      "S06",
+      "S07",
+      "S08",
+      "S09",
+      "S10",
+      "S11",
+      "S12",
+      "S13",
+      "S14",
+      "S15",
+      "S16",
+      "S17",
+      "S18",
+      "S19",
+      "S20",
+      "S21",
+      "S22",
+      "S23"
+    ],
+    "unique_executed_sql_texts": 17,
+    "conceptual_or_unexecuted_only": [],
+    "integrity_notes": [
+      "Only cases.json was read from the local repository; no authored context, expected answers, seeds, earlier runs, dashboards, or other agent outputs were consulted.",
+      "Warehouse get_table_info unexpectedly returned view SQL alongside schema for int_customer_identity and stg_invoices. These incidental view definitions were disregarded; no answer relies on them. Subsequent staging schema retrieval used column-only INFORMATION_SCHEMA. No further view definitions were accessed.",
+      "All numeric answers derive from read-only BigQuery SELECT queries. Monetary units are as stored because currency metadata was absent.",
+      "Repeated case queries are included with exact SQL and returned tool results. Two initial schema-profiling SELECT attempts used a reserved alias (rows) and failed validation; corrected successful executions are included."
+    ]
+  },
+  "on": {
+    "answer_count": 23,
+    "cases_with_executed_sql": [
+      "S01",
+      "S02",
+      "S03",
+      "S04",
+      "S06",
+      "S07",
+      "S09",
+      "S11",
+      "S12",
+      "S13",
+      "S14",
+      "S15",
+      "S16",
+      "S17",
+      "S18",
+      "S19",
+      "S20",
+      "S21",
+      "S23"
+    ],
+    "unique_executed_sql_texts": 14,
+    "conceptual_or_unexecuted_only": [
+      "S05",
+      "S08",
+      "S10",
+      "S22"
+    ],
+    "integrity_notes": [
+      "Read only cases.json and frozen context-on.md as authored inputs. No grading inputs, dashboards, or other agent outputs were read.",
+      "Schema discovery get_table_info exposed ViewQuery for stg_refunds and stg_revenue_recognition: simple staging source/cast definitions. Column names/types were used; source/raw tables and view SQL were not queried or copied into answers. All data queries used BigQuery MCP SELECTs against nodal-shorelane.shorelane."
+    ]
+  }
+}

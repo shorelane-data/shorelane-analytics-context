@@ -1,0 +1,25 @@
+# SIMULATION TEST ARTIFACT
+# Migrated from ACF v0.2 (2026-10-27); not yet re-validated against v0.3 definitions.
+# MIGRATION: domain executive-revenue renamed to revenue.
+question: Can order-line sales measure all company revenue?
+domain: revenue
+intent: Order lines exist only for d2c and marketplace orders, sum to consumer gross
+  value, and exclude subscriptions. Marketplace line value is retail, not Shorelane
+  take. Use fct_order_lines for consumer product/category mix, quantities and line
+  margin. Marketplace retail line margin does not establish Shorelane economic margin;
+  marketplace/subscription cost basis is not provided.
+expected:
+  kind: sql_shape
+  must_include:
+  - Order lines exist only for d2c and marketplace orders, sum to consumer gross value,
+    and exclude subscriptions. Marketplace line value is retail, not Shorelane take.
+    Use fct_order_lines for consumer product/category mix, quantities and line margin.
+    Marketplace retail line margin does not establish Shorelane economic margin; marketplace/subscription
+    cost basis is not provided.
+provenance: interview
+status: draft
+lineage:
+- source: dbt_core
+  models:
+  - fct_order_lines
+  - fct_orders

@@ -1,0 +1,1162 @@
+{
+  "as_of_date": "2026-09-15",
+  "condition": "context_off",
+  "integrity_notes": [
+    "Only cases.json was read from the local repository; no authored context, expected answers, seeds, earlier runs, dashboards, or other agent outputs were consulted.",
+    "Warehouse get_table_info unexpectedly returned view SQL alongside schema for int_customer_identity and stg_invoices. These incidental view definitions were disregarded; no answer relies on them. Subsequent staging schema retrieval used column-only INFORMATION_SCHEMA. No further view definitions were accessed.",
+    "All numeric answers derive from read-only BigQuery SELECT queries. Monetary units are as stored because currency metadata was absent.",
+    "Repeated case queries are included with exact SQL and returned tool results. Two initial schema-profiling SELECT attempts used a reserved alias (rows) and failed validation; corrected successful executions are included."
+  ],
+  "cases": [
+    {
+      "case_id": "S01",
+      "question": "How many active subscribers did we have at month end?",
+      "answer": "At August 31, 2026 month end, there were 3,583 active subscribers (distinct customers), representing 3,583 active subscriptions and 159,928 seats.",
+      "sql": [
+        {
+          "text": "SELECT COUNT(DISTINCT customer_id) active_subscribers, COUNT(DISTINCT subscription_id) active_subscriptions, SUM(seats) active_seats FROM `nodal-shorelane.shorelane.fct_subscriptions` WHERE term_start_date <= DATE '2026-08-31' AND term_end_date > DATE '2026-08-31' AND (cancelled_date IS NULL OR cancelled_date > DATE '2026-08-31')",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"active_subscribers\":3583,\"active_subscriptions\":3583,\"active_seats\":159928}"
+              }
+            ]
+          },
+          "trace_id": "active",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "Month end means the most recently completed month, August 31, 2026.",
+        "A subscriber is a distinct customer with a term started by that date, term end strictly later, and no cancellation on or before that date.",
+        "Term end is treated as exclusive; all plan generations included."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.fct_subscriptions"
+      ],
+      "clarification_needed": null,
+      "limitations": [
+        "No documented policy for term-end inclusivity, cancellation grace periods, or subscriber grain was available; this is an explicitly assumed operational count."
+      ]
+    },
+    {
+      "case_id": "S02",
+      "question": "What was billed revenue last quarter?",
+      "answer": "Billed revenue in Q2 2026 was 9,215,469.97 in the warehouse's monetary units.",
+      "sql": [
+        {
+          "text": "SELECT measure_name, MIN(activity_date) min_date, MAX(activity_date) max_date, COUNT(*) row_count, COUNTIF(amount IS NULL) null_amounts, ROUND(SUM(IF(activity_date >= DATE '2026-04-01' AND activity_date < DATE '2026-07-01',amount,0)),2) q2_amount FROM `nodal-shorelane.shorelane.fct_revenue` GROUP BY measure_name",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"billed_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":78710,\"null_amounts\":0,\"q2_amount\":\"9215469.97\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"collected_cash\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":81525,\"null_amounts\":0,\"q2_amount\":\"9114052.34\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"gmv\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":78710,\"null_amounts\":0,\"q2_amount\":\"9391427.22\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"net_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":82508,\"null_amounts\":0,\"q2_amount\":\"9178187.54\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"recognized_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":225883,\"null_amounts\":0,\"q2_amount\":\"8948677.37\"}"
+              }
+            ]
+          },
+          "trace_id": "measures",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "Last quarter means April 1–June 30, 2026.",
+        "Use the explicit billed_revenue measure and its activity_date."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.fct_revenue"
+      ],
+      "clarification_needed": null,
+      "limitations": [
+        "Currency and fiscal calendar are not documented in column metadata."
+      ]
+    },
+    {
+      "case_id": "S03",
+      "question": "Compare direct and d2c revenue over time.",
+      "answer": "The warehouse normalizes direct and d2c to the same d2c channel: raw direct ends May 31, 2022 and raw d2c starts June 1, 2022. Treat this as a continuous series rather than competing channels. Annual order net amounts: 2019 1,186,158.36; 2020 1,351,864.37; 2021 1,547,357.51; 2022 1,701,355.74; 2023 1,959,489.18; 2024 2,233,631.88; 2025 2,509,432.38; 2026 through September 15 1,778,393.80.",
+      "sql": [
+        {
+          "text": "SELECT channel, channel_raw, MIN(order_date) min_date, MAX(order_date) max_date, COUNT(*) row_count FROM `nodal-shorelane.shorelane.fct_orders` GROUP BY channel,channel_raw",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"channel\":\"business_subscription\",\"channel_raw\":\"business_subscription\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":15124}"
+              },
+              {
+                "type": "text",
+                "text": "{\"channel\":\"d2c\",\"channel_raw\":\"d2c\",\"min_date\":\"2022-06-01\",\"max_date\":\"2026-09-15\",\"row_count\":32328}"
+              },
+              {
+                "type": "text",
+                "text": "{\"channel\":\"d2c\",\"channel_raw\":\"direct\",\"min_date\":\"2019-01-01\",\"max_date\":\"2022-05-31\",\"row_count\":15415}"
+              },
+              {
+                "type": "text",
+                "text": "{\"channel\":\"marketplace\",\"channel_raw\":\"marketplace\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":15843}"
+              }
+            ]
+          },
+          "trace_id": "channels",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        },
+        {
+          "text": "SELECT EXTRACT(YEAR FROM order_date) year, channel, STRING_AGG(DISTINCT channel_raw,', ' ORDER BY channel_raw) raw_labels, ROUND(SUM(net_amount),2) order_net_amount FROM `nodal-shorelane.shorelane.fct_orders` WHERE channel='d2c' AND order_date <= DATE '2026-09-15' GROUP BY year,channel ORDER BY year",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"year\":2019,\"channel\":\"d2c\",\"raw_labels\":\"direct\",\"order_net_amount\":\"1186158.36\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"year\":2020,\"channel\":\"d2c\",\"raw_labels\":\"direct\",\"order_net_amount\":\"1351864.37\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"year\":2021,\"channel\":\"d2c\",\"raw_labels\":\"direct\",\"order_net_amount\":\"1547357.51\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"year\":2022,\"channel\":\"d2c\",\"raw_labels\":\"d2c, direct\",\"order_net_amount\":\"1701355.74\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"year\":2023,\"channel\":\"d2c\",\"raw_labels\":\"d2c\",\"order_net_amount\":\"1959489.18\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"year\":2024,\"channel\":\"d2c\",\"raw_labels\":\"d2c\",\"order_net_amount\":\"2233631.88\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"year\":2025,\"channel\":\"d2c\",\"raw_labels\":\"d2c\",\"order_net_amount\":\"2509432.38\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"year\":2026,\"channel\":\"d2c\",\"raw_labels\":\"d2c\",\"order_net_amount\":\"1778393.8\"}"
+              }
+            ]
+          },
+          "trace_id": "directtrend",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "Revenue proxy here is SUM(fct_orders.net_amount) by order year.",
+        "Use normalized channel for longitudinal comparison.",
+        "2026 is a partial year and should not be compared directly with full-year totals."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.fct_orders"
+      ],
+      "clarification_needed": "If you want recognized revenue, refund-adjusted net revenue, or a monthly comparison instead of annual order amounts, specify that basis.",
+      "limitations": [
+        "The raw-label switch is inferred from warehouse values; no business explanation for the rename was supplied.",
+        "Order net amounts may differ from revenue measures on recognition or refund timing."
+      ]
+    },
+    {
+      "case_id": "S04",
+      "question": "What was collected cash last quarter?",
+      "answer": "Collected cash in Q2 2026 was 9,114,052.34 in warehouse monetary units.",
+      "sql": [
+        {
+          "text": "SELECT measure_name, MIN(activity_date) min_date, MAX(activity_date) max_date, COUNT(*) row_count, COUNTIF(amount IS NULL) null_amounts, ROUND(SUM(IF(activity_date >= DATE '2026-04-01' AND activity_date < DATE '2026-07-01',amount,0)),2) q2_amount FROM `nodal-shorelane.shorelane.fct_revenue` GROUP BY measure_name",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"billed_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":78710,\"null_amounts\":0,\"q2_amount\":\"9215469.97\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"collected_cash\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":81525,\"null_amounts\":0,\"q2_amount\":\"9114052.34\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"gmv\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":78710,\"null_amounts\":0,\"q2_amount\":\"9391427.22\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"net_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":82508,\"null_amounts\":0,\"q2_amount\":\"9178187.54\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"recognized_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":225883,\"null_amounts\":0,\"q2_amount\":\"8948677.37\"}"
+              }
+            ]
+          },
+          "trace_id": "measures",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "Last quarter is April 1–June 30, 2026.",
+        "Use collected_cash on its activity_date, rather than selecting invoices by billing date."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.fct_revenue"
+      ],
+      "clarification_needed": null,
+      "limitations": [
+        "Currency and completeness of the cash measure are not independently documented."
+      ]
+    },
+    {
+      "case_id": "S05",
+      "question": "Can order-line sales measure all company revenue?",
+      "answer": "No. In Q2 2026, order lines cover all 2,157 d2c and 745 marketplace orders, but none of the 890 business-subscription orders. Order-line sales therefore omit a company revenue stream. Gross merchandise sales may also differ from marketplace earnings and accounting recognition. Use a specifically selected fct_revenue measure for company totals.",
+      "sql": [
+        {
+          "text": "SELECT o.channel, COUNT(DISTINCT o.order_id) orders,COUNT(DISTINCT l.order_id) orders_with_lines FROM `nodal-shorelane.shorelane.fct_orders` o LEFT JOIN (SELECT DISTINCT order_id FROM `nodal-shorelane.shorelane.fct_order_lines`) l USING(order_id) WHERE o.order_date >= DATE '2026-04-01' AND o.order_date < DATE '2026-07-01' GROUP BY o.channel",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"channel\":\"business_subscription\",\"orders\":890,\"orders_with_lines\":0}"
+              },
+              {
+                "type": "text",
+                "text": "{\"channel\":\"d2c\",\"orders\":2157,\"orders_with_lines\":2157}"
+              },
+              {
+                "type": "text",
+                "text": "{\"channel\":\"marketplace\",\"orders\":745,\"orders_with_lines\":745}"
+              }
+            ]
+          },
+          "trace_id": "linecoverage",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "Coverage check uses Q2 2026 and order_id existence."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.fct_orders",
+        "nodal-shorelane.shorelane.fct_order_lines",
+        "nodal-shorelane.shorelane.fct_revenue"
+      ],
+      "clarification_needed": null,
+      "limitations": [
+        "Line coverage establishes incompleteness; it does not by itself establish the accounting treatment of every line amount."
+      ]
+    },
+    {
+      "case_id": "S06",
+      "question": "How many current customers do we have?",
+      "answer": "As of September 15, 2026, the customer dimension contains 28,930 distinct known customers; 25,769 have an order. I would provisionally report 28,930 for the current known customer base, but an active or currently paying customer count requires a different definition.",
+      "sql": [
+        {
+          "text": "SELECT COUNT(DISTINCT app_db_customer_id) known_customers, COUNT(DISTINCT IF(has_order,app_db_customer_id,NULL)) purchasing_customers, COUNT(DISTINCT IF(first_order_date >= DATE '2026-04-01' AND first_order_date < DATE '2026-07-01',app_db_customer_id,NULL)) new_purchasing_customers, COUNT(DISTINCT IF(first_seen_date >= DATE '2026-04-01' AND first_seen_date < DATE '2026-07-01',app_db_customer_id,NULL)) newly_seen_customers FROM `nodal-shorelane.shorelane.dim_customers` WHERE first_seen_date <= DATE '2026-09-15'",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"known_customers\":28930,\"purchasing_customers\":25769,\"new_purchasing_customers\":1137,\"newly_seen_customers\":1277}"
+              }
+            ]
+          },
+          "trace_id": "customers",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "Count canonical app_db_customer_id once.",
+        "Current known customer base means dimension customers first seen by the as-of date."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.dim_customers"
+      ],
+      "clarification_needed": "Does current mean all known customers, customers who have ever ordered, or customers active within a specified period?",
+      "limitations": [
+        "No current-customer status or activity-window definition is provided by the dimension schema."
+      ]
+    },
+    {
+      "case_id": "S07",
+      "question": "How many orders did we have last quarter?",
+      "answer": "There were 3,792 distinct orders in Q2 2026: 890 business subscription, 2,157 d2c, and 745 marketplace.",
+      "sql": [
+        {
+          "text": "SELECT channel, COUNT(*) row_count, COUNT(DISTINCT order_id) order_count, ROUND(SUM(gross_amount),2) gross_amount, ROUND(SUM(net_amount),2) net_amount FROM `nodal-shorelane.shorelane.fct_orders` WHERE order_date >= DATE '2026-04-01' AND order_date < DATE '2026-07-01' GROUP BY channel",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"channel\":\"business_subscription\",\"row_count\":890,\"order_count\":890,\"gross_amount\":\"8552351.04\",\"net_amount\":\"8552351.04\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"channel\":\"d2c\",\"row_count\":2157,\"order_count\":2157,\"gross_amount\":\"619001.7\",\"net_amount\":\"619001.7\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"channel\":\"marketplace\",\"row_count\":745,\"order_count\":745,\"gross_amount\":\"220074.48\",\"net_amount\":\"44117.23\"}"
+              }
+            ]
+          },
+          "trace_id": "orders",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        },
+        {
+          "text": "SELECT 'fact_orders' source,COUNT(*) row_count,COUNT(DISTINCT order_id) order_count FROM `nodal-shorelane.shorelane.fct_orders` WHERE order_date >= DATE '2026-04-01' AND order_date < DATE '2026-07-01' UNION ALL SELECT 'staged_orders',COUNT(*),COUNT(DISTINCT order_id) FROM `nodal-shorelane.shorelane.stg_orders` WHERE order_date >= DATE '2026-04-01' AND order_date < DATE '2026-07-01'",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"source\":\"fact_orders\",\"row_count\":3792,\"order_count\":3792}"
+              },
+              {
+                "type": "text",
+                "text": "{\"source\":\"staged_orders\",\"row_count\":3852,\"order_count\":3852}"
+              }
+            ]
+          },
+          "trace_id": "coverage",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "Use fct_orders as the reporting fact at distinct order_id grain.",
+        "Last quarter is April 1–June 30, 2026."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.fct_orders",
+        "nodal-shorelane.shorelane.stg_orders"
+      ],
+      "clarification_needed": null,
+      "limitations": [
+        "Staging has 3,852 orders, 60 more; the fact's inclusion policy is not described by schema metadata."
+      ]
+    },
+    {
+      "case_id": "S08",
+      "question": "The executive dashboard order count is higher than the governed order count. Which should reporting use?",
+      "answer": "Reporting should use the governed order count consistently, provided its scope matches the report, and reconcile the executive dashboard to that definition before mixing numbers. The warehouse shows 3,792 fact orders versus 3,852 staged orders in Q2 2026. This demonstrates a 60-order coverage difference, but does not prove the dashboard uses staging or establish the reason for exclusion.",
+      "sql": [
+        {
+          "text": "SELECT 'fact_orders' source,COUNT(*) row_count,COUNT(DISTINCT order_id) order_count FROM `nodal-shorelane.shorelane.fct_orders` WHERE order_date >= DATE '2026-04-01' AND order_date < DATE '2026-07-01' UNION ALL SELECT 'staged_orders',COUNT(*),COUNT(DISTINCT order_id) FROM `nodal-shorelane.shorelane.stg_orders` WHERE order_date >= DATE '2026-04-01' AND order_date < DATE '2026-07-01'",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"source\":\"fact_orders\",\"row_count\":3792,\"order_count\":3792}"
+              },
+              {
+                "type": "text",
+                "text": "{\"source\":\"staged_orders\",\"row_count\":3852,\"order_count\":3852}"
+              }
+            ]
+          },
+          "trace_id": "coverage",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "The question describes a governed metric; standard reporting should follow its approved definition.",
+        "fct_orders is the provisional warehouse reporting source."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.fct_orders",
+        "nodal-shorelane.shorelane.stg_orders"
+      ],
+      "clarification_needed": null,
+      "limitations": [
+        "No dashboard access or documented business inclusion rules were used; the exact dashboard discrepancy cannot be attributed from these counts alone."
+      ]
+    },
+    {
+      "case_id": "S09",
+      "question": "What was gmv last quarter?",
+      "answer": "GMV in Q2 2026 was 9,391,427.22 in warehouse monetary units.",
+      "sql": [
+        {
+          "text": "SELECT measure_name, MIN(activity_date) min_date, MAX(activity_date) max_date, COUNT(*) row_count, COUNTIF(amount IS NULL) null_amounts, ROUND(SUM(IF(activity_date >= DATE '2026-04-01' AND activity_date < DATE '2026-07-01',amount,0)),2) q2_amount FROM `nodal-shorelane.shorelane.fct_revenue` GROUP BY measure_name",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"billed_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":78710,\"null_amounts\":0,\"q2_amount\":\"9215469.97\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"collected_cash\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":81525,\"null_amounts\":0,\"q2_amount\":\"9114052.34\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"gmv\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":78710,\"null_amounts\":0,\"q2_amount\":\"9391427.22\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"net_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":82508,\"null_amounts\":0,\"q2_amount\":\"9178187.54\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"recognized_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":225883,\"null_amounts\":0,\"q2_amount\":\"8948677.37\"}"
+              }
+            ]
+          },
+          "trace_id": "measures",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "Use the explicit gmv measure across the company.",
+        "Last quarter is April 1–June 30, 2026."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.fct_revenue"
+      ],
+      "clarification_needed": null,
+      "limitations": [
+        "GMV is a transaction-volume measure and should not be treated as recognized revenue."
+      ]
+    },
+    {
+      "case_id": "S10",
+      "question": "Should active subscribers exclude retired plans?",
+      "answer": "No, plan retirement alone should not exclude an otherwise active subscriber. Under the stated date-based active definition, 977 active subscriptions at August 31 are on retired plans (400 plus 577), alongside 2,606 on current plans. Filtering to current plans would reduce the count from 3,583 to 2,606. Keep existing active contracts unless the intended metric explicitly limits plan eligibility.",
+      "sql": [
+        {
+          "text": "SELECT COUNT(DISTINCT customer_id) active_subscribers, COUNT(DISTINCT subscription_id) active_subscriptions, SUM(seats) active_seats FROM `nodal-shorelane.shorelane.fct_subscriptions` WHERE term_start_date <= DATE '2026-08-31' AND term_end_date > DATE '2026-08-31' AND (cancelled_date IS NULL OR cancelled_date > DATE '2026-08-31')",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"active_subscribers\":3583,\"active_subscriptions\":3583,\"active_seats\":159928}"
+              }
+            ]
+          },
+          "trace_id": "active",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        },
+        {
+          "text": "SELECT p.is_current,p.retired_date,COUNT(DISTINCT s.customer_id) active_customers,COUNT(DISTINCT s.subscription_id) active_subscriptions FROM `nodal-shorelane.shorelane.fct_subscriptions` s LEFT JOIN `nodal-shorelane.shorelane.dim_plans` p USING(plan_id) WHERE s.term_start_date <= DATE '2026-08-31' AND s.term_end_date > DATE '2026-08-31' AND (s.cancelled_date IS NULL OR s.cancelled_date > DATE '2026-08-31') GROUP BY p.is_current,p.retired_date ORDER BY p.retired_date",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"is_current\":true,\"retired_date\":null,\"active_customers\":2606,\"active_subscriptions\":2606}"
+              },
+              {
+                "type": "text",
+                "text": "{\"is_current\":false,\"retired_date\":\"2021-06-30\",\"active_customers\":400,\"active_subscriptions\":400}"
+              },
+              {
+                "type": "text",
+                "text": "{\"is_current\":false,\"retired_date\":\"2023-03-31\",\"active_customers\":577,\"active_subscriptions\":577}"
+              }
+            ]
+          },
+          "trace_id": "planactive",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "Retired refers to the plan catalog lifecycle, not necessarily termination of existing subscriptions.",
+        "Active terms use start <= August 31, end > August 31, and cancellation absent or later."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.fct_subscriptions",
+        "nodal-shorelane.shorelane.dim_plans"
+      ],
+      "clarification_needed": null,
+      "limitations": [
+        "This is a reporting recommendation supported by observed active terms; no Shorelane-specific retired-plan eligibility policy was supplied."
+      ]
+    },
+    {
+      "case_id": "S11",
+      "question": "What was revenue last quarter?",
+      "answer": "Assuming revenue means recognized revenue, Q2 2026 revenue was 8,948,677.37. Other available bases are billed revenue 9,215,469.97, net revenue 9,178,187.54, and collected cash 9,114,052.34.",
+      "sql": [
+        {
+          "text": "SELECT measure_name, MIN(activity_date) min_date, MAX(activity_date) max_date, COUNT(*) row_count, COUNTIF(amount IS NULL) null_amounts, ROUND(SUM(IF(activity_date >= DATE '2026-04-01' AND activity_date < DATE '2026-07-01',amount,0)),2) q2_amount FROM `nodal-shorelane.shorelane.fct_revenue` GROUP BY measure_name",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"billed_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":78710,\"null_amounts\":0,\"q2_amount\":\"9215469.97\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"collected_cash\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":81525,\"null_amounts\":0,\"q2_amount\":\"9114052.34\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"gmv\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":78710,\"null_amounts\":0,\"q2_amount\":\"9391427.22\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"net_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":82508,\"null_amounts\":0,\"q2_amount\":\"9178187.54\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"recognized_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":225883,\"null_amounts\":0,\"q2_amount\":\"8948677.37\"}"
+              }
+            ]
+          },
+          "trace_id": "measures",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "Last quarter is April 1–June 30, 2026.",
+        "Use recognized_revenue as a provisional accounting revenue interpretation."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.fct_revenue"
+      ],
+      "clarification_needed": "Confirm whether revenue means recognized, billed, net, or another basis.",
+      "limitations": [
+        "The warehouse exposes multiple revenue bases; it does not establish an unqualified business default."
+      ]
+    },
+    {
+      "case_id": "S12",
+      "question": "How much did we earn from the marketplace last quarter?",
+      "answer": "Marketplace order net earnings in Q2 2026 were 44,117.23, against 220,074.48 of marketplace gross order value. Recognized amounts linked to marketplace fact orders also total 44,117.23.",
+      "sql": [
+        {
+          "text": "SELECT channel, COUNT(*) row_count, COUNT(DISTINCT order_id) order_count, ROUND(SUM(gross_amount),2) gross_amount, ROUND(SUM(net_amount),2) net_amount FROM `nodal-shorelane.shorelane.fct_orders` WHERE order_date >= DATE '2026-04-01' AND order_date < DATE '2026-07-01' GROUP BY channel",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"channel\":\"business_subscription\",\"row_count\":890,\"order_count\":890,\"gross_amount\":\"8552351.04\",\"net_amount\":\"8552351.04\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"channel\":\"d2c\",\"row_count\":2157,\"order_count\":2157,\"gross_amount\":\"619001.7\",\"net_amount\":\"619001.7\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"channel\":\"marketplace\",\"row_count\":745,\"order_count\":745,\"gross_amount\":\"220074.48\",\"net_amount\":\"44117.23\"}"
+              }
+            ]
+          },
+          "trace_id": "orders",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        },
+        {
+          "text": "SELECT o.channel,ROUND(SUM(r.amount),2) recognized_revenue FROM `nodal-shorelane.shorelane.stg_revenue_recognition` r JOIN `nodal-shorelane.shorelane.fct_orders` o USING(order_id) WHERE r.recognition_date >= DATE '2026-04-01' AND r.recognition_date < DATE '2026-07-01' GROUP BY o.channel",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"channel\":\"business_subscription\",\"recognized_revenue\":\"8285558.44\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"channel\":\"d2c\",\"recognized_revenue\":\"619001.7\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"channel\":\"marketplace\",\"recognized_revenue\":\"44117.23\"}"
+              }
+            ]
+          },
+          "trace_id": "recognized_reconciled",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "Earned means marketplace revenue retained, represented by order net_amount and corroborated by recognition rows, not gross merchandise volume.",
+        "Last quarter is April 1–June 30, 2026."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.fct_orders",
+        "nodal-shorelane.shorelane.stg_revenue_recognition"
+      ],
+      "clarification_needed": null,
+      "limitations": [
+        "This is revenue, not profit; no operating cost deduction is included.",
+        "Refund allocation is not included in this channel calculation."
+      ]
+    },
+    {
+      "case_id": "S13",
+      "question": "How many multi-channel customers did we have last quarter?",
+      "answer": "There were 242 customers who placed orders in at least two distinct normalized channels during Q2 2026.",
+      "sql": [
+        {
+          "text": "SELECT COUNT(*) multichannel_customers FROM (SELECT customer_id FROM `nodal-shorelane.shorelane.fct_orders` WHERE order_date >= DATE '2026-04-01' AND order_date < DATE '2026-07-01' AND customer_id IS NOT NULL GROUP BY customer_id HAVING COUNT(DISTINCT channel) >= 2)",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"multichannel_customers\":242}"
+              }
+            ]
+          },
+          "trace_id": "multi",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "Multi-channel means purchases in at least two fct_orders.channel values within the quarter.",
+        "Count non-null customer_id once; last quarter is April 1–June 30, 2026."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.fct_orders"
+      ],
+      "clarification_needed": null,
+      "limitations": [
+        "This measures purchase-channel activity, not mere presence in multiple source identity systems."
+      ]
+    },
+    {
+      "case_id": "S14",
+      "question": "What was net revenue last quarter?",
+      "answer": "Net revenue in Q2 2026 was 9,178,187.54 in warehouse monetary units.",
+      "sql": [
+        {
+          "text": "SELECT measure_name, MIN(activity_date) min_date, MAX(activity_date) max_date, COUNT(*) row_count, COUNTIF(amount IS NULL) null_amounts, ROUND(SUM(IF(activity_date >= DATE '2026-04-01' AND activity_date < DATE '2026-07-01',amount,0)),2) q2_amount FROM `nodal-shorelane.shorelane.fct_revenue` GROUP BY measure_name",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"billed_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":78710,\"null_amounts\":0,\"q2_amount\":\"9215469.97\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"collected_cash\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":81525,\"null_amounts\":0,\"q2_amount\":\"9114052.34\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"gmv\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":78710,\"null_amounts\":0,\"q2_amount\":\"9391427.22\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"net_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":82508,\"null_amounts\":0,\"q2_amount\":\"9178187.54\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"recognized_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":225883,\"null_amounts\":0,\"q2_amount\":\"8948677.37\"}"
+              }
+            ]
+          },
+          "trace_id": "measures",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "Use explicit net_revenue measure on activity_date.",
+        "Last quarter is April 1–June 30, 2026."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.fct_revenue"
+      ],
+      "clarification_needed": null,
+      "limitations": [
+        "The measure's business adjustment policy is not documented in schema metadata; no additional invented deductions were applied."
+      ]
+    },
+    {
+      "case_id": "S15",
+      "question": "How many new customers did we acquire last quarter?",
+      "answer": "There were 1,137 newly purchasing customers in Q2 2026, using first_order_date. If acquisition means first appearance in the customer system instead, the count is 1,277.",
+      "sql": [
+        {
+          "text": "SELECT COUNT(DISTINCT app_db_customer_id) known_customers, COUNT(DISTINCT IF(has_order,app_db_customer_id,NULL)) purchasing_customers, COUNT(DISTINCT IF(first_order_date >= DATE '2026-04-01' AND first_order_date < DATE '2026-07-01',app_db_customer_id,NULL)) new_purchasing_customers, COUNT(DISTINCT IF(first_seen_date >= DATE '2026-04-01' AND first_seen_date < DATE '2026-07-01',app_db_customer_id,NULL)) newly_seen_customers FROM `nodal-shorelane.shorelane.dim_customers` WHERE first_seen_date <= DATE '2026-09-15'",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"known_customers\":28930,\"purchasing_customers\":25769,\"new_purchasing_customers\":1137,\"newly_seen_customers\":1277}"
+              }
+            ]
+          },
+          "trace_id": "customers",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "New customer means canonical customer with first_order_date in April 1–June 30, 2026.",
+        "First purchase is the provisional acquisition event."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.dim_customers"
+      ],
+      "clarification_needed": "Confirm first purchase versus first registration/appearance as the acquisition event.",
+      "limitations": [
+        "Historical first-order completeness and attribution policy are not documented by the available schema."
+      ]
+    },
+    {
+      "case_id": "S16",
+      "question": "What was recognized revenue last quarter?",
+      "answer": "Recognized revenue in Q2 2026 was 8,948,677.37 in warehouse monetary units.",
+      "sql": [
+        {
+          "text": "SELECT measure_name, MIN(activity_date) min_date, MAX(activity_date) max_date, COUNT(*) row_count, COUNTIF(amount IS NULL) null_amounts, ROUND(SUM(IF(activity_date >= DATE '2026-04-01' AND activity_date < DATE '2026-07-01',amount,0)),2) q2_amount FROM `nodal-shorelane.shorelane.fct_revenue` GROUP BY measure_name",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"billed_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":78710,\"null_amounts\":0,\"q2_amount\":\"9215469.97\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"collected_cash\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":81525,\"null_amounts\":0,\"q2_amount\":\"9114052.34\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"gmv\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":78710,\"null_amounts\":0,\"q2_amount\":\"9391427.22\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"net_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":82508,\"null_amounts\":0,\"q2_amount\":\"9178187.54\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"recognized_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":225883,\"null_amounts\":0,\"q2_amount\":\"8948677.37\"}"
+              }
+            ]
+          },
+          "trace_id": "measures",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "Use explicit recognized_revenue measure by activity_date.",
+        "Last quarter is April 1–June 30, 2026."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.fct_revenue"
+      ],
+      "clarification_needed": null,
+      "limitations": [
+        "Currency and formal accounting policies were not provided in warehouse metadata."
+      ]
+    },
+    {
+      "case_id": "S17",
+      "question": "What was our renewal rate last quarter?",
+      "answer": "The provisional Q2 2026 term renewal rate was 82.38%: 608 renewed terms divided by 738 terms ending in the quarter.",
+      "sql": [
+        {
+          "text": "SELECT COUNT(DISTINCT s.subscription_id) terms_due, COUNT(DISTINCT IF(r.subscription_id IS NOT NULL,s.subscription_id,NULL)) renewed_terms, SAFE_DIVIDE(COUNT(DISTINCT IF(r.subscription_id IS NOT NULL,s.subscription_id,NULL)),COUNT(DISTINCT s.subscription_id)) renewal_rate FROM `nodal-shorelane.shorelane.fct_subscriptions` s LEFT JOIN `nodal-shorelane.shorelane.fct_subscriptions` r ON r.renewed_from_subscription_id=s.subscription_id AND r.term_start_date <= DATE '2026-09-15' WHERE s.term_end_date >= DATE '2026-04-01' AND s.term_end_date < DATE '2026-07-01'",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"terms_due\":738,\"renewed_terms\":608,\"renewal_rate\":0.8238482384823849}"
+              }
+            ]
+          },
+          "trace_id": "renewal",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "Denominator is distinct subscription terms ending April 1–June 30, 2026.",
+        "Numerator requires a successor linked by renewed_from_subscription_id whose start is no later than September 15, 2026.",
+        "This is a term-count rate, not customer, seat, or revenue retention."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.fct_subscriptions"
+      ],
+      "clarification_needed": "Confirm the renewal window and whether cancelled terms or other eligibility exclusions belong in the denominator.",
+      "limitations": [
+        "No documented grace period or renewal eligibility policy was available; late renewals up to the as-of date are counted."
+      ]
+    },
+    {
+      "case_id": "S18",
+      "question": "Break recognized revenue down by channel.",
+      "answer": "For Q2 2026, recognized revenue by channel is business subscription 8,285,558.44; d2c 619,001.70; marketplace 44,117.23. These sum to the fct_revenue recognized total of 8,948,677.37. Attribution joins recognition events to fact orders. A left-join diagnostic additionally found 6,178.87 of staged recognition without matching fact orders; those amounts are outside the reconciled fact total.",
+      "sql": [
+        {
+          "text": "SELECT o.channel, COUNT(*) recognition_rows, ROUND(SUM(r.amount),2) recognized_revenue FROM `nodal-shorelane.shorelane.stg_revenue_recognition` r LEFT JOIN `nodal-shorelane.shorelane.fct_orders` o USING(order_id) WHERE r.recognition_date >= DATE '2026-04-01' AND r.recognition_date < DATE '2026-07-01' GROUP BY o.channel",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"channel\":\"business_subscription\",\"recognition_rows\":10349,\"recognized_revenue\":\"8285558.44\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"channel\":\"d2c\",\"recognition_rows\":2157,\"recognized_revenue\":\"619001.7\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"channel\":\"marketplace\",\"recognition_rows\":745,\"recognized_revenue\":\"44117.23\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"channel\":null,\"recognition_rows\":60,\"recognized_revenue\":\"6178.87\"}"
+              }
+            ]
+          },
+          "trace_id": "recognized_channels",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        },
+        {
+          "text": "SELECT o.channel,ROUND(SUM(r.amount),2) recognized_revenue FROM `nodal-shorelane.shorelane.stg_revenue_recognition` r JOIN `nodal-shorelane.shorelane.fct_orders` o USING(order_id) WHERE r.recognition_date >= DATE '2026-04-01' AND r.recognition_date < DATE '2026-07-01' GROUP BY o.channel",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"channel\":\"business_subscription\",\"recognized_revenue\":\"8285558.44\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"channel\":\"d2c\",\"recognized_revenue\":\"619001.7\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"channel\":\"marketplace\",\"recognized_revenue\":\"44117.23\"}"
+              }
+            ]
+          },
+          "trace_id": "recognized_reconciled",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        },
+        {
+          "text": "SELECT measure_name, MIN(activity_date) min_date, MAX(activity_date) max_date, COUNT(*) row_count, COUNTIF(amount IS NULL) null_amounts, ROUND(SUM(IF(activity_date >= DATE '2026-04-01' AND activity_date < DATE '2026-07-01',amount,0)),2) q2_amount FROM `nodal-shorelane.shorelane.fct_revenue` GROUP BY measure_name",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"billed_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":78710,\"null_amounts\":0,\"q2_amount\":\"9215469.97\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"collected_cash\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":81525,\"null_amounts\":0,\"q2_amount\":\"9114052.34\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"gmv\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":78710,\"null_amounts\":0,\"q2_amount\":\"9391427.22\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"net_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":82508,\"null_amounts\":0,\"q2_amount\":\"9178187.54\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"recognized_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":225883,\"null_amounts\":0,\"q2_amount\":\"8948677.37\"}"
+              }
+            ]
+          },
+          "trace_id": "measures",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "No period was specified; use the most recent complete calendar quarter, Q2 2026.",
+        "Use recognition_date for time and normalized order channel for attribution.",
+        "Limit attributed amounts to matched fact orders to reconcile with the company revenue fact."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.stg_revenue_recognition",
+        "nodal-shorelane.shorelane.fct_orders",
+        "nodal-shorelane.shorelane.fct_revenue"
+      ],
+      "clarification_needed": null,
+      "limitations": [
+        "fct_revenue itself has no channel column.",
+        "The reason unmatched staging recognition is excluded from fact reporting is not established by column metadata."
+      ]
+    },
+    {
+      "case_id": "S19",
+      "question": "What was net revenue last quarter?",
+      "answer": "Net revenue in Q2 2026 was 9,178,187.54 in warehouse monetary units.",
+      "sql": [
+        {
+          "text": "SELECT measure_name, MIN(activity_date) min_date, MAX(activity_date) max_date, COUNT(*) row_count, COUNTIF(amount IS NULL) null_amounts, ROUND(SUM(IF(activity_date >= DATE '2026-04-01' AND activity_date < DATE '2026-07-01',amount,0)),2) q2_amount FROM `nodal-shorelane.shorelane.fct_revenue` GROUP BY measure_name",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"billed_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":78710,\"null_amounts\":0,\"q2_amount\":\"9215469.97\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"collected_cash\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":81525,\"null_amounts\":0,\"q2_amount\":\"9114052.34\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"gmv\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":78710,\"null_amounts\":0,\"q2_amount\":\"9391427.22\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"net_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":82508,\"null_amounts\":0,\"q2_amount\":\"9178187.54\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"recognized_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":225883,\"null_amounts\":0,\"q2_amount\":\"8948677.37\"}"
+              }
+            ]
+          },
+          "trace_id": "measures",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "Use explicit net_revenue measure on activity_date.",
+        "Last quarter is April 1–June 30, 2026.",
+        "Reuses the same executed metric query as S14; the question is identical."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.fct_revenue"
+      ],
+      "clarification_needed": null,
+      "limitations": [
+        "The measure's adjustment policy is not documented by schema metadata."
+      ]
+    },
+    {
+      "case_id": "S20",
+      "question": "Compare revenue through the latest available month.",
+      "answer": "Assuming recognized revenue and a 2026 monthly comparison: January 2,719,971.20; February 2,724,725.92; March 2,843,150.88; April 2,913,808.47; May 3,004,119.79; June 3,030,749.11; July 3,074,299.24; August 3,208,472.01; September through September 15 1,582,898.73. August, the latest complete calendar month, increased 4.36% over July. September is partial and should not be read as a full-month decline.",
+      "sql": [
+        {
+          "text": "SELECT DATE_TRUNC(activity_date,MONTH) month, ROUND(SUM(amount),2) recognized_revenue, COUNTIF(amount IS NULL) null_amounts, MAX(activity_date) last_activity FROM `nodal-shorelane.shorelane.fct_revenue` WHERE measure_name='recognized_revenue' AND activity_date >= DATE '2026-01-01' AND activity_date <= DATE '2026-09-15' GROUP BY month ORDER BY month",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"month\":\"2026-01-01\",\"recognized_revenue\":\"2719971.2\",\"null_amounts\":0,\"last_activity\":\"2026-01-31\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"month\":\"2026-02-01\",\"recognized_revenue\":\"2724725.92\",\"null_amounts\":0,\"last_activity\":\"2026-02-28\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"month\":\"2026-03-01\",\"recognized_revenue\":\"2843150.88\",\"null_amounts\":0,\"last_activity\":\"2026-03-31\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"month\":\"2026-04-01\",\"recognized_revenue\":\"2913808.47\",\"null_amounts\":0,\"last_activity\":\"2026-04-30\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"month\":\"2026-05-01\",\"recognized_revenue\":\"3004119.79\",\"null_amounts\":0,\"last_activity\":\"2026-05-31\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"month\":\"2026-06-01\",\"recognized_revenue\":\"3030749.11\",\"null_amounts\":0,\"last_activity\":\"2026-06-30\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"month\":\"2026-07-01\",\"recognized_revenue\":\"3074299.24\",\"null_amounts\":0,\"last_activity\":\"2026-07-31\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"month\":\"2026-08-01\",\"recognized_revenue\":\"3208472.01\",\"null_amounts\":0,\"last_activity\":\"2026-08-31\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"month\":\"2026-09-01\",\"recognized_revenue\":\"1582898.73\",\"null_amounts\":0,\"last_activity\":\"2026-09-15\"}"
+              }
+            ]
+          },
+          "trace_id": "trend",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "Use recognized_revenue provisionally.",
+        "Compare calendar months in the as-of year through September 15, 2026.",
+        "Latest available month is September; latest complete calendar month is August."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.fct_revenue"
+      ],
+      "clarification_needed": "Confirm the revenue basis and comparison period if you intended year-over-year or channel comparisons.",
+      "limitations": [
+        "Date coverage does not prove accounting close or completeness; no close calendar is available.",
+        "No forecast or partial-month extrapolation is applied."
+      ]
+    },
+    {
+      "case_id": "S21",
+      "question": "What was our revenue last quarter?",
+      "answer": "Assuming revenue means recognized revenue, Q2 2026 revenue was 8,948,677.37. Billed revenue was 9,215,469.97 and net revenue was 9,178,187.54.",
+      "sql": [
+        {
+          "text": "SELECT measure_name, MIN(activity_date) min_date, MAX(activity_date) max_date, COUNT(*) row_count, COUNTIF(amount IS NULL) null_amounts, ROUND(SUM(IF(activity_date >= DATE '2026-04-01' AND activity_date < DATE '2026-07-01',amount,0)),2) q2_amount FROM `nodal-shorelane.shorelane.fct_revenue` GROUP BY measure_name",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"billed_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":78710,\"null_amounts\":0,\"q2_amount\":\"9215469.97\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"collected_cash\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":81525,\"null_amounts\":0,\"q2_amount\":\"9114052.34\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"gmv\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":78710,\"null_amounts\":0,\"q2_amount\":\"9391427.22\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"net_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":82508,\"null_amounts\":0,\"q2_amount\":\"9178187.54\"}"
+              },
+              {
+                "type": "text",
+                "text": "{\"measure_name\":\"recognized_revenue\",\"min_date\":\"2019-01-01\",\"max_date\":\"2026-09-15\",\"row_count\":225883,\"null_amounts\":0,\"q2_amount\":\"8948677.37\"}"
+              }
+            ]
+          },
+          "trace_id": "measures",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "Use recognized revenue as the provisional accounting basis.",
+        "Last quarter is April 1–June 30, 2026.",
+        "Reuses the same executed metric query as S11."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.fct_revenue"
+      ],
+      "clarification_needed": "Confirm the intended revenue basis.",
+      "limitations": [
+        "No unqualified Shorelane revenue default is inferred from the available schema."
+      ]
+    },
+    {
+      "case_id": "S22",
+      "question": "Can I join all customer identities to orders to report revenue?",
+      "answer": "Do not join every customer identity row to orders on canonical customer ID and then sum revenue. The identity table has multiple rows for 25,538 resolved customers, up to five per customer, so that join can multiply order amounts. Aggregate revenue at its fact grain first; join a unique customer dimension for customer attributes, or use a deduplicated canonical-ID set/EXISTS for identity filtering. If resolving source customer IDs, join on source system plus source customer ID and validate mapping uniqueness and unmatched records.",
+      "sql": [
+        {
+          "text": "SELECT source_system,COUNT(*) identities,COUNT(DISTINCT app_db_customer_id) resolved_customers,COUNTIF(app_db_customer_id IS NULL) unresolved_identities FROM `nodal-shorelane.shorelane.int_customer_identity` GROUP BY source_system",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"source_system\":\"app_db\",\"identities\":28930,\"resolved_customers\":28930,\"unresolved_identities\":0}"
+              },
+              {
+                "type": "text",
+                "text": "{\"source_system\":\"stripe\",\"identities\":25205,\"resolved_customers\":24053,\"unresolved_identities\":286}"
+              },
+              {
+                "type": "text",
+                "text": "{\"source_system\":\"shopify\",\"identities\":21236,\"resolved_customers\":20505,\"unresolved_identities\":731}"
+              },
+              {
+                "type": "text",
+                "text": "{\"source_system\":\"salesforce\",\"identities\":5694,\"resolved_customers\":5499,\"unresolved_identities\":195}"
+              }
+            ]
+          },
+          "trace_id": "identity",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        },
+        {
+          "text": "SELECT COUNT(*) customer_ids_with_multiple_identity_rows,MAX(identity_rows) max_rows_per_customer FROM (SELECT app_db_customer_id,COUNT(*) identity_rows FROM `nodal-shorelane.shorelane.int_customer_identity` WHERE app_db_customer_id IS NOT NULL GROUP BY app_db_customer_id HAVING COUNT(*)>1)",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"customer_ids_with_multiple_identity_rows\":25538,\"max_rows_per_customer\":5}"
+              }
+            ]
+          },
+          "trace_id": "identityfanout",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "Orders are already keyed by customer_id; any enrichment must preserve one row per original fact record."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.int_customer_identity",
+        "nodal-shorelane.shorelane.fct_orders",
+        "nodal-shorelane.shorelane.dim_customers"
+      ],
+      "clarification_needed": null,
+      "limitations": [
+        "A full order-identity relationship audit was not performed.",
+        "Unresolved source identities exist, so dropping unmatched records can also understate coverage."
+      ]
+    },
+    {
+      "case_id": "S23",
+      "question": "How many new subscriptions started last quarter?",
+      "answer": "There were 282 new first-term subscriptions starting in Q2 2026. There were 890 total term starts including renewals; 608 were renewal starts.",
+      "sql": [
+        {
+          "text": "SELECT COUNT(DISTINCT subscription_id) term_starts, COUNT(DISTINCT IF(is_first_term,subscription_id,NULL)) first_term_starts, COUNT(DISTINCT IF(renewed_from_subscription_id IS NULL,subscription_id,NULL)) no_predecessor_starts FROM `nodal-shorelane.shorelane.fct_subscriptions` WHERE term_start_date >= DATE '2026-04-01' AND term_start_date < DATE '2026-07-01'",
+          "executed": true,
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"term_starts\":890,\"first_term_starts\":282,\"no_predecessor_starts\":282}"
+              }
+            ]
+          },
+          "trace_id": "subs",
+          "reuse_note": "Query results are shared across cases where the same trace_id appears."
+        }
+      ],
+      "assumptions": [
+        "New subscriptions means is_first_term=true, not all terms starting in the quarter.",
+        "Last quarter is April 1–June 30, 2026."
+      ],
+      "tables": [
+        "nodal-shorelane.shorelane.fct_subscriptions"
+      ],
+      "clarification_needed": null,
+      "limitations": [
+        "First-term classification is accepted as stored; no separate business definition of reactivation or subscription migration was supplied."
+      ]
+    }
+  ]
+}

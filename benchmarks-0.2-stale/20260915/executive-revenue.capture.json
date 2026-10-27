@@ -1,0 +1,396 @@
+{
+  "dashboard_url": "https://shorelane-data.github.io/shorelane/business/",
+  "tool": "plotly-static",
+  "binding": "chrome-devtools MCP",
+  "captured_at": "2026-09-15T22:15:49.462Z",
+  "filter_state": {
+    "period": "Last 12 Months",
+    "window": "2025-09-01 .. 2026-08-31",
+    "as_of": "2026-09-15",
+    "date_grain": "month"
+  },
+  "widgets": [
+    {
+      "title": "Recognized Revenue by Month",
+      "values": [
+        {
+          "measure": "Recognized Revenue by Month",
+          "dates": [
+            "2025-09-01T00:00:00.000000",
+            "2025-10-01T00:00:00.000000",
+            "2025-11-01T00:00:00.000000",
+            "2025-12-01T00:00:00.000000",
+            "2026-01-01T00:00:00.000000",
+            "2026-02-01T00:00:00.000000",
+            "2026-03-01T00:00:00.000000",
+            "2026-04-01T00:00:00.000000",
+            "2026-05-01T00:00:00.000000",
+            "2026-06-01T00:00:00.000000",
+            "2026-07-01T00:00:00.000000",
+            "2026-08-01T00:00:00.000000"
+          ],
+          "value": [
+            2493427.94,
+            2523303.25,
+            2592348.5,
+            2760434.86,
+            2719971.2,
+            2724725.92,
+            2843150.88,
+            2913808.47,
+            3004119.79,
+            3030749.11,
+            3074299.24,
+            3208472.01
+          ],
+          "extraction_tier": 1.5,
+          "precision": "exact"
+        }
+      ],
+      "generating_query": null
+    },
+    {
+      "title": "Revenue by Channel",
+      "values": [
+        {
+          "measure": "Revenue by Channel",
+          "dates": [],
+          "labels": [
+            "Business Subscriptions",
+            "Direct-to-Consumer",
+            "Marketplace"
+          ],
+          "value": [
+            31104372.88,
+            2634211.95,
+            179781.44
+          ],
+          "extraction_tier": 1.5,
+          "precision": "exact"
+        }
+      ],
+      "generating_query": null
+    },
+    {
+      "title": "Customer Growth",
+      "values": [
+        {
+          "measure": "New customers",
+          "dates": [
+            "2025-09-01T00:00:00.000000",
+            "2025-10-01T00:00:00.000000",
+            "2025-11-01T00:00:00.000000",
+            "2025-12-01T00:00:00.000000",
+            "2026-01-01T00:00:00.000000",
+            "2026-02-01T00:00:00.000000",
+            "2026-03-01T00:00:00.000000",
+            "2026-04-01T00:00:00.000000",
+            "2026-05-01T00:00:00.000000",
+            "2026-06-01T00:00:00.000000",
+            "2026-07-01T00:00:00.000000",
+            "2026-08-01T00:00:00.000000"
+          ],
+          "value": [
+            460,
+            418,
+            433,
+            526,
+            331,
+            227,
+            288,
+            263,
+            445,
+            429,
+            377,
+            524
+          ],
+          "extraction_tier": 1.5,
+          "precision": "exact"
+        },
+        {
+          "measure": "Total customers",
+          "dates": [
+            "2025-09-01T00:00:00.000000",
+            "2025-10-01T00:00:00.000000",
+            "2025-11-01T00:00:00.000000",
+            "2025-12-01T00:00:00.000000",
+            "2026-01-01T00:00:00.000000",
+            "2026-02-01T00:00:00.000000",
+            "2026-03-01T00:00:00.000000",
+            "2026-04-01T00:00:00.000000",
+            "2026-05-01T00:00:00.000000",
+            "2026-06-01T00:00:00.000000",
+            "2026-07-01T00:00:00.000000",
+            "2026-08-01T00:00:00.000000"
+          ],
+          "value": [
+            21251,
+            21669,
+            22102,
+            22628,
+            22959,
+            23186,
+            23474,
+            23737,
+            24182,
+            24611,
+            24988,
+            25512
+          ],
+          "extraction_tier": 1.5,
+          "precision": "exact"
+        }
+      ],
+      "generating_query": null
+    },
+    {
+      "title": "Orders & Average Order Value",
+      "values": [
+        {
+          "measure": "Orders",
+          "dates": [
+            "2025-09-01T00:00:00.000000",
+            "2025-10-01T00:00:00.000000",
+            "2025-11-01T00:00:00.000000",
+            "2025-12-01T00:00:00.000000",
+            "2026-01-01T00:00:00.000000",
+            "2026-02-01T00:00:00.000000",
+            "2026-03-01T00:00:00.000000",
+            "2026-04-01T00:00:00.000000",
+            "2026-05-01T00:00:00.000000",
+            "2026-06-01T00:00:00.000000",
+            "2026-07-01T00:00:00.000000",
+            "2026-08-01T00:00:00.000000"
+          ],
+          "value": [
+            1480,
+            1364,
+            1397,
+            1651,
+            1065,
+            971,
+            1163,
+            1187,
+            1369,
+            1296,
+            1237,
+            1607
+          ],
+          "extraction_tier": 1.5,
+          "precision": "exact"
+        },
+        {
+          "measure": "Avg order value",
+          "dates": [
+            "2025-09-01T00:00:00.000000",
+            "2025-10-01T00:00:00.000000",
+            "2025-11-01T00:00:00.000000",
+            "2025-12-01T00:00:00.000000",
+            "2026-01-01T00:00:00.000000",
+            "2026-02-01T00:00:00.000000",
+            "2026-03-01T00:00:00.000000",
+            "2026-04-01T00:00:00.000000",
+            "2026-05-01T00:00:00.000000",
+            "2026-06-01T00:00:00.000000",
+            "2026-07-01T00:00:00.000000",
+            "2026-08-01T00:00:00.000000"
+          ],
+          "value": [
+            2044.361108108108,
+            2643.3546920821113,
+            2516.288031496063,
+            2781.421144760751,
+            2160.5383661971828,
+            2361.4919979402675,
+            2929.5979449699057,
+            2582.9085846672283,
+            2592.2162892622355,
+            2142.5699305555554,
+            2414.4769684721095,
+            2022.216907280647
+          ],
+          "extraction_tier": 1.5,
+          "precision": "exact"
+        }
+      ],
+      "generating_query": null
+    },
+    {
+      "title": "Recognized Revenue vs Collected Cash",
+      "values": [
+        {
+          "measure": "Recognized revenue",
+          "dates": [
+            "2025-09-01T00:00:00.000000",
+            "2025-10-01T00:00:00.000000",
+            "2025-11-01T00:00:00.000000",
+            "2025-12-01T00:00:00.000000",
+            "2026-01-01T00:00:00.000000",
+            "2026-02-01T00:00:00.000000",
+            "2026-03-01T00:00:00.000000",
+            "2026-04-01T00:00:00.000000",
+            "2026-05-01T00:00:00.000000",
+            "2026-06-01T00:00:00.000000",
+            "2026-07-01T00:00:00.000000",
+            "2026-08-01T00:00:00.000000"
+          ],
+          "value": [
+            2493427.94,
+            2523303.25,
+            2592348.5,
+            2760434.86,
+            2719971.2,
+            2724725.92,
+            2843150.88,
+            2913808.47,
+            3004119.79,
+            3030749.11,
+            3074299.24,
+            3208472.01
+          ],
+          "extraction_tier": 1.5,
+          "precision": "exact"
+        },
+        {
+          "measure": "Collected cash",
+          "dates": [
+            "2025-09-01T00:00:00.000000",
+            "2025-10-01T00:00:00.000000",
+            "2025-11-01T00:00:00.000000",
+            "2025-12-01T00:00:00.000000",
+            "2026-01-01T00:00:00.000000",
+            "2026-02-01T00:00:00.000000",
+            "2026-03-01T00:00:00.000000",
+            "2026-04-01T00:00:00.000000",
+            "2026-05-01T00:00:00.000000",
+            "2026-06-01T00:00:00.000000",
+            "2026-07-01T00:00:00.000000",
+            "2026-08-01T00:00:00.000000"
+          ],
+          "value": [
+            2382513.11,
+            2615300.73,
+            3338420.75,
+            3385266.06,
+            3879028.14,
+            2391657.14,
+            2394880.64,
+            3002691.05,
+            2967876.63,
+            3143484.66,
+            2907481.42,
+            2928442.27
+          ],
+          "extraction_tier": 1.5,
+          "precision": "exact"
+        }
+      ],
+      "generating_query": null
+    },
+    {
+      "title": "REVENUE",
+      "values": [
+        {
+          "display": "$33.89M",
+          "extraction_tier": 2,
+          "precision": "display-rounded"
+        }
+      ],
+      "generating_query": null
+    },
+    {
+      "title": "GMV",
+      "values": [
+        {
+          "display": "$38.37M",
+          "extraction_tier": 2,
+          "precision": "display-rounded"
+        }
+      ],
+      "generating_query": null
+    },
+    {
+      "title": "ACTIVE CUSTOMERS",
+      "values": [
+        {
+          "display": "9,771",
+          "extraction_tier": 2,
+          "precision": "exact",
+          "value": 9771
+        }
+      ],
+      "generating_query": null
+    },
+    {
+      "title": "NEW CUSTOMERS",
+      "values": [
+        {
+          "display": "4,721",
+          "extraction_tier": 2,
+          "precision": "exact",
+          "value": 4721
+        }
+      ],
+      "generating_query": null
+    },
+    {
+      "title": "AVG ORDER VALUE",
+      "values": [
+        {
+          "display": "$2.4K",
+          "extraction_tier": 2,
+          "precision": "display-rounded"
+        }
+      ],
+      "generating_query": null
+    },
+    {
+      "title": "REFUND RATE",
+      "values": [
+        {
+          "display": "0.46%",
+          "extraction_tier": 2,
+          "precision": "display-rounded"
+        }
+      ],
+      "generating_query": null
+    },
+    {
+      "title": "Revenue total",
+      "values": [
+        {
+          "value": 33888811.17,
+          "extraction_tier": 1.5,
+          "precision": "exact",
+          "derivation": "Sum of visible monthly embedded series from Recognized Revenue by Month over captured window."
+        }
+      ],
+      "generating_query": null
+    },
+    {
+      "title": "Collected cash total",
+      "values": [
+        {
+          "value": 35337042.6,
+          "extraction_tier": 1.5,
+          "precision": "exact",
+          "derivation": "Sum of visible monthly embedded series from Recognized Revenue vs Collected Cash over captured window."
+        }
+      ],
+      "generating_query": null
+    },
+    {
+      "title": "Order count total",
+      "values": [
+        {
+          "value": 15787,
+          "extraction_tier": 1.5,
+          "precision": "exact",
+          "derivation": "Sum of visible monthly embedded series from Orders & Average Order Value over captured window."
+        }
+      ],
+      "generating_query": null
+    }
+  ],
+  "extraction_notes": "No XHR/fetch requests. Decoded embedded Plotly arrays from visible panels only (tier 1.5); KPI tiles are tier 2. Analyst blessing pending. Simulation test capture."
+}
