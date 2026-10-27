@@ -10,11 +10,10 @@ lineage_sources:
 - id: dbt_core
   type: dbt                     # dbt | sqlmesh | raw_sql | none
   repo: github.com/shorelane-data/shorelane-dbt   # human-confirmed 2026-10-27
-    # If the dbt repo runs the sender workflow (dbt-repo/notify-context-repo.yml) —
-    # the norm, since target/ is usually gitignored on main — use its published
-    # branch instead: `ref: dbt-manifest`, `manifest_path: manifest.json`.
-  ref: main
-  manifest_path: target/manifest.json
+    # The dbt repo publishes its parsed manifest to the dbt-manifest branch via
+    # its sender workflow (dbt-repo/notify-context-repo.yml); target/ is not on main.
+  ref: dbt-manifest
+  manifest_path: manifest.json
   # Multiple warehouses / clouds? Tag the non-default source(s) with `warehouse:`,
   # e.g. a second platform — entries without `warehouse:` inherit the default above:
   # - id: dbt_bq_marketing
