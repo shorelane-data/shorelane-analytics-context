@@ -1,0 +1,274 @@
+{
+  "sources": {
+    "dbt_core": {
+      "models": {
+        "dim_customers": {
+          "columns": [
+            "account_type",
+            "acquisition_channel",
+            "app_db_customer_id",
+            "first_order_date",
+            "first_seen_date",
+            "has_app_db",
+            "has_order",
+            "has_salesforce",
+            "has_shopify",
+            "has_stripe",
+            "resolved_source_id_count",
+            "resolved_source_system_count",
+            "segment"
+          ],
+          "tests": [
+            "not_null:account_type",
+            "not_null:acquisition_channel",
+            "not_null:app_db_customer_id",
+            "not_null:first_seen_date",
+            "not_null:has_app_db",
+            "not_null:has_order",
+            "not_null:has_salesforce",
+            "not_null:has_shopify",
+            "not_null:has_stripe",
+            "not_null:resolved_source_id_count",
+            "not_null:resolved_source_system_count",
+            "not_null:segment",
+            "unique:app_db_customer_id"
+          ]
+        },
+        "dim_date": {
+          "columns": [
+            "date_day",
+            "year_month"
+          ],
+          "tests": [
+            "not_null:date_day",
+            "not_null:year_month",
+            "unique:date_day"
+          ]
+        },
+        "dim_plans": {
+          "columns": [
+            "current_annual_price_per_seat",
+            "plan_generation",
+            "plan_id"
+          ],
+          "tests": [
+            "not_null:current_annual_price_per_seat",
+            "not_null:plan_generation",
+            "not_null:plan_id",
+            "unique:plan_id"
+          ]
+        },
+        "dim_products": {
+          "columns": [
+            "category",
+            "sku",
+            "unit_cost"
+          ],
+          "tests": [
+            "not_null:category",
+            "not_null:sku",
+            "not_null:unit_cost",
+            "unique:sku"
+          ]
+        },
+        "fct_identity_resolution_quality": {
+          "columns": [
+            "observed_id_count",
+            "resolution_null_rate",
+            "resolved_id_count",
+            "source_system",
+            "unresolved_id_count"
+          ],
+          "tests": [
+            "accepted_values:source_system:[app_db,stripe,shopify,salesforce]",
+            "not_null:observed_id_count",
+            "not_null:resolution_null_rate",
+            "not_null:resolved_id_count",
+            "not_null:source_system",
+            "not_null:unresolved_id_count",
+            "unique:source_system"
+          ]
+        },
+        "fct_marketing_spend": {
+          "columns": [
+            "attributed_new_d2c_customers_day_total",
+            "platform",
+            "spend_date"
+          ],
+          "tests": [
+            "not_null:attributed_new_d2c_customers_day_total",
+            "not_null:platform",
+            "not_null:spend_date"
+          ]
+        },
+        "fct_order_lines": {
+          "columns": [
+            "gross_margin",
+            "order_id",
+            "order_line_id"
+          ],
+          "tests": [
+            "not_null:gross_margin",
+            "not_null:order_id",
+            "not_null:order_line_id",
+            "relationships:order_id:->ref('fct_orders').order_id",
+            "unique:order_line_id"
+          ]
+        },
+        "fct_orders": {
+          "columns": [
+            "channel",
+            "channel_raw",
+            "customer_id",
+            "is_first_order",
+            "order_id"
+          ],
+          "tests": [
+            "accepted_values:channel:[d2c,business_subscription,marketplace]",
+            "not_null:channel",
+            "not_null:channel_raw",
+            "not_null:customer_id",
+            "not_null:is_first_order",
+            "not_null:order_id",
+            "relationships:customer_id:->ref('dim_customers').app_db_customer_id",
+            "unique:order_id"
+          ]
+        },
+        "fct_revenue": {
+          "columns": [
+            "activity_date",
+            "amount",
+            "measure_name"
+          ],
+          "tests": [
+            "accepted_values:measure_name:[gmv,net_revenue,recognized_revenue,billed_revenue,collected_cash]",
+            "not_null:activity_date",
+            "not_null:amount",
+            "not_null:measure_name"
+          ]
+        },
+        "fct_subscriptions": {
+          "columns": [
+            "customer_id",
+            "plan_generation",
+            "status",
+            "subscription_id"
+          ],
+          "tests": [
+            "accepted_values:status:[renewed,active,churned]",
+            "not_null:customer_id",
+            "not_null:plan_generation",
+            "not_null:status",
+            "not_null:subscription_id",
+            "relationships:customer_id:->ref('dim_customers').app_db_customer_id",
+            "unique:subscription_id"
+          ]
+        },
+        "int_customer_identity": {
+          "columns": [
+            "app_db_customer_id",
+            "deactivated_date",
+            "is_active",
+            "link_method",
+            "linked_date",
+            "resolution_status",
+            "source_created_date",
+            "source_customer_id",
+            "source_system"
+          ],
+          "tests": [
+            "accepted_values:resolution_status:[resolved,unresolved_migration_gap,unresolved_sync_lag]",
+            "accepted_values:source_system:[app_db,stripe,shopify,salesforce]",
+            "not_null:is_active",
+            "not_null:resolution_status",
+            "not_null:source_created_date",
+            "not_null:source_customer_id",
+            "not_null:source_system"
+          ]
+        },
+        "stg_app_customers": {
+          "columns": [
+            "account_type",
+            "acquisition_channel",
+            "app_db_customer_id",
+            "created_date",
+            "segment"
+          ],
+          "tests": [
+            "accepted_values:account_type:[customer,test,internal]",
+            "accepted_values:segment:[consumer,smb,enterprise]",
+            "not_null:account_type",
+            "not_null:acquisition_channel",
+            "not_null:app_db_customer_id",
+            "not_null:created_date",
+            "not_null:segment",
+            "unique:app_db_customer_id"
+          ]
+        },
+        "stg_invoices": {
+          "columns": [
+            "invoice_id",
+            "order_id",
+            "salesforce_customer_id"
+          ],
+          "tests": [
+            "not_null:invoice_id",
+            "not_null:order_id",
+            "not_null:salesforce_customer_id",
+            "relationships:order_id:->ref('stg_orders').order_id",
+            "relationships:salesforce_customer_id:->ref('stg_salesforce_customers').salesforce_customer_id",
+            "unique:invoice_id"
+          ]
+        },
+        "stg_orders": {
+          "columns": [
+            "customer_id",
+            "order_id"
+          ],
+          "tests": [
+            "not_null:customer_id",
+            "not_null:order_id",
+            "relationships:customer_id:->ref('stg_app_customers').app_db_customer_id",
+            "unique:order_id"
+          ]
+        },
+        "stg_promotions": {
+          "columns": [
+            "promo_code"
+          ],
+          "tests": [
+            "not_null:promo_code",
+            "unique:promo_code"
+          ]
+        },
+        "stg_refunds": {
+          "columns": [
+            "order_id",
+            "refund_id",
+            "stripe_customer_id"
+          ],
+          "tests": [
+            "not_null:order_id",
+            "not_null:refund_id",
+            "not_null:stripe_customer_id",
+            "relationships:order_id:->ref('stg_orders').order_id",
+            "relationships:stripe_customer_id:->ref('stg_stripe_customers').stripe_customer_id",
+            "unique:refund_id"
+          ]
+        },
+        "stg_revenue_recognition": {
+          "columns": [
+            "order_id",
+            "recognition_date"
+          ],
+          "tests": [
+            "not_null:order_id",
+            "not_null:recognition_date",
+            "relationships:order_id:->ref('stg_orders').order_id"
+          ]
+        }
+      }
+    }
+  },
+  "version": 1
+}
