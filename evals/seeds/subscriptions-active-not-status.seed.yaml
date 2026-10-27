@@ -1,0 +1,22 @@
+# status: draft — simulated-analyst answer (company-003); not human-confirmed.
+question: "How many active subscribers did we have at the end of last quarter?"
+domain: subscriptions
+intent: >
+  Distinct customers holding a term whose date range contains the quarter's last day
+  (term_start_date <= D <= term_end_date, DATE comparison). Rejected: filtering
+  status = 'active' (an outcome flag that drops terms that later renewed or churned),
+  filtering dim_plans.is_current, or counting terms or seats.
+ir:
+  metric: active_subscribers
+expected:
+  kind: sql_shape
+  must_include:
+    - "terms containing the as-of date via term_start_date / term_end_date"
+    - "COUNT(DISTINCT customer_id)"
+  must_exclude:
+    - "status = 'active' as the liveness filter"
+    - "is_current as a filter"
+provenance: interview
+lineage:
+  - source: dbt_core
+    models: [fct_subscriptions]

@@ -1,26 +1,8 @@
 #!/usr/bin/env python3
-"""Validate Analytics Context Format (ACF) docs against the JSON Schemas.
+"""Validate ACF 0.3 context repos, or shipped examples and template structure.
 
-Dual-mode (option A) — one script for both places it runs:
-
-  • In a *context* repo (the analyst's analytics-context repo) the ACF docs live at
-    the repo root (./context.config.yaml, ./domains/**, ./entities/**, ./evals/**).
-    Run with no args; the script validates that root strictly.
-
-  • In *this tool* repo there are no root-level context docs — the shipped ACF lives
-    under examples/<company>/ and template/. With no args here, the script strictly
-    validates each examples/*/ (they are real worked examples and must pass) and does
-    a lenient *structural* check on template/ (it is full of `<placeholder>` values
-    that intentionally don't satisfy the schemas — we check field parallelism, not
-    values). This is the regression test CLAUDE.md asks for: "does examples/ still
-    validate against schemas/, and does template/ match?"
-
-  python .ci/validate.py                # auto-discover (see above)
-  python .ci/validate.py path/to/root   # validate one or more explicit roots, strict
-  python .ci/validate.py --schemas schemas
-
-Exit 0 = valid (drafts are warned, not failed); 1 = schema/structure errors;
-2 = setup error (schemas dir or deps missing).
+Exit 0: valid; 1: invalid context; 2: configuration/dependency error.
+Validation is read-only. Draft readiness issues warn; structural errors fail.
 """
 import argparse
 import glob
@@ -28,86 +10,26 @@ import json
 import sys
 from pathlib import Path
 
-SCRIPT_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from acf_runtime.loader import discover_docs as _discover_docs, read_yaml, read_method, Schemas
+from acf_runtime import load_context
+from acf_runtime.observed import read_queue
+from acf_runtime.expressions import MeasureParser
 
-# filename/pattern -> ACF kind -> schema file. lineage is only $ref'd, never paired.
-KIND_BY_NAME = {
-    "context.config.yaml": "config",
-    "domain.yaml": "domain",
-    "metrics.yaml": "metric",
-    "entities.yaml": "entity",
-}
-SCHEMA_FILE = {
-    "config": "config.schema.json",
-    "domain": "domain.schema.json",
-    "metric": "metric.schema.json",
-    "entity": "entity.schema.json",
-    "evalseed": "evalseed.schema.json",
-}
+SCHEMA_FILE = {kind: kind + ".schema.json" for kind in
+               ("config", "domain", "metric", "entity", "evalseed", "method", "shared")}
 
 
-def _die(msg, code=2):
-    print(f"validate: ERROR: {msg}", file=sys.stderr)
-    sys.exit(code)
+def discover_docs(root):
+    return _discover_docs(root, templates=True)
 
 
-def _resolve_schemas_dir(arg):
-    for cand in (arg, "schemas", str(SCRIPT_DIR.parent / "schemas")):
-        if cand and Path(cand).is_dir():
-            return Path(cand)
-    _die("could not find a schemas/ directory (pass --schemas)")
-
-
-def _kind_for(path: Path):
-    """Map a yaml file to its ACF kind, or None if it isn't an ACF doc we validate."""
-    name = path.name
-    if name in KIND_BY_NAME:
-        return KIND_BY_NAME[name]
-    if name.endswith(".seed.yaml"):
-        return "evalseed"
-    # entity files may live under an entities/ directory with arbitrary names
-    if path.suffix in (".yaml", ".yml") and "entities" in path.parts:
-        return "entity"
-    return None
-
-
-def discover_docs(root: Path):
-    """[(path, kind)] for every ACF doc under root."""
-    out = []
-    for p in sorted(root.rglob("*.yaml")) + sorted(root.rglob("*.yml")):
-        kind = _kind_for(p)
-        if kind:
-            out.append((p, kind))
-    return out
-
-
-def _load_yaml(path, yaml):
+def _load_yaml(path, yaml=None):
     try:
-        return yaml.safe_load(path.read_text()) or {}
-    except yaml.YAMLError as e:
-        return e  # caller reports
+        return read_method(path)[0] if Path(path).suffix == ".md" else read_yaml(path)
+    except Exception as exc:
+        return exc
 
-
-# ----- strict (schema) validation --------------------------------------------
-
-def validate_strict(docs, schemas, validator_cls, registry, yaml):
-    """Returns (errors, draft_count)."""
-    errors, drafts = [], 0
-    for path, kind in docs:
-        doc = _load_yaml(path, yaml)
-        if not isinstance(doc, dict) and not isinstance(doc, list):
-            errors.append(f"{path}: not valid YAML ({doc})")
-            continue
-        if isinstance(doc, dict) and doc.get("status") == "draft":
-            drafts += 1
-        v = validator_cls(schemas[kind], registry=registry)
-        for err in sorted(v.iter_errors(doc), key=lambda e: list(e.path)):
-            loc = "/".join(str(p) for p in err.path) or "(root)"
-            errors.append(f"{path} [{kind}] at {loc}: {err.message}")
-    return errors, drafts
-
-
-# ----- lineage repo sanity (warn, never fail) --------------------------------
 
 def lineage_repo_warnings(docs, yaml):
     """Warn when a lineage source's `repo` is a local filesystem path. The drift
@@ -194,58 +116,14 @@ def canonical_name_warnings(root):
     for p in sorted(Path(root).glob("domains/*/*.yml")):
         if p.parent.name.startswith("_"):
             continue
-        if p.name in ("domain.yml", "metrics.yml", "entities.yml"):
+        if p.name == "metrics.yml":
+            warns.append(f"{p}: legacy metric wrappers are unsupported in 0.3; convert to per-metric YAML before validation.")
+        elif p.name in ("domain.yml", "entities.yml"):
             warns.append(
                 f"{p}: consumers match '{p.stem}.yaml' exactly — this .yml "
                 "variant is not validated or indexed; rename to .yaml.")
     return warns
 
-
-# ----- IR coverage (warn, never fail) -----------------------------------------
-
-def ir_coverage_report(docs, yaml):
-    """Cross-check each seed's `ir.metric` against the root's metrics.yaml docs.
-    Dangling references warn (never fail). The summary line is the computable form
-    of "a question is covered iff an IR-complete definition exists": confirmed
-    seeds whose ir.metric resolves to an expression-bearing metric, over all
-    confirmed seeds. Returns (warnings, summary_or_None)."""
-    metrics_by_domain = {}  # domain -> {metric name: has expression}
-    for path, kind in docs:
-        if kind != "metric":
-            continue
-        doc = _load_yaml(path, yaml)
-        if not isinstance(doc, dict):
-            continue
-        domain = path.parent.name
-        for m in doc.get("metrics") or []:
-            if isinstance(m, dict) and m.get("name"):
-                metrics_by_domain.setdefault(domain, {})[m["name"]] = \
-                    bool(m.get("expression"))
-    warns, covered, confirmed = [], 0, 0
-    for path, kind in docs:
-        if kind != "evalseed":
-            continue
-        doc = _load_yaml(path, yaml)
-        if not isinstance(doc, dict):
-            continue
-        if doc.get("status") == "confirmed":
-            confirmed += 1
-        ir = doc.get("ir")
-        if not isinstance(ir, dict):
-            continue
-        domain, metric = doc.get("domain", ""), ir.get("metric")
-        known = metrics_by_domain.get(domain, {})
-        if metric not in known:
-            warns.append(f"{path}: ir.metric '{metric}' is not defined in "
-                         f"domains/{domain}/metrics.yaml — dangling IR reference")
-        elif doc.get("status") == "confirmed" and known[metric]:
-            covered += 1
-    summary = (f"IR coverage: {covered}/{confirmed} confirmed seed(s) resolve to "
-               "an expression-bearing metric") if confirmed else None
-    return warns, summary
-
-
-# ----- lenient (structural) check for template/ ------------------------------
 
 def check_structure(docs, raw_schemas, yaml):
     """Field-parallelism check: top-level keys ⊆ schema properties, and the schema's
@@ -285,87 +163,64 @@ def discover_roots():
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description=__doc__,
-                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("roots", nargs="*", help="context root(s) to validate strictly")
-    ap.add_argument("--schemas", help="path to schemas/ (default: ./schemas or beside .ci/)")
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("roots", nargs="*")
+    ap.add_argument("--branch-test", action="store_true", help="validate proposed context without granting approval")
+    ap.add_argument("--require-ready", action="store_true", help="fail on unresolved dependencies/readiness blockers before merge")
+    ap.add_argument("--schemas")
+    ap.add_argument("--manifest", action="append", default=[], metavar="SOURCE_ID=PATH")
+    ap.add_argument("--json", action="store_true")
     args = ap.parse_args(argv)
-
+    schema_dir = Path(args.schemas) if args.schemas else Path(__file__).resolve().parents[1] / "schemas"
+    manifests = {}
     try:
-        import yaml, jsonschema
-        from referencing import Registry, Resource
-    except ImportError as e:
-        _die(f"missing dependency ({e}); run: pip install jsonschema pyyaml")
-
-    schemas_dir = _resolve_schemas_dir(args.schemas)
-    raw = {}  # kind -> schema dict
-    resources = []
-    for sfile in glob.glob(str(schemas_dir / "*.json")):
-        contents = json.load(open(sfile))
-        sid = contents.get("$id")
-        if sid:
-            resources.append((sid, Resource.from_contents(contents)))
-    registry = Registry().with_resources(resources)
-    for kind, fname in SCHEMA_FILE.items():
-        fpath = schemas_dir / fname
-        if not fpath.exists():
-            _die(f"schema {fname} not found in {schemas_dir}")
-        raw[kind] = json.load(open(fpath))
-    validator_cls = jsonschema.Draft202012Validator
-
-    if args.roots:
-        strict_roots, structural_root = [Path(r) for r in args.roots], None
-    else:
-        strict_roots, structural_root = discover_roots()
-
-    if not strict_roots and not structural_root:
-        print("validate: no ACF docs found to validate")
-        return 0
-
-    all_errors, all_warnings, total_docs, total_drafts = [], [], 0, 0
-
-    for root in strict_roots:
-        docs = discover_docs(root)
-        total_docs += len(docs)
-        errs, drafts = validate_strict(docs, raw, validator_cls, registry, yaml)
-        total_drafts += drafts
-        all_errors += errs
-        all_warnings += lineage_repo_warnings(docs, yaml)
-        all_warnings += entity_placement_warnings(docs, yaml, root)
-        all_warnings += canonical_name_warnings(root)
-        ir_warns, ir_summary = ir_coverage_report(docs, yaml)
-        all_warnings += ir_warns
-        print(f"validate: {root}/ — {len(docs)} doc(s), "
-              f"{len(errs)} error(s), {drafts} draft(s)"
-              + (f" — {ir_summary}" if ir_summary else ""))
-
-    if structural_root:
-        docs = discover_docs(structural_root)
-        total_docs += len(docs)
-        errs = check_structure(docs, raw, yaml)
-        all_errors += errs
-        all_warnings += lineage_repo_warnings(docs, yaml)
-        print(f"validate: {structural_root}/ — {len(docs)} doc(s) (structural), "
-              f"{len(errs)} error(s)")
-
-    if all_warnings:
-        print(f"\nvalidate: WARNING — {len(all_warnings)} problem(s) "
-              "(not a failure):")
-        for w in all_warnings:
-            print(f"  - {w}")
-
-    if total_drafts:
-        print(f"\nvalidate: NOTE: {total_drafts} definition(s) still `status: draft` "
-              "(excluded from the eval 'perfect' baseline — not a failure).")
-
-    if all_errors:
-        print(f"\nvalidate: FAILED with {len(all_errors)} problem(s):", file=sys.stderr)
-        for e in all_errors:
-            print(f"  - {e}", file=sys.stderr)
-        return 1
-
-    print(f"\nvalidate: OK — {total_docs} doc(s) validated, no schema errors.")
-    return 0
+        for pair in args.manifest:
+            source, sep, path = pair.partition("=")
+            if not source or not sep or not path:
+                raise ValueError("--manifest expects SOURCE_ID=PATH")
+            manifest = json.loads(Path(path).read_text())
+            if not isinstance(manifest, dict) or any(not isinstance(manifest.get(k, {}), dict) for k in ("nodes", "sources")):
+                raise ValueError("manifest must contain nodes/sources objects")
+            manifests[source] = manifest
+        checker = Schemas(schema_dir)
+        strict, structural = ([Path(r) for r in args.roots], None) if args.roots else discover_roots()
+        diagnostics = []
+        total = 0
+        for root in strict:
+            registry = load_context(root, schemas=schema_dir, manifests=manifests, branch_test=True if args.branch_test else None)
+            diagnostics.extend(vars(d) for d in registry.diagnostics)
+            if args.require_ready and (args.roots or Path("context.config.yaml").is_file()):
+                for node in registry.nodes.values():
+                    if node.blocking_reasons:
+                        diagnostics.append(dict(code="merge.blocked", severity="error", path=node.path, field="",
+                            message=", ".join(sorted(node.blocking_reasons)), target=node.id))
+            try:
+                read_queue(root, checker, registry)
+            except (ValueError, OSError) as exc:
+                diagnostics.append(dict(code="observed.invalid", severity="error",
+                    path=str(root / "evals/observed/queue.jsonl"), field="", message=str(exc), target=""))
+            docs = discover_docs(root)
+            total += len(docs)
+            warnings = lineage_repo_warnings(docs, None) + entity_placement_warnings(docs, None, root) + canonical_name_warnings(root)
+            diagnostics.extend(dict(code="context.warning", severity="warning", path=str(root), field="", message=w, target="") for w in warnings)
+        if structural:
+            docs = discover_docs(structural)
+            total += len(docs)
+            for error in check_structure(docs, checker.raw, None):
+                diagnostics.append(dict(code="template.structure", severity="error", path=str(structural), field="", message=error, target=""))
+        errors = sum(d["severity"] == "error" for d in diagnostics)
+        if args.json:
+            print(json.dumps({"schema_version": 1, "documents": total, "errors": errors, "diagnostics": diagnostics}, indent=2))
+        else:
+            for d in diagnostics:
+                print(f"validate: {d['severity'].upper()} {d['path']}:{d['field']} [{d['code']}] {d['message']}")
+                for related in d.get("related", []):
+                    print(f"  related: {related['path']}:{related['field']}")
+            print(f"validate: {'FAILED' if errors else 'OK'} — {total} documents, {errors} errors")
+        return 1 if errors else 0
+    except (ImportError, OSError, ValueError) as exc:
+        print(f"validate: setup error: {exc}", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":

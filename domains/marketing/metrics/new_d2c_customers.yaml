@@ -1,0 +1,24 @@
+# Simulated (marketing-001); distinct-customer counting human-decided 2026-10-27 (customers-001).
+name: new_d2c_customers
+status: draft
+definition: >
+  Distinct real customers whose first-ever Shorelane order was a Direct-to-Consumer order in the
+  period — the warehouse-attributed acquisition count behind CAC.
+grain: canonical customer (fct_orders.customer_id)
+temporal_kind: flow
+parameters: [{shared: period}]
+caveats:
+- Do not sum fct_marketing_spend.attributed_new_d2c_customers_day_total — it repeats the day total on every platform row, and it counts flagged rows rather than distinct customers.
+expression:
+  measure: COUNT(DISTINCT customer_id)
+  mandatory_filters:
+  - field: is_first_order
+    op: '='
+    value: true
+    reason: First-ever orders only.
+  - field: channel
+    op: '='
+    value: d2c
+    reason: Paid media attributes new d2c customers only.
+  allowed_dimensions: [order_date, segment]
+lineage: {shared: fct_orders}

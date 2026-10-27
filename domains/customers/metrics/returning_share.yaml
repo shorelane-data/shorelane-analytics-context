@@ -1,0 +1,16 @@
+# Human-decided 2026-10-27 (customers-002): returning share = returning ÷ active.
+name: returning_share
+status: draft
+definition: >
+  Share of the period's active customers who had ordered before the period:
+  returning customers ÷ active customers.
+grain: canonical customer, over the period
+temporal_kind: rate
+parameters: [{shared: period}]
+expression:
+  measure: metric(returning_customers) / metric(active_customers)
+  ratio:
+    zero_denominator: null
+    reason: No active customers in the period means the share is undefined, not zero.
+  allowed_dimensions: [order_date, segment]
+lineage: inherit

@@ -1,0 +1,12 @@
+# Human-decided 2026-10-27 (catalog-001): d2c only.
+name: gross_margin
+status: draft
+definition: Gross margin dollars on d2c lines — line_amount minus quantity × unit_cost.
+grain: order line (fct_order_lines)
+temporal_kind: flow
+parameters: [{shared: period}]
+expression:
+  measure: SUM(gross_margin)
+  include_filters: [owned_inventory]
+  allowed_dimensions: [order_date, category, sku]
+lineage: {shared: fct_order_lines}

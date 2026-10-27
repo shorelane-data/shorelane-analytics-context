@@ -1,0 +1,26 @@
+# status: draft — simulated-analyst answers (domains-001, revenue-001); owner human-confirmed.
+name: revenue
+status: draft
+summary: How much money Shorelane made in a period, under five non-additive measures (GMV, net, recognized, billed, collected cash); recognized revenue is Finance's official number.
+owner: Finance (CFO)
+grain: fct_revenue — one row per underlying money movement (order, invoice, refund or recognition slice) with identifiers dropped; no dimensions beyond activity_date and measure_name
+tables:
+  canonical: nodal-shorelane.shorelane.fct_revenue
+  others:
+  - nodal-shorelane.shorelane.fct_orders              # route for channel / customer splits (GMV, net at order date)
+  - nodal-shorelane.shorelane.stg_revenue_recognition # recognition events for recognized-revenue splits (join to fct_orders for eligibility)
+  - nodal-shorelane.shorelane.stg_invoices            # subscription billed / collected events
+  - nodal-shorelane.shorelane.stg_refunds             # refund events (negative rows in net and collected)
+dashboards:
+- name: Executive Revenue Dashboard
+  owner: Finance (CFO)
+  canonical_question: What were the five revenue measures for a period, and how is recognized revenue trending?
+  url: https://shorelane-data.github.io/shorelane/business/
+  tool: plotly   # query-history-derived: BigQuery job label app=plotly_dashboard, dashboard=business
+- name: Shorelane-Business (Sigma workbook)
+  owner: _To be confirmed._
+  canonical_question: KPI tiles, monthly series and revenue-by-channel for preset periods (6/12/24 months, all time)
+  tool: sigma    # query-history-derived; its revenue-by-channel donut reads staging tables — unreconciled
+lineage:
+- source: dbt_core
+  models: [fct_revenue, fct_orders, stg_revenue_recognition, stg_invoices, stg_refunds]

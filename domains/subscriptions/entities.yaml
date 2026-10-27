@@ -1,12 +1,11 @@
-# SIMULATION TEST ARTIFACT — human review required.
+# Domain-specific status values on fct_subscriptions. status: draft (simulated, company-003).
 entities:
-- name: subscription_term_outcome
-  description: Stored term outcome differs from date-derived active-subscriber eligibility.
-  important: 'renewed: successor link exists; churned: not renewed at term end; active:
-    undecided in loaded snapshot. Renewal/churn rates exclude undecided terms; stock
-    ignores stored status.'
+- name: subscription_status
   status: draft
-  lineage:
-  - source: dbt_core
-    models:
-    - fct_subscriptions
+  description: The outcome of a subscription term (fct_subscriptions.status).  # dbt-derived (accepted_values)
+  mappings:
+    renewed: The term ended and the customer renewed into a new term
+    active: The term's fate is not yet known at load time (still running)
+    churned: The term ended without renewal (cancelled_date = term_end_date)
+  important: Status is an outcome, not liveness — never filter active subscribers on status = 'active'.
+  analytical_notes: Use status only to classify decided terms for renewal rate and churned ACV.

@@ -1,0 +1,18 @@
+# Stage-5 dashboard match, value reviewed by a real human (Ron Potok, 2026-10-27). Dependencies remain draft metrics.
+question: "What was our average order value from October 2025 through September 2026?"
+domain: marketing
+intent: >
+  Consumer AOV (d2c + marketplace): consumer GMV ÷ consumer orders. The context-off run returned an all-channel AOV including subscription orders (about 8.5x too high) — rejected. Dashboard shows display-rounded $293.
+ir:
+  metric: aov
+  time_window: {start: "2025-10-01", end: "2026-09-30"}
+expected:
+  kind: value_at_snapshot
+  value: 292.92
+  as_of: "2026-10-27"
+  tolerance: {absolute: 0.50}
+provenance: dashboard
+verified_query_file: evals/verified/marketing-aov-dashboard.sql
+lineage:
+  - source: dbt_core
+    models: [fct_orders]

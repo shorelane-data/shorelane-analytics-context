@@ -1,9 +1,14 @@
-# Subscriptions
+# Subscriptions — Context
 
-> SIMULATION TEST ARTIFACT — simulated answers are not human approval; all definitions remain draft.
+<!-- status: draft — simulated-analyst answers; not human-confirmed. -->
 
-FP&A follows the size of the subscription book, new business and renewal performance. fct_subscriptions is the governed real-customer term fact. Subscribers count canonical customers, seats measure capacity, and starts/renewal/churn count terms. Date-contained stock differs from start- or end-cohort flows.
+Shorelane for Business sells seat-based annual subscriptions. Each 12-month term
+is a row; a renewal creates a new term chained to the old one, and a churned
+customer simply has a final term that ends without a successor. Prices are
+locked at each term's start, and customers keep the plan generation they signed,
+so the book carries three live generations at different prices — "grandfathered"
+customers renew at old prices, which is why ACV per seat on new subscriptions
+differs from the book average.
 
-Each term locks its annual seat price and ACV at term start. Renewals keep plan and seats while applying the effective price at the new start. Current list prices cannot value the existing or historical book. Retired generations remain active through grandfathered customers; grandfathering depends on retirement as of the requested date.
-
-New-subscription ACV per seat is a ratio of sums over first terms. Monthly Renewals bars count renewal terms by their start date. Renewal/churn rates use decided predecessor terms by their end date, allowing successor starts beyond the reporting window. These are intentionally different cohorts, so their totals can differ at period boundaries. Live data masks future rows and outcomes; a recent term may remain undecided. The observed leap-day gap and historical knowledge-as-of policy await review. Definitions do not assert dashboard parity or production approval.
+Because a term's outcome is unknown until it ends, `status = 'active'` only means
+"not yet decided at load time". Liveness is always a date-range test.

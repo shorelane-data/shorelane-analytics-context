@@ -1,0 +1,25 @@
+# status: draft — simulated-analyst answers (customers-001); not human-confirmed.
+name: ordered_customers
+status: draft
+definition: >
+  All-time count of canonical real customers who have ever ordered. A legitimate reference figure
+  only when explicitly asked for ("customers who have ever ordered"); never the default customer count.
+grain: canonical customer (dim_customers row)
+temporal_kind: stock
+caveats:
+- Profiles without orders are real profiles, not customers — has_order is mandatory.
+expression:
+  measure: COUNT(app_db_customer_id)
+  mandatory_filters:
+  - field: has_order
+    op: '='
+    value: true
+    reason: Never-ordered profiles are not customers.
+  - field: account_type
+    op: '='
+    value: customer
+    reason: Exclude test and internal accounts.
+  allowed_dimensions: [segment, acquisition_channel]
+lineage:
+- source: dbt_core
+  models: [dim_customers]

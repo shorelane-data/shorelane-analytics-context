@@ -1,0 +1,26 @@
+# Stage-5 dashboard match, values reviewed by a real human (Ron Potok, 2026-10-27).
+# Only the two measures visible on the dashboard are pinned; GMV / net / billed
+# for Q2 2026 were not dashboard-verified. Dependencies remain draft metrics.
+question: "What were recognized revenue and collected cash for Q2 2026?"
+domain: revenue
+intent: >
+  Each measure separately from fct_revenue (never summed across measures), each at
+  its own activity date; refunds already negative rows. Values read from the
+  Executive Revenue Dashboard monthly series (exact figure data, Apr+May+Jun 2026;
+  Last 12 Months, as of 2026-10-27).
+ir:
+  metric: recognized_revenue
+  time_window: {start: "2026-04-01", end: "2026-06-30"}
+expected:
+  kind: value_at_snapshot
+  value:
+    - {measure_name: collected_cash, amount: 9114052.34}
+    - {measure_name: recognized_revenue, amount: 8948677.37}
+  key_columns: [measure_name]
+  as_of: "2026-10-27"
+  tolerance: {absolute: 0.01}
+provenance: dashboard
+verified_query_file: evals/verified/revenue-q2-2026-recognized-collected-dashboard.sql
+lineage:
+  - source: dbt_core
+    models: [fct_revenue]

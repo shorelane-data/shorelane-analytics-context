@@ -1,13 +1,16 @@
-# Subscriptions known issues
+# Subscriptions — Known Issues
 
-> SIMULATION TEST ARTIFACT — all entries draft.
+## What This Covers
+Data-quality issues and analytical gotchas — the silent-failure modes. Each issue
+here also appears as an `IF … DO NOT …` routing trigger in `reference.md`
+and as an eval seed.
 
-- **Owner and durable lineage:** accountable owner and prior dbt repository durability question remain open; source checkout and metadata are evidence, not ownership confirmation.
-- **Zero denominators:** behavior for seat ratios, renewal/churn and grandfathered share awaits human policy.
-- **Date integrity:** empirical checks found no overlapping terms, but one linked leap-day renewal has a service-date gap. No date repair authorized; owner disposition pending.
-- **Snapshot timing:** future terms and outcomes are masked. Recent endings may remain active/undecided and are excluded from renewal rates. Historical knowledge-as-of reconstruction is not established.
-- **Quarter coverage:** selected window can clip calendar-quarter churn buckets; compare matching cohorts.
-- **Valuation:** term ACV is locked at start-effective price. Latest list prices and recognized revenue are different measures.
-- **Retirement:** current generation is not the entire active book; grandfathering uses retirement as of date. Exact tier mappings remain source-derived pending owner review.
-- **Unsupported events/dimensions:** no pauses, midterm cancellations, upgrades or plan switches in fixture; seat buckets need a definition. No inferred general causal estimate from the documented synthetic billing incident.
-- **Live verification:** source and dashboard have no established automatic parity contract; the four off/on cases returned identical answers, and six directly comparable dashboard measures agree exactly or at display precision. The human accepted the six directly compared values at their stated precision. Grandfathered share remains pending, with no direct visible tile. The human selected monthly renewal starts for the bars and ending-term decisions for renewal rate; differing totals are expected at period boundaries.
+- **status = 'active' as liveness** — drops terms that later renewed or churned; historical counts collapse. <!-- status: draft (simulated, company-003) -> seed -->
+- **is_current as liveness** — drops every grandfathered subscriber. <!-- status: draft (simulated, company-003) -> seed -->
+- **Renewal rate shapes** — renewals ÷ active subscribers, renewal starts as numerator, or terms started as base are all wrong. <!-- status: draft (simulated, subscriptions-001) -> seed -->
+- **Timestamped as-of** — compares past `term_end_date` and drops terms ending that day. <!-- status: draft (simulated, subscriptions-001) -->
+- **Live-warehouse windows** — windows reaching today lose recently ending terms from the renewal denominator. <!-- status: draft (simulated, subscriptions-001) -->
+- **Current-plan lookup** — grouping by today's plan misattributes ACV; use the term row. <!-- status: draft (simulated, subscriptions-001) -->
+- **Renewals in new ACV per seat** — grandfathered renewal prices pull the figure down. <!-- status: draft (simulated, subscriptions-001) -> seed -->
+- **Staging subscriptions** — `stg_subscriptions` includes test/internal accounts and lacks `is_first_term`. <!-- status: draft (simulated, subscriptions-001) -->
+- **No parity check** — nothing reconciles `fct_subscriptions` against the FP&A dashboard module. <!-- status: draft (simulated, subscriptions-001) -->

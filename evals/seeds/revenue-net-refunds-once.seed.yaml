@@ -1,0 +1,22 @@
+# status: draft — simulated-analyst answer (revenue-001); not human-confirmed.
+question: "What was net revenue after refunds last month?"
+domain: revenue
+status: draft
+intent: >
+  Net revenue in fct_revenue already includes refunds as negative rows dated at
+  the refund date. Sum measure_name = net_revenue for the month; do not join
+  stg_refunds and subtract again.
+ir:
+  metric: net_revenue
+  time_window: last_month
+expected:
+  kind: sql_shape
+  must_include:
+    - "fct_revenue filtered to measure_name = net_revenue"
+  must_exclude:
+    - "refunds subtracted a second time"
+    - "staging tables as the revenue source"
+provenance: interview
+lineage:
+  - source: dbt_core
+    models: [fct_revenue]

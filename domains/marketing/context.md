@@ -1,11 +1,10 @@
-# Marketing
+# Marketing — Context
 
-> SIMULATION TEST ARTIFACT. All definitions remain draft; simulated answers are not human approval.
+<!-- status: draft — simulated-analyst answers; not human-confirmed. -->
 
-Marketing uses GMV to describe sales volume, while Executive Revenue owns recognized revenue. The headline GMV includes all canonical commerce channels. Consumer orders and AOV cover d2c and marketplace only. AOV is a ratio of period totals, with discounts already reflected in GMV.
-
-Paid-media reporting separates spend platforms from commerce channels. Governed CAC uses warehouse first-ever d2c acquisitions rather than platform-reported conversions. The human selected earliest purchase timestamp across all channels for first-time CAC acquisition, counting each canonical customer once. The spend mart repeats one acquisition day total on every platform row; use it once per day only after reconciling to that timestamp-based denominator. That total does not allocate customers to platforms.
-
-Category reporting uses consumer order lines, d2c and marketplace together, as the Marketing dashboard does; category gross margin is summed line margin over summed line value. Marketplace line value is full retail value, not Shorelane take, so marketplace line margin describes product mix rather than Shorelane earnings; answers include those lines and say so instead of dropping them. Promotion reporting separates order-level count/GMV from line-level discount dollars and does not turn tagged sales into causal lift.
-
-The human selected a fixed hash tie-breaker for identical earliest purchase timestamps; those assignments remain flagged as conventions. The interview preserves CAC zero behavior, category mix/rate contracts, historical category mapping, promotion code/date exceptions and attribution methods. Ownership remains unconfirmed. Warehouse checks and query-history mining ran after credential renewal. AOV reconciles; the human accepted AOV, distinct total new-customer counting, and timestamp-first CAC attribution. Implementation verification and other policy questions remain open.
+Marketing's headline number is GMV — everything that crossed the platform at full
+ticket — and its acquisition lens is paid media on Google, Meta and TikTok against
+new Shorelane customers whose first order is direct-to-consumer. The ad platforms
+report their own conversions, which run high by design; the governed CAC uses the
+warehouse's own count of first-time d2c customers. Because that count is a daily
+total with no per-platform split, CAC is blended across platforms.

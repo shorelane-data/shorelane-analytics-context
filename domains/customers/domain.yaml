@@ -1,33 +1,25 @@
-# SIMULATION TEST ARTIFACT — human review required.
-name: Customers
-summary: Customer population, acquisition, period activity, channel participation
-  and identity health.
+# status: draft — simulated-analyst answers (customers-001); owner + new-customer counting human-decided 2026-10-27.
+name: customers
 status: draft
-owner: To be confirmed
-grain: 'dim_customers: one row per canonical app_db_customer_id; fct_orders: one row
-  per real-customer order; fct_subscriptions: one row per subscription term.'
+summary: Who counts as a Shorelane customer — how many real, deduplicated customers there are, how many are active or new in a period and in which channels, and how healthy identity resolution is across source systems.
+owner: Marketing (VP Marketing)
+grain: canonical real customer (app_db_customer_id) — dim_customers is one row per canonical profile; fct_orders one row per order from a real customer
 tables:
   canonical: nodal-shorelane.shorelane.dim_customers
   others:
-  - nodal-shorelane.shorelane.fct_orders
-  - nodal-shorelane.shorelane.fct_subscriptions
-  - nodal-shorelane.shorelane.int_customer_identity
-  - nodal-shorelane.shorelane.fct_identity_resolution_quality
+  - nodal-shorelane.shorelane.fct_orders                       # active / new / current counts (real customers, canonical channel)
+  - nodal-shorelane.shorelane.int_customer_identity            # identity bridge — one row per source alias; quality figures only
+  - nodal-shorelane.shorelane.fct_identity_resolution_quality  # per-source-system resolution health
 dashboards:
-- name: Customers
-  canonical_question: How many current, active and new customers do we have, and how
-    do channels and identity resolution affect those counts?
+- name: Customer Dashboard
+  owner: Marketing (VP Marketing)
+  canonical_question: How many current, active and new customers do we have, by channel, and how healthy is identity resolution?
   url: https://shorelane-data.github.io/shorelane/customers/
-  tool: plotly-static
-  owner: To be confirmed
+  tool: plotly
+- name: Shorelane-Customers (Sigma workbook)
+  owner: Marketing (VP Marketing)
+  canonical_question: Customer KPIs and monthly series by preset period; identity health tiles
+  tool: sigma   # query-history-derived
 lineage:
 - source: dbt_core
-  models:
-  - dim_customers
-  - fct_orders
-  - int_customer_identity
-  - fct_identity_resolution_quality
-  - dim_date
-  - fct_subscriptions
-  - stg_app_customers
-  - stg_orders
+  models: [dim_customers, fct_orders, int_customer_identity, fct_identity_resolution_quality]

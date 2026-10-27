@@ -1,0 +1,18 @@
+# Stage-5 dashboard match, value reviewed by a real human (Ron Potok, 2026-10-27). Dependencies remain draft metrics.
+question: "How many new subscriptions did we get from October 2025 through September 2026?"
+domain: subscriptions
+intent: >
+  First terms (is_first_term) started in the window; renewal starts excluded. Read from the FP&A dashboard New subscriptions series (12-month sum).
+ir:
+  metric: new_subscriptions
+  time_window: {start: "2025-10-01", end: "2026-09-30"}
+expected:
+  kind: value_at_snapshot
+  value: 1151
+  as_of: "2026-10-27"
+  tolerance: {absolute: 0}
+provenance: dashboard
+verified_query_file: evals/verified/subscriptions-new-oct2025-sep2026-dashboard.sql
+lineage:
+  - source: dbt_core
+    models: [fct_subscriptions]

@@ -1,0 +1,23 @@
+# status: draft — simulated-analyst answer (company-004, subscriptions-001); not human-confirmed.
+question: "What was our renewal rate last quarter?"
+domain: subscriptions
+intent: >
+  Renewed terms ÷ decided terms (renewed + churned) whose term END date falls in the
+  most recent completed calendar quarter; counted in terms. Rejected: renewals ÷ active
+  subscribers, renewal starts as numerator, terms started as base, including
+  still-running 'active' terms.
+ir:
+  metric: renewal_rate
+  time_window: last_quarter
+expected:
+  kind: sql_shape
+  must_include:
+    - "terms placed by term_end_date in the quarter"
+    - "denominator restricted to status in (renewed, churned)"
+  must_exclude:
+    - "active subscribers as the denominator"
+    - "terms placed by term_start_date"
+provenance: interview
+lineage:
+  - source: dbt_core
+    models: [fct_subscriptions]

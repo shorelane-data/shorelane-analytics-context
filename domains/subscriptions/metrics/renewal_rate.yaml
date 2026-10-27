@@ -1,0 +1,19 @@
+# status: draft — simulated (company-004, subscriptions-001); not human-confirmed.
+name: renewal_rate
+status: draft
+definition: >
+  Renewed terms ÷ decided terms (renewed + churned) whose end date falls in the period. Counted
+  in terms, not customers.
+grain: subscription term
+temporal_kind: rate
+parameters: [{shared: period}]
+caveats:
+- Not renewals ÷ active subscribers, not renewal starts as numerator, not terms started as base.
+- Windows reaching today lose recently ending terms (still 'active') — use fully elapsed windows.
+expression:
+  measure: metric(renewed_terms) / metric(decided_terms)
+  ratio:
+    zero_denominator: null
+    reason: No decided terms in the period means the rate is undefined, not zero.
+  allowed_dimensions: [plan_generation, plan_name, tier, segment]
+lineage: inherit

@@ -1,0 +1,30 @@
+# status: draft — simulated-analyst answers (company-002, revenue-001); not human-confirmed.
+# dbt-derived (model.fct_revenue accepted_values: measure_name)
+name: net_revenue
+status: draft
+definition: >
+  What Shorelane earns at the point of sale: d2c and subscription fees in full plus only the marketplace commission (take), minus refunds (negative rows, dated at refund date). Ops/COO's measure.
+aliases: ['net']
+grain: one fct_revenue row = one underlying money movement (identifiers dropped); sum amount over an explicit activity_date range
+temporal_kind: flow
+parameters:
+- name: time_window
+  note: Required. Attributed by activity_date, which for this measure is the order date; refunds at refund date. Use explicit bounds; "last quarter" = most recent completed calendar quarter.
+caveats:
+- fct_revenue has no channel, customer or product columns — splits route through fct_orders (see reference.md).
+- Refunds are already negative rows; never subtract refunds again.
+- The five revenue measures are not additive; never sum across measure_name values.
+- "Never source revenue from staging views (stg_*) — they include test and internal accounts."
+expression:
+  measure: SUM(amount)
+  mandatory_filters:
+  - field: measure_name
+    op: '='
+    value: net_revenue
+    reason: fct_revenue stacks five non-additive measures; without this the sum mixes them.
+  allowed_dimensions: [activity_date]
+family:
+  name: revenue_measures
+  discriminator: measure_name
+  siblings: ['recognized_revenue', 'gmv', 'billed_revenue', 'collected_cash']
+lineage: {shared: fct_revenue}

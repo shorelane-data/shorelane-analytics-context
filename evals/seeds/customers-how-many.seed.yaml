@@ -1,0 +1,24 @@
+# status: draft — simulated-analyst answer (company-002, customers-001); not human-confirmed.
+question: "How many customers do we have?"
+domain: customers
+intent: >
+  Current customers: distinct canonical real customers (fct_orders) with an order
+  in any channel (scope human-decided 2026-10-27) in the trailing twelve calendar months ending at the last completed month; state
+  the window. Rejected readings: all dim_customers profiles (includes never-ordered),
+  raw source-alias counts across Stripe/Shopify/Salesforce, all-time ordered
+  customers, and a D2C + Marketplace-only count (excludes subscription customers).
+ir:
+  metric: current_customers
+  dimensions: []
+expected:
+  kind: sql_shape
+  must_include:
+    - "COUNT(DISTINCT customer_id) on fct_orders across all channels"
+    - "trailing twelve calendar months ending at the snapshot month, stated in the answer"
+  must_exclude:
+    - "counting all dim_customers rows or source aliases"
+    - "stg_orders or any staging table as the source"
+provenance: interview
+lineage:
+  - source: dbt_core
+    models: [fct_orders]

@@ -1,0 +1,26 @@
+# Stage-5 dashboard match, value reviewed by a real human (Ron Potok, 2026-10-27).
+# The analyst chose the dashboard's all-channel framing over the earlier D2C+Marketplace
+# scope. Dependencies remain draft metrics.
+question: "How many customers do we have, as of the end of September 2026?"
+domain: customers
+intent: >
+  Current customers: distinct canonical real customers (fct_orders) with an order in
+  any channel, including business subscriptions, in the twelve calendar months ending
+  September 2026. Rejected: all-time ever-ordered customers (the context-off reading),
+  a D2C + Marketplace-only count, all dim_customers profiles, source aliases. Value
+  read from the Customers Dashboard "Current Customers" KPI and its "All channels
+  (deduplicated)" series (Last 12 Months, as of 2026-10-27).
+ir:
+  metric: current_customers
+  dimensions: []
+  time_window: {start: "2025-10-01", end: "2026-09-30"}
+expected:
+  kind: value_at_snapshot
+  value: 9812
+  as_of: "2026-10-27"
+  tolerance: {absolute: 0}
+provenance: dashboard
+verified_query_file: evals/verified/customers-current-sep-2026-dashboard.sql
+lineage:
+  - source: dbt_core
+    models: [fct_orders]

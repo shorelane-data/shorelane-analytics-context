@@ -1,0 +1,17 @@
+# Stage-5 dashboard match, value reviewed by a real human (Ron Potok, 2026-10-27). Dependencies remain draft metrics.
+question: "How many active subscribers did we have at the end of September 2026?"
+domain: subscriptions
+intent: >
+  Distinct customers with a term containing 2026-09-30 (DATE, inclusive ends); no status or is_current filter. Read from the Subscriptions (FP&A) dashboard, Active Subscribers Total (deduplicated), Sep 2026.
+ir:
+  metric: active_subscribers
+expected:
+  kind: value_at_snapshot
+  value: 3647
+  as_of: "2026-10-27"
+  tolerance: {absolute: 0}
+provenance: dashboard
+verified_query_file: evals/verified/subscriptions-active-sep-2026-dashboard.sql
+lineage:
+  - source: dbt_core
+    models: [fct_subscriptions]

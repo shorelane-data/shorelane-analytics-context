@@ -1,0 +1,23 @@
+# Definition simulated (customers-001); distinct-customer counting human-decided 2026-10-27.
+question: "How many new customers did we get last quarter?"
+domain: customers
+intent: >
+  Distinct canonical real customers whose first-ever order falls in the most recent
+  completed calendar quarter: COUNT(DISTINCT customer_id) on fct_orders where
+  is_first_order. Counting flagged rows overstates, because some customers have two
+  orders flagged as first. New to Shorelane, not new to a channel.
+ir:
+  metric: new_customers
+  time_window: last_quarter
+expected:
+  kind: sql_shape
+  must_include:
+    - "COUNT(DISTINCT customer_id) with is_first_order on fct_orders"
+  must_exclude:
+    - "COUNTIF(is_first_order) or counting flagged order rows"
+    - "first order per channel treated as a new customer"
+    - "stg_orders as the source"
+provenance: interview
+lineage:
+  - source: dbt_core
+    models: [fct_orders]

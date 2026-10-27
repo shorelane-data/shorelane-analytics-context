@@ -1,0 +1,30 @@
+# Correction harvested at Stage 5 (2026-10-27): the analyst (Ron Potok, real human)
+# decided "make from the marketplace" = take NET of refunds. Both live runs returned
+# take before refunds. Depends on draft metric net_revenue.
+question: "How much did we make from the marketplace last quarter?"
+domain: revenue
+intent: >
+  "Make from the marketplace" is Shorelane's take net of refunds — net revenue
+  restricted to marketplace orders: fct_orders.net_amount for marketplace orders
+  at order date, plus refund rows (each carrying only the take) joined to
+  fct_orders on order_id and dated at refund date. Not marketplace GMV (full
+  retail paid to sellers), and not take before refunds.
+ir:
+  metric: net_revenue
+  filters:
+    - field: channel
+      op: '='
+      value: marketplace
+  time_window: last_quarter
+expected:
+  kind: sql_shape
+  must_include:
+    - "marketplace take (net_amount) from fct_orders on canonical channel = marketplace"
+    - "marketplace refunds subtracted, joined to fct_orders on order_id and dated at refund date"
+  must_exclude:
+    - "marketplace GMV / gross_amount reported as what Shorelane made"
+    - "take reported gross of refunds as the answer"
+provenance: correction
+lineage:
+  - source: dbt_core
+    models: [fct_orders, stg_refunds]

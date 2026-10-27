@@ -1,37 +1,20 @@
-# SIMULATION TEST ARTIFACT — human review required.
-name: Marketing
-summary: Commerce GMV and consumer performance, paid-media spend and acquisition,
-  category and promotion reporting.
+# status: draft — simulated-analyst answers (marketing-001); owner, AOV scope and dashboard defect human-decided 2026-10-27.
+name: marketing
 status: draft
-owner: To be confirmed
-grain: 'Paid spend: platform-day; commerce: eligible order; category/discount: consumer
-  order line; acquisition: canonical customer.'
+summary: How much Shorelane sells (GMV by channel, consumer orders, AOV) and what acquiring new customers costs (ad spend vs warehouse-attributed new d2c customers), plus category and promotion effects.
+owner: Marketing (VP Marketing)
+grain: fct_orders — one order from a real customer; fct_marketing_spend — one row per platform-day of paid media
 tables:
-  canonical: nodal-shorelane.shorelane.fct_marketing_spend
+  canonical: nodal-shorelane.shorelane.fct_orders
   others:
-  - nodal-shorelane.shorelane.fct_orders
-  - nodal-shorelane.shorelane.fct_order_lines
-  - nodal-shorelane.shorelane.dim_products
-  - nodal-shorelane.shorelane.dim_customers
-  - nodal-shorelane.shorelane.fct_revenue
-  - nodal-shorelane.shorelane.stg_promotions
+  - nodal-shorelane.shorelane.fct_marketing_spend   # platform-day spend; day-total new-customer column repeats per platform
+  - nodal-shorelane.shorelane.stg_promotions        # promo code catalog
 dashboards:
-- name: Marketing
-  canonical_question: How do GMV, consumer order value and acquisition cost vary over
-    the selected period, and how do categories and promotions contribute?
+- name: Marketing Dashboard
+  owner: Marketing (VP Marketing)
+  canonical_question: What were GMV by channel, consumer orders and AOV, ad spend and CAC for the period?
   url: https://shorelane-data.github.io/shorelane/marketing/
-  tool: plotly-static
-  owner: To be confirmed
+  tool: plotly
 lineage:
 - source: dbt_core
-  models:
-  - fct_marketing_spend
-  - fct_order_lines
-  - fct_orders
-  - dim_products
-  - dim_date
-  - dim_customers
-  - fct_revenue
-  - stg_ad_spend
-  - stg_promotions
-  - stg_products
+  models: [fct_orders, fct_marketing_spend, stg_promotions]

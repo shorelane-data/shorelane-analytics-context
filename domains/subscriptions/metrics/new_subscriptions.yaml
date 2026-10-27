@@ -1,0 +1,22 @@
+# status: draft — simulated (subscriptions-001); not human-confirmed.
+name: new_subscriptions
+status: draft
+definition: >
+  First subscription terms (is_first_term) of real customers whose term start date falls in the
+  period (inclusive). Later terms are renewals ("renewal starts"), not new subscriptions.
+grain: subscription term (first terms only — one per customer)
+temporal_kind: flow
+parameters: [{shared: period}]
+expression:
+  measure: COUNT(subscription_id)
+  mandatory_filters:
+  - field: is_first_term
+    op: '='
+    value: true
+    reason: Without it renewal starts are counted as new subscriptions.
+  - field: term_start_date
+    op: between
+    value: [<period_start>, <period_end>]
+    reason: New subscriptions are placed by term start date.
+  allowed_dimensions: [plan_generation, plan_name, tier, segment]
+lineage: {shared: fct_subscriptions}

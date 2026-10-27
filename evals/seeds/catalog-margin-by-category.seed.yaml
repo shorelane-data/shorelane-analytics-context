@@ -1,0 +1,23 @@
+# Human-decided 2026-10-27 (catalog-001): d2c only, ratio of totals.
+question: "What's our gross margin by category last quarter?"
+domain: catalog-margin
+intent: >
+  Gross margin % by category = SUM(gross_margin) ÷ SUM(line_amount) over d2c order
+  lines in the most recent completed calendar quarter. Rejected: including
+  marketplace lines (seller retail, no cost basis), averaging per-line margin %.
+ir:
+  metric: gross_margin_pct
+  dimensions: [category]
+  time_window: last_quarter
+expected:
+  kind: sql_shape
+  must_include:
+    - "channel = 'd2c' on fct_order_lines"
+    - "SUM(gross_margin) / SUM(line_amount) grouped by category"
+  must_exclude:
+    - "marketplace lines included in margin"
+    - "AVG of per-line margin ratios"
+provenance: interview
+lineage:
+  - source: dbt_core
+    models: [fct_order_lines]

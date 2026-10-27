@@ -1,0 +1,13 @@
+# status: draft — simulated (marketing-001); column from dbt source (models/marts/fct_marketing_spend.sql).
+name: ad_spend
+status: draft
+definition: Paid-media spend in USD across platforms (google, meta, tiktok) by spend date.
+grain: platform-day (fct_marketing_spend)
+temporal_kind: flow
+parameters: [{shared: period}]
+expression:
+  measure: SUM(spend_usd)
+  allowed_dimensions: [spend_date, platform]
+lineage:
+- source: dbt_core
+  models: [fct_marketing_spend]

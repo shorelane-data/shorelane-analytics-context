@@ -1,4 +1,11 @@
-# SIMULATION TEST ARTIFACT — human review required.
-# Customer lifecycle and identity are subject entities in entities/customer-subjects.yaml.
-# No additional Customers-only fact status value was ratified; do not invent one.
-entities: []
+# Domain-specific status values. status: draft (simulated, customers-001).
+entities:
+- name: resolution_status
+  status: draft
+  description: Outcome of linking a source-system alias to a canonical customer (int_customer_identity).  # dbt-derived (accepted_values)
+  mappings:
+    resolved: Alias has a retained crosswalk link to a canonical app customer
+    unresolved_migration_gap: Permanently unlinked — pre-2021-07-01 Shopify/Salesforce profiles lost in the 2021 migration
+    unresolved_sync_lag: Not yet linked — the crosswalk link arrives late
+  important: Unresolved means unknown, never an extra customer. Report unresolved aliases as a quality figure only.
+  analytical_notes: Never inner join the crosswalk; left join on (source_system, source_customer_id).
