@@ -14,7 +14,20 @@
           "digest": "da5d061c0bec4aa11efbe71f8d249a67be3888ad85750460c860df13d510d5fb"
         }
       }
+    },
+    "7f5542f1e8ca59502acaea448bd97a8a32fa5ddd": {
+      "revision": "7f5542f1e8ca59502acaea448bd97a8a32fa5ddd",
+      "content_digest": "253e4bf9af56e929598afaf0c37c103a4a43dfbe72121c0400b3dcc4d82c60e5",
+      "checked_at": "2026-10-28T03:23:42.015935+00:00",
+      "expires_at": "2026-10-29T03:23:42.016034+00:00",
+      "sources": {
+        "dbt_core": {
+          "status": "checked",
+          "revision": "sha256:da5d061c0bec4aa11efbe71f8d249a67be3888ad85750460c860df13d510d5fb",
+          "digest": "da5d061c0bec4aa11efbe71f8d249a67be3888ad85750460c860df13d510d5fb"
+        }
+      }
     }
   },
-  "last_source_check_run": "40623865902"
+  "last_source_check_run": "40626401955"
 }
