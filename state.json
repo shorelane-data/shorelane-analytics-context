@@ -1,1 +1,20 @@
-{"approval_branch":"main","events":[],"freshness":{}}
+{
+  "approval_branch": "main",
+  "events": [],
+  "freshness": {
+    "b4e9357f4a2bd9f763b9d577b7321c1afc6c1d37": {
+      "revision": "b4e9357f4a2bd9f763b9d577b7321c1afc6c1d37",
+      "content_digest": "260fcdfeb4f08be57930f06d652f3f6a62e00429d514b6731607611c834e7fc7",
+      "checked_at": "2026-10-28T02:11:55.009655+00:00",
+      "expires_at": "2026-10-29T02:11:55.009765+00:00",
+      "sources": {
+        "dbt_core": {
+          "status": "checked",
+          "revision": "sha256:da5d061c0bec4aa11efbe71f8d249a67be3888ad85750460c860df13d510d5fb",
+          "digest": "da5d061c0bec4aa11efbe71f8d249a67be3888ad85750460c860df13d510d5fb"
+        }
+      }
+    }
+  },
+  "last_source_check_run": "40616588509"
+}
