@@ -4,6 +4,10 @@ Read [GOVERNANCE.md](GOVERNANCE.md) for protected merge approval, live stale-sta
 checks, explicit branch testing and legacy conversion. New definitions omit
 authored approval status; interview confirmation is evidence for review.
 
+Approval authority for this repo: reviewed, protected merges to `main` are recorded
+in the append-only ledger on the `acf-governance` branch (`state.json`), written only
+by the governance service identity.
+
 
 This repo is Shorelane Commerce's **business context layer** for analytics agents, in
 Analytics Context Format (ACF) 0.3. It tells an AI agent what your terms mean, which
