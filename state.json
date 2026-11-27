@@ -248,8 +248,8 @@
     "a46accfaf6cd68aa8bed18c50406412a3e0e5410": {
       "revision": "a46accfaf6cd68aa8bed18c50406412a3e0e5410",
       "content_digest": "253e4bf9af56e929598afaf0c37c103a4a43dfbe72121c0400b3dcc4d82c60e5",
-      "checked_at": "2026-11-27T01:15:37.947291+00:00",
-      "expires_at": "2026-11-28T01:15:37.947387+00:00",
+      "checked_at": "2026-11-27T15:48:03.130557+00:00",
+      "expires_at": "2026-11-28T15:48:03.130677+00:00",
       "sources": {
         "dbt_core": {
           "status": "checked",
@@ -259,5 +259,5 @@
       }
     }
   },
-  "last_source_check_run": "45921511316"
+  "last_source_check_run": "46028041357"
 }
